@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/pragmataW/graphmaster/internal/adapters"
 	"github.com/pragmataW/graphmaster/internal/hookapi"
@@ -223,27 +222,19 @@ func gate(d hookapi.Decision) gateOutput {
 	case hookapi.ActionAllow:
 		return gateOutput{Permission: "allow", UserMessage: d.UserMessage}
 	case hookapi.ActionDeny, hookapi.ActionAsk:
+		// Cursor's agent (2026.07) hands user_message, not agent_message, to
+		// the model when a preToolUse/beforeShellExecution hook denies, so the
+		// full reason (graph results included) must go there as well.
 		user := d.UserMessage
 		if user == "" {
-			user = "graphmaster: " + summary(d.Reason)
+			user = strings.TrimSpace(d.Reason)
+		}
+		if user == "" {
+			user = "graphmaster: tool call redirected to the code graph"
 		}
 		return gateOutput{Permission: string(d.Effective()), UserMessage: user, AgentMessage: d.Reason}
 	}
 	return gateOutput{}
-}
-
-// summary returns the first line of reason, capped for the user-facing UI.
-func summary(reason string) string {
-	line, _, _ := strings.Cut(strings.TrimSpace(reason), "\n")
-	line = strings.TrimSpace(line)
-	if line == "" {
-		return "tool call redirected to the code graph"
-	}
-	const maxRunes = 200
-	if utf8.RuneCountInString(line) > maxRunes {
-		line = string([]rune(line)[:maxRunes]) + "…"
-	}
-	return line
 }
 
 func nativeName(raw json.RawMessage) string {

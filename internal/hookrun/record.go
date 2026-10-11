@@ -10,6 +10,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 )
@@ -32,6 +33,9 @@ const maxRecordSeq = 100000
 
 // envPrefixes select the agent-related variables kept in a snapshot.
 var envPrefixes = []string{"CLAUDE_", "CODEX_", "CURSOR_", "OPENCODE_"}
+
+// emailPattern matches e-mail addresses scrubbed from recorded payloads.
+var emailPattern = regexp.MustCompile(`[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}`)
 
 // envExact lists individual variables kept in a snapshot.
 var envExact = map[string]bool{"TERM_PROGRAM": true}
@@ -107,7 +111,9 @@ func (r *Recorder) Record(agent, event string, stdin []byte, cwd string) (string
 		CWD:   s.Scrub(cwd),
 		Env:   SnapshotEnv(environ, s),
 	}
-	payload := s.Scrub(string(stdin))
+	// Agents put account data in payloads (Cursor sends user_email); fixtures
+	// must never carry it.
+	payload := emailPattern.ReplaceAllString(s.Scrub(string(stdin)), "{{EMAIL}}")
 	if trimmed := bytes.TrimSpace([]byte(payload)); len(trimmed) > 0 && json.Valid(trimmed) {
 		rec.Stdin = json.RawMessage(trimmed)
 	} else {

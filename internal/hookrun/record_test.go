@@ -248,3 +248,19 @@ func readRecording(t *testing.T, path string) Recording {
 	}
 	return rec
 }
+
+func TestRecordScrubsEmails(t *testing.T) {
+	dir := t.TempDir()
+	r := &Recorder{Dir: dir, Home: "/home/alice", Repo: "/home/alice/src/proj"}
+	path, err := r.Record("cursor", "pre-tool-use", []byte(`{"user_email":"alice@example.com","tool_name":"Grep"}`), "/home/alice/src/proj")
+	if err != nil {
+		t.Fatal(err)
+	}
+	b, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(b), "alice@example.com") || !strings.Contains(string(b), `"user_email": "{{EMAIL}}"`) {
+		t.Fatalf("email not scrubbed:\n%s", b)
+	}
+}
