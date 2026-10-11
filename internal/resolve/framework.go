@@ -20,6 +20,10 @@
 // Language specifics plug in through LangResolver (resolve/<lang>.go,
 // registered from init()); module identity and import targets come from the
 // parse layer's model.LanguageSpec.
+//
+// Every run that changed something ends with the Go implements pass
+// (goimpl.go), which derives the implicit interface satisfaction of Go
+// types from the resolved graph.
 package resolve
 
 import (
@@ -144,6 +148,10 @@ type Stats struct {
 	Unresolved        int // references left with dst NULL
 	Edges             int // edge rows written (updates + inserts + deletes)
 	ByTier            [tierCount]int
+	// Implements counts derived Go implements rows written (see goimpl.go);
+	// ImplementsSkipped the interfaces left unlinked by the bounds there.
+	Implements        int
+	ImplementsSkipped int
 }
 
 // ResolvePending drains the per-file queue (see PendingFilePrefix), the
@@ -226,9 +234,32 @@ func run(ctx context.Context, st *store.Store, rc model.RepoContext, opts Option
 	defer s.close()
 	tr := newPhaseTracer()
 	if full {
-		err := runByFile(s, w, &stats)
+		// The flag makes a later run redo the Go implements pass if this
+		// one stops after the walk (see finishImpl).
+		if err := w.SetMeta(metaImplDirty, "1"); err != nil {
+			return stats, fmt.Errorf("resolve: %w", err)
+		}
+		if err := runByFile(s, w, &stats); err != nil {
+			return stats, err
+		}
 		tr.phase("full", &stats)
+		err := finishImpl(s, w, &stats)
+		tr.phase("go implements", &stats)
 		return stats, err
+	}
+	// The Go implements pass runs after the queues are drained; the flag
+	// commits first so that an interrupted run still runs it next time.
+	impl, err := implQueued(s)
+	if err != nil {
+		return stats, fmt.Errorf("resolve: %w", err)
+	}
+	if impl {
+		if err := w.SetMeta(metaImplDirty, "1"); err != nil {
+			return stats, fmt.Errorf("resolve: %w", err)
+		}
+		if err := w.Flush(); err != nil {
+			return stats, fmt.Errorf("resolve: commit: %w", err)
+		}
 	}
 	if err := drainFileQueue(s, w, &stats); err != nil {
 		return stats, err
@@ -251,7 +282,12 @@ func run(ctx context.Context, st *store.Store, rc model.RepoContext, opts Option
 		}
 		if len(ids) == 0 {
 			tr.phase("pending_names", &stats)
-			return stats, nil
+			if !impl {
+				return stats, nil
+			}
+			err := finishImpl(s, w, &stats)
+			tr.phase("go implements", &stats)
+			return stats, err
 		}
 		if err := resolveBatch(s, w, ids, full || opts.NoDependents, &stats); err != nil {
 			return stats, err
@@ -316,6 +352,22 @@ func runByFile(s *Session, w *store.Writer, stats *Stats) error {
 	if n, err := res.RowsAffected(); err == nil {
 		stats.Names = int(n)
 	}
+	if err := w.Flush(); err != nil {
+		return fmt.Errorf("resolve: commit: %w", err)
+	}
+	return nil
+}
+
+// finishImpl runs the Go implements pass (goimpl.go) and clears its flag
+// in one committed transaction.
+func finishImpl(s *Session, w *store.Writer, stats *Stats) error {
+	if err := goImplPass(s, w, stats); err != nil {
+		return fmt.Errorf("resolve: go implements: %w", err)
+	}
+	if _, err := w.Exec(`DELETE FROM meta WHERE key = ?`, metaImplDirty); err != nil {
+		return fmt.Errorf("resolve: %w", err)
+	}
+	stats.Batches++
 	if err := w.Flush(); err != nil {
 		return fmt.Errorf("resolve: commit: %w", err)
 	}

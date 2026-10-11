@@ -39,13 +39,20 @@ func (q *querier) reverseClosure(ctx context.Context, seeds []int64, kinds []mod
 	}
 	kl := edgeKindList(kinds)
 	limit := len(seeds) + impactWalkLimit
-	rows, err := q.db.QueryContext(ctx, fmt.Sprintf(`WITH RECURSIVE walk(id, depth) AS (
-			SELECT value, 0 FROM json_each(?1)
+	// Methods also step, at the same depth, to the interface and base
+	// methods they implement (virtual dispatch, see dispatch.go): their
+	// callers may reach the method. virt marks rows reached that way, disp
+	// the dispatch steps themselves, whose other implementations (implements
+	// edges into them) are not affected.
+	rows, err := q.db.QueryContext(ctx, fmt.Sprintf(`WITH RECURSIVE walk(id, depth, virt, disp) AS (
+			SELECT value, 0, 0, 0 FROM json_each(?1)
 			UNION
-			SELECT e.src, w.depth + 1 FROM walk w CROSS JOIN edges e ON e.dst = w.id
-			WHERE w.depth < ?2 AND e.kind IN (%s) AND e.conf >= ?3
+			SELECT e.src, w.depth + 1, w.virt, 0 FROM walk w CROSS JOIN edges e ON e.dst = w.id
+			WHERE w.depth < ?2 AND e.kind IN (%s) AND e.conf >= ?3 AND NOT (w.disp = 1 AND e.kind = %d)%s
 			LIMIT ?4
-		) SELECT id, depth FROM walk`, kl), string(seedJSON), depth, minConf, limit)
+		) SELECT id, depth, virt, disp FROM walk`, kl, model.EdgeImplements,
+		dispatchUpSQL(func(id string) string { return id + ", w.depth, 1, 1" })),
+		string(seedJSON), depth, minConf, limit)
 	if err != nil {
 		return nil, false, err
 	}
@@ -55,19 +62,26 @@ func (q *querier) reverseClosure(ctx context.Context, seeds []int64, kinds []mod
 		isSeed[id] = true
 	}
 	minDepth := map[int64]int{}
+	direct := map[int64]bool{} // reached without virtual dispatch
 	n := 0
 	for rows.Next() {
 		var id int64
 		var d int
-		if err := rows.Scan(&id, &d); err != nil {
+		var virt, disp bool
+		if err := rows.Scan(&id, &d, &virt, &disp); err != nil {
 			return nil, false, err
 		}
 		n++
-		if isSeed[id] {
+		// Interface and base methods reached only as dispatch steps are
+		// not affected themselves.
+		if isSeed[id] || disp {
 			continue
 		}
 		if old, ok := minDepth[id]; !ok || d < old {
 			minDepth[id] = d
+		}
+		if !virt {
+			direct[id] = true
 		}
 	}
 	if err := rows.Err(); err != nil {
@@ -89,7 +103,11 @@ func (q *querier) reverseClosure(ctx context.Context, seeds []int64, kinds []mod
 	}
 	for _, id := range ids {
 		if s := syms[id]; s != nil {
-			out = append(out, &reach{sym: s, depth: minDepth[id], conf: conf[id]})
+			c := conf[id]
+			if !direct[id] && (c == 0 || c > virtualConf) {
+				c = virtualConf
+			}
+			out = append(out, &reach{sym: s, depth: minDepth[id], conf: c})
 		}
 	}
 	return out, capped, nil

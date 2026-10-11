@@ -3,7 +3,7 @@ graphmaster repo_map · fresh
   c/  6 files, 89 loc  · Vec2, clamp_int, log_msg
   cpp/  6 files, 121 loc  · add, area, totalArea
   csharp/  7 files, 94 loc  · Invoice, CardPayment, IPayment
-  go/  8 files, 185 loc  · Item, Memory, Audited
+  go/  8 files, 185 loc  · Item, Memory, Store
   java/  7 files, 125 loc  · Animal, Cat, Keeper
   js/  5 files, 79 loc  · formatTotal
   php/  7 files, 134 loc

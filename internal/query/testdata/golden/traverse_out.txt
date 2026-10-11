@@ -7,16 +7,16 @@ out via calls,references,extends,implements,embeds,tests,declares, depth ≤2, m
     →references interface store.Store  go/internal/store/store.go:6-9
     →references struct service.OrderService  go/internal/service/order.go:14-16
   →calls function store.NewAudited  go/internal/store/store.go:44-46
-    →references struct store.Audited  go/internal/store/store.go:38-41
     →calls function store.NewMemory  go/internal/store/store.go:18-20
+    →references struct store.Audited  go/internal/store/store.go:38-41
   →calls method store.Audited.Put  go/internal/store/store.go:49-52
     →references field store.Audited.Writes  go/internal/store/store.go:40-40
+    →implements ~method store.Store.Put  go/internal/store/store.go:8-8
     →calls method store.Memory.Put  go/internal/store/store.go:31-35
   →calls method service.OrderService.PlaceOrder  go/internal/service/order.go:24-32
     →calls function util.FormatID  go/internal/util/format.go:11-13
     →calls function util.FormatMoney  go/internal/util/format.go:16-18
     →calls method store.Store.Get  go/internal/store/store.go:7-7
-    →calls method store.Store.Put  go/internal/store/store.go:8-8
     →references field service.OrderService.store  go/internal/service/order.go:15-15
     →references field store.Item.Price  go/internal/store/item.go:6-6
     →references field store.Item.Quantity  go/internal/store/item.go:7-7

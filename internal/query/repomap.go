@@ -3,6 +3,7 @@ package query
 import (
 	"context"
 	"fmt"
+	"path"
 	"sort"
 	"strings"
 
@@ -97,7 +98,7 @@ func (e *Engine) RepoMap(ctx context.Context, in RepoMapInput) (string, error) {
 		o.list(len(rows), func(i int) string {
 			r := rows[i]
 			line := fmt.Sprintf("%s  %s, %d loc", r.label, plural(r.node.files, "file"), r.node.loc)
-			if p := pkgs[r.node.path]; p != "" && p != r.node.path {
+			if p := pkgs[r.node.path]; p != "" {
 				line += "  pkg " + p
 			}
 			top, err := q.topSymbols(ctx, r.node, len(r.node.children) > 0)
@@ -170,10 +171,11 @@ func spread(ids []int64, n int) []int64 {
 	return out
 }
 
-// packageDirs maps a directory to the package declared there. Directories
-// holding several packages (e.g. one module per JS file) map to "".
+// packageDirs maps a directory to the label of the package declared there
+// (see pkgLabel). Directories holding several packages (e.g. one module
+// per JS file) map to "".
 func (q *querier) packageDirs(ctx context.Context) (map[string]string, error) {
-	rows, err := q.db.QueryContext(ctx, `SELECT coalesce(dir, ''), name FROM packages`)
+	rows, err := q.db.QueryContext(ctx, `SELECT coalesce(dir, ''), name, lang FROM packages`)
 	if err != nil {
 		return nil, err
 	}
@@ -181,15 +183,39 @@ func (q *querier) packageDirs(ctx context.Context) (map[string]string, error) {
 	out := map[string]string{}
 	for rows.Next() {
 		var dir, name string
-		if err := rows.Scan(&dir, &name); err != nil {
+		var lang int
+		if err := rows.Scan(&dir, &name, &lang); err != nil {
 			return nil, err
 		}
 		if _, dup := out[dir]; dup {
-			name = ""
+			out[dir] = ""
+			continue
 		}
-		out[dir] = name
+		out[dir] = pkgLabel(dir, name, model.Lang(uint8(lang)))
 	}
 	return out, rows.Err()
+}
+
+// pkgLabel shortens a package name for a directory line the way
+// displayQName shortens qualified names, and drops it when the line
+// already says it: a Go import path keeps its last segment; a module named
+// after the directory or one of its files (TS/JS, C), or whose last
+// segment is the directory's name (Go import paths, Java and Python
+// dotted packages), is not shown.
+func pkgLabel(dir, name string, lang model.Lang) string {
+	if name == "" || name == dir || strings.HasPrefix(name, dir+"/") {
+		return ""
+	}
+	if lang == model.LangGo {
+		if i := strings.LastIndexByte(name, '/'); i >= 0 && i < len(name)-1 {
+			name = name[i+1:]
+		}
+	}
+	last := name[strings.LastIndexAny(name, `/.\:`)+1:]
+	if last == path.Base(dir) {
+		return ""
+	}
+	return name
 }
 
 // topSymbols returns up to three exported top-level non-test definitions

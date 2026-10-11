@@ -9,29 +9,38 @@ import (
 	"github.com/pragmataW/graphmaster/internal/model"
 )
 
-// link is one edge of a walked call tree: id reached from parent.
+// link is one edge of a walked call tree: id reached from parent. via
+// marks a dispatch step of a reverse walk (parent's interface or base
+// method, see dispatch.go); through is the method a caller was reached
+// through once foldDispatch removed those steps.
 type link struct {
 	id, parent int64
 	depth      int
 	conf, line int
+	via        bool
+	through    int64
 }
 
 // walkCalls runs the recursive CTE behind callers (reverse) and callees:
-// UNION dedupes (id, parent, depth), the depth column bounds the walk and
-// LIMIT bounds its size. capped reports that the row limit was hit.
+// UNION dedupes (id, parent, depth, via), the depth column bounds the walk
+// and LIMIT bounds its size. capped reports that the row limit was hit.
+// A reverse walk also steps from methods to the interface and base methods
+// they implement (dispatch.go) at the same depth; those links have via set
+// and no annotation.
 func (q *querier) walkCalls(ctx context.Context, root int64, reverse bool, depth, minConf int, kinds []model.EdgeKind, rowLimit int) (links []link, capped bool, err error) {
-	next, join, extra := "e.dst", "e.src = w.id", " AND +e.dst IS NOT NULL"
+	next, join, extra, dispatch := "e.dst", "e.src = w.id", " AND +e.dst IS NOT NULL", ""
 	if reverse {
 		next, join, extra = "e.src", "e.dst = w.id", ""
+		dispatch = dispatchUpSQL(func(id string) string { return id + ", w.id, w.depth, 1" })
 	}
 	kl := edgeKindList(kinds)
-	rows, err := q.db.QueryContext(ctx, fmt.Sprintf(`WITH RECURSIVE walk(id, parent, depth) AS (
-			SELECT ?1, 0, 0
+	rows, err := q.db.QueryContext(ctx, fmt.Sprintf(`WITH RECURSIVE walk(id, parent, depth, via) AS (
+			SELECT ?1, 0, 0, 0
 			UNION
-			SELECT %s, w.id, w.depth + 1 FROM walk w CROSS JOIN edges e ON %s
-			WHERE w.depth < ?2 AND e.kind IN (%s) AND e.conf >= ?3%s
+			SELECT %s, w.id, w.depth + 1, 0 FROM walk w CROSS JOIN edges e ON %s
+			WHERE w.depth < ?2 AND e.kind IN (%s) AND e.conf >= ?3%s%s
 			LIMIT ?4
-		) SELECT id, parent, depth FROM walk WHERE depth > 0`, next, join, kl, extra),
+		) SELECT id, parent, depth, via FROM walk WHERE depth > 0 OR via = 1`, next, join, kl, extra, dispatch),
 		root, depth, minConf, rowLimit+1)
 	if err != nil {
 		return nil, false, err
@@ -39,7 +48,7 @@ func (q *querier) walkCalls(ctx context.Context, root int64, reverse bool, depth
 	defer rows.Close()
 	for rows.Next() {
 		var l link
-		if err := rows.Scan(&l.id, &l.parent, &l.depth); err != nil {
+		if err := rows.Scan(&l.id, &l.parent, &l.depth, &l.via); err != nil {
 			return nil, false, err
 		}
 		links = append(links, l)
@@ -95,6 +104,9 @@ func (q *querier) annotateLinks(ctx context.Context, links []link, reverse bool,
 		return err
 	}
 	for i := range links {
+		if links[i].via {
+			continue
+		}
 		p := pair{src: links[i].parent, dst: links[i].id}
 		if reverse {
 			p = pair{src: links[i].id, dst: links[i].parent}
@@ -190,9 +202,13 @@ func (e *Engine) calls(ctx context.Context, tool string, in CallsInput, reverse 
 		if err != nil {
 			return err
 		}
+		links = foldDispatch(links)
 		ids := make([]int64, 0, len(links))
 		for _, l := range links {
 			ids = append(ids, l.id)
+			if l.through != 0 {
+				ids = append(ids, l.through)
+			}
 		}
 		syms, err := q.symsByID(ctx, ids)
 		if err != nil {
@@ -204,8 +220,16 @@ func (e *Engine) calls(ctx context.Context, tool string, in CallsInput, reverse 
 			if l.line > 0 {
 				r += fmt.Sprintf("  @%d", l.line)
 			}
+			if v := syms[l.through]; v != nil {
+				r += "  ~via " + v.displayQName()
+			}
 			return r
 		})
+		if !reverse {
+			if rows, err = q.withImplementations(ctx, rows); err != nil {
+				return err
+			}
+		}
 		if len(rows) == 0 {
 			o.linef("  no %s (min_confidence %d)", tool, minConf)
 		}
