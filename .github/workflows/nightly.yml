@@ -1,0 +1,168 @@
+name: nightly
+
+# Performance gates (docs/PLAN.md U54). Thresholds per runner live in
+# bench/thresholds.json (profiles macos-ci and linux-ci); bench/README.md
+# documents them. Raw results are uploaded as the perf-<os> artifact.
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+    inputs:
+      gates:
+        description: "Synthetic gates to run (subset of: dirty full incr multi query)"
+        type: string
+        default: "dirty full incr multi query"
+      k8s:
+        description: "Run the Kubernetes benchmark"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CGO_ENABLED: "1"
+  GO_TAGS: sqlite_fts5 sqlite_omit_load_extension
+  OUT: bench-out
+  KUBE_VERSION: v1.34.0
+  # Scheduled runs have no inputs: run everything.
+  GATES: ${{ inputs.gates || 'dirty full incr multi query' }}
+  RUN_K8S: ${{ github.event_name != 'workflow_dispatch' || inputs.k8s }}
+  # Query latency repository size. The 50ms p95 limit is fixed in the test
+  # (no per-runner headroom); repo_map and imports grow with the file count
+  # (M4: ~26ms and ~11ms p95 at 20k files), so CI stays at the test default.
+  GRAPHMASTER_QUERY_PERF_FILES: "3000"
+
+jobs:
+  perf:
+    name: perf (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15
+            profile: macos-ci
+          - os: ubuntu-24.04
+            profile: linux-ci
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: false # GOCACHE is cached explicitly below (cgo grammars are slow to build)
+
+      - name: Resolve Go cache paths
+        id: gopaths
+        shell: bash
+        run: |
+          echo "gocache=$(go env GOCACHE)" >> "$GITHUB_OUTPUT"
+          echo "gomodcache=$(go env GOMODCACHE)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Go build and module cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.gopaths.outputs.gocache }}
+            ${{ steps.gopaths.outputs.gomodcache }}
+          key: go-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('go.sum') }}-${{ github.sha }}
+          restore-keys: |
+            go-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('go.sum') }}-
+            go-${{ runner.os }}-${{ runner.arch }}-
+
+      - name: Build graphmaster and perfgate
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/bin" "$OUT"
+          go build -tags "$GO_TAGS" -o "$RUNNER_TEMP/bin/graphmaster" ./cmd/graphmaster
+          go build -o "$RUNNER_TEMP/bin/perfgate" ./internal/perfgate/cmd/perfgate
+          "$RUNNER_TEMP/bin/graphmaster" --version
+
+      - name: Record machine
+        shell: bash
+        run: |
+          {
+            echo "runner: ${{ matrix.os }} profile: ${{ matrix.profile }}"
+            echo "commit: $GITHUB_SHA"
+            go version
+            uname -a
+            if [[ "$RUNNER_OS" == macOS ]]; then
+              sysctl -n machdep.cpu.brand_string hw.ncpu hw.memsize
+            else
+              nproc; grep -m1 'model name' /proc/cpuinfo; free -h
+            fi
+          } | tee "$OUT/machine.txt"
+
+      - name: Synthetic gates (${{ env.GATES }})
+        id: synth
+        continue-on-error: true
+        shell: bash
+        run: |
+          read -ra gates <<< "$GATES"
+          bench/synth.sh "${gates[@]}"
+
+      - name: Cache Kubernetes checkout
+        if: env.RUN_K8S == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/graphmaster-bench/kubernetes-${{ env.KUBE_VERSION }}
+          key: k8s-${{ env.KUBE_VERSION }}-${{ runner.os }}
+
+      - name: Kubernetes benchmark
+        id: k8s
+        if: env.RUN_K8S == 'true'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          GRAPHMASTER_BIN="$RUNNER_TEMP/bin/graphmaster" RESULTS="$OUT/k8s.jsonl" \
+            bench/k8s.sh 2>&1 | tee "$OUT/k8s.log"
+
+      - name: Check thresholds
+        id: check
+        if: always()
+        shell: bash
+        run: |
+          shopt -s nullglob
+          args=(-thresholds bench/thresholds.json -profile "${{ matrix.profile }}"
+            -summary "$GITHUB_STEP_SUMMARY" -json "$OUT/perfgate.json")
+          for f in "$OUT"/bench-*.txt; do args+=(-bench "$f"); done
+          if [[ "$RUN_K8S" == true ]]; then args+=(-k8s "$OUT/k8s.jsonl"); fi
+          if [[ "$GATES" != "dirty full incr multi query" ]]; then args+=(-partial); fi
+          "$RUNNER_TEMP/bin/perfgate" "${args[@]}" | tee "$OUT/perfgate.txt"
+
+      - name: Drop the Kubernetes index before caching the checkout
+        if: always() && env.RUN_K8S == 'true'
+        shell: bash
+        run: rm -rf ~/.cache/graphmaster-bench/kubernetes-*/.graphmaster
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-${{ matrix.os }}
+          path: ${{ env.OUT }}/
+          retention-days: 90
+          if-no-files-found: warn
+
+      - name: Fail on a failed gate
+        if: always()
+        shell: bash
+        run: |
+          status=0
+          if [[ "${{ steps.synth.outcome }}" == failure ]]; then
+            echo "::error::synthetic gates failed (see bench-out/*.txt and the synth step log)"; status=1
+          fi
+          if [[ "${{ steps.k8s.outcome }}" == failure ]]; then
+            echo "::error::Kubernetes benchmark failed (see bench-out/k8s.log)"; status=1
+          fi
+          if [[ "${{ steps.check.outcome }}" != success ]]; then
+            echo "::error::performance thresholds exceeded (see the job summary and bench-out/perfgate.txt)"; status=1
+          fi
+          exit "$status"

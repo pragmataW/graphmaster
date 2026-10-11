@@ -1,0 +1,77 @@
+{
+  "_doc": [
+    "Performance thresholds checked by bench/check.sh (internal/perfgate). See bench/README.md.",
+    "Limits are inclusive. A value is a number in the metric's unit or a Go duration string ('150ms'),",
+    "converted to ns for ns/op, ms for *-ms units and seconds for *_s fields. Bench metric keys may be",
+    "path.Match patterns over units ('*-edit-ms'). A configured limit without a result fails.",
+    "plan:     PLAN targets on a developer machine (reference: Apple M4, 10 cores).",
+    "macos-ci: GitHub macos-15 runner (arm64, 3 vCPU M1 VM), about 3x slower than the M4 on parallel work.",
+    "linux-ci: GitHub ubuntu-24.04 runner (x86-64, 4 vCPU), about 3x slower than the M4 on parallel work.",
+    "CI limits are initial estimates with headroom; tighten them from the uploaded nightly results."
+  ],
+  "profiles": {
+    "plan": {
+      "k8s": {
+        "full_s": {"max": 60},
+        "noop_s": {"max": 0.3},
+        "touch_s": {"max": 1},
+        "edit_s": {"max": 2},
+        "restore_s": {"max": 2},
+        "db_bytes": {"max": 335544320}
+      },
+      "bench": {
+        "BenchmarkFreshenNoChange/warm": {"ns/op": {"max": "150ms"}},
+        "BenchmarkFreshenNoChange/cold": {"ns/op": {"max": "150ms"}},
+        "BenchmarkFullBuildSynth": {"ns/op": {"max": "60s"}, "LOC/s": {"min": 16667}},
+        "BenchmarkIncrementalSynth": {
+          "*-edit-ms": {"max": 500},
+          "*-del-ms": {"max": 1000},
+          "*-add-ms": {"max": 2500}
+        },
+        "BenchmarkMultiFileEdit": {"ns/op": {"max": "500ms"}, "refs/restore": {"max": 800}}
+      }
+    },
+    "macos-ci": {
+      "k8s": {
+        "full_s": {"max": 180},
+        "noop_s": {"max": 0.6},
+        "touch_s": {"max": 2},
+        "edit_s": {"max": 4},
+        "restore_s": {"max": 4},
+        "db_bytes": {"max": 335544320}
+      },
+      "bench": {
+        "BenchmarkFreshenNoChange/warm": {"ns/op": {"max": "450ms"}},
+        "BenchmarkFreshenNoChange/cold": {"ns/op": {"max": "450ms"}},
+        "BenchmarkFullBuildSynth": {"ns/op": {"max": "120s"}},
+        "BenchmarkIncrementalSynth": {
+          "*-edit-ms": {"max": 1500},
+          "*-del-ms": {"max": 3000},
+          "*-add-ms": {"max": 7500}
+        },
+        "BenchmarkMultiFileEdit": {"ns/op": {"max": "1500ms"}, "refs/restore": {"max": 800}}
+      }
+    },
+    "linux-ci": {
+      "k8s": {
+        "full_s": {"max": 180},
+        "noop_s": {"max": 0.6},
+        "touch_s": {"max": 2},
+        "edit_s": {"max": 4},
+        "restore_s": {"max": 4},
+        "db_bytes": {"max": 335544320}
+      },
+      "bench": {
+        "BenchmarkFreshenNoChange/warm": {"ns/op": {"max": "450ms"}},
+        "BenchmarkFreshenNoChange/cold": {"ns/op": {"max": "450ms"}},
+        "BenchmarkFullBuildSynth": {"ns/op": {"max": "120s"}},
+        "BenchmarkIncrementalSynth": {
+          "*-edit-ms": {"max": 1500},
+          "*-del-ms": {"max": 3000},
+          "*-add-ms": {"max": 7500}
+        },
+        "BenchmarkMultiFileEdit": {"ns/op": {"max": "1500ms"}, "refs/restore": {"max": 800}}
+      }
+    }
+  }
+}

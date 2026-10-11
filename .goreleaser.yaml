@@ -1,0 +1,204 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+#
+# graphmaster release configuration (GoReleaser OSS v2).
+#
+# graphmaster needs cgo (tree-sitter grammars, SQLite), so every target is
+# built with CGO_ENABLED=1 from one macOS arm64 host:
+#   darwin/arm64, darwin/amd64   Apple clang (-arch)
+#   linux/amd64, linux/arm64     zig cc -target <arch>-linux-musl, fully static
+#   windows/amd64                zig cc -target x86_64-windows-gnu (experimental:
+#                                cross-built, not exercised on Windows in CI)
+#
+# Local dry run (needs zig; syft optional):
+#   make release-snapshot
+# which runs: goreleaser release --snapshot --clean --skip=publish,sign[,sbom]
+version: 2
+
+project_name: graphmaster
+
+env:
+  - GOTOOLCHAIN=local
+  - CGO_ENABLED=1
+  # cgo invokes the C compiler inside the (read-only) module cache, where zig
+  # would otherwise try to create .zig-cache. Point both caches somewhere
+  # writable; CI caches this directory.
+  - ZIG_GLOBAL_CACHE_DIR={{ if index .Env "ZIG_GLOBAL_CACHE_DIR" }}{{ .Env.ZIG_GLOBAL_CACHE_DIR }}{{ else }}{{ .Env.HOME }}/.cache/zig{{ end }}
+  - ZIG_LOCAL_CACHE_DIR={{ if index .Env "ZIG_LOCAL_CACHE_DIR" }}{{ .Env.ZIG_LOCAL_CACHE_DIR }}{{ else }}{{ .Env.HOME }}/.cache/zig{{ end }}
+
+before:
+  hooks:
+    - go mod download
+    - go mod verify
+
+builds:
+  - id: darwin
+    main: ./cmd/graphmaster
+    binary: graphmaster
+    goos: [darwin]
+    goarch: [arm64, amd64]
+    tags: &tags
+      - sqlite_fts5
+      - sqlite_omit_load_extension
+    flags: &flags
+      - -trimpath
+    ldflags: &ldflags
+      - -s -w
+      - -X github.com/pragmataW/graphmaster/internal/version.Version={{ .Version }}
+      - -X github.com/pragmataW/graphmaster/internal/version.Commit={{ .ShortCommit }}
+      - -X github.com/pragmataW/graphmaster/internal/version.Date={{ .CommitDate }}
+    mod_timestamp: &mod_timestamp "{{ .CommitTimestamp }}"
+    env:
+      - MACOSX_DEPLOYMENT_TARGET=12.0
+    overrides:
+      - goos: darwin
+        goarch: arm64
+        env:
+          - CC=clang -arch arm64
+          - CXX=clang++ -arch arm64
+      - goos: darwin
+        goarch: amd64
+        env:
+          - CC=clang -arch x86_64
+          - CXX=clang++ -arch x86_64
+
+  - id: linux
+    main: ./cmd/graphmaster
+    binary: graphmaster
+    goos: [linux]
+    goarch: [amd64, arm64]
+    tags:
+      - sqlite_fts5
+      - sqlite_omit_load_extension
+      - osusergo
+      - netgo
+    flags: *flags
+    ldflags:
+      - -s -w
+      - -X github.com/pragmataW/graphmaster/internal/version.Version={{ .Version }}
+      - -X github.com/pragmataW/graphmaster/internal/version.Commit={{ .ShortCommit }}
+      - -X github.com/pragmataW/graphmaster/internal/version.Date={{ .CommitDate }}
+      - -linkmode external
+      - -extldflags '-static -s'
+    mod_timestamp: *mod_timestamp
+    overrides:
+      - goos: linux
+        goarch: amd64
+        env:
+          - CC=zig cc -target x86_64-linux-musl
+          - CXX=zig c++ -target x86_64-linux-musl
+      - goos: linux
+        goarch: arm64
+        env:
+          - CC=zig cc -target aarch64-linux-musl
+          - CXX=zig c++ -target aarch64-linux-musl
+
+  - id: windows
+    main: ./cmd/graphmaster
+    binary: graphmaster
+    goos: [windows]
+    goarch: [amd64]
+    tags: *tags
+    flags: *flags
+    ldflags: *ldflags
+    mod_timestamp: *mod_timestamp
+    env:
+      - CC=zig cc -target x86_64-windows-gnu
+      - CXX=zig c++ -target x86_64-windows-gnu
+
+archives:
+  - id: default
+    # Version-free names give stable /releases/latest/download/<name> URLs,
+    # which install.sh relies on.
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+
+# SPDX SBOM per archive, generated with syft. Skipped locally when syft is
+# missing (make release-snapshot adds --skip=sbom).
+sboms:
+  - artifacts: archive
+
+# Keyless cosign signing of checksums.txt (GitHub OIDC). CI only: local
+# snapshots run with --skip=sign. Verify with
+#   cosign verify-blob --bundle checksums.txt.sigstore.json \
+#     --certificate-identity-regexp 'https://github.com/pragmataW/graphmaster/' \
+#     --certificate-oidc-issuer https://token.actions.githubusercontent.com checksums.txt
+signs:
+  - cmd: cosign
+    signature: "${artifact}.sigstore.json"
+    args:
+      - sign-blob
+      - --bundle=${signature}
+      - ${artifact}
+      - --yes
+    artifacts: checksum
+    output: true
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  use: github
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "^ci:"
+
+release:
+  github:
+    owner: pragmataW
+    name: graphmaster
+  prerelease: auto
+  footer: |
+    ## Install
+
+    ```sh
+    brew install pragmataW/tap/graphmaster
+    # or
+    curl -fsSL https://raw.githubusercontent.com/pragmataW/graphmaster/main/install.sh | sh
+    ```
+
+    Then run `graphmaster install`.
+
+    Linux binaries are fully static (musl). The Windows build is experimental and untested.
+    `checksums.txt` is signed with cosign (keyless); each archive has an SPDX SBOM.
+
+homebrew_casks:
+  - name: graphmaster
+    ids: [default]
+    binaries: [graphmaster]
+    homepage: https://github.com/pragmataW/graphmaster
+    description: Code graph and search steering for AI coding agents
+    license: MIT
+    repository:
+      owner: pragmataW
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    commit_author:
+      name: graphmaster-release-bot
+      email: noreply@github.com
+    commit_msg_template: "graphmaster {{ .Tag }}"
+    # Prereleases are not pushed to the tap.
+    skip_upload: auto
+    caveats: |
+      Run `graphmaster install` once to register graphmaster with your AI agents.
+    hooks:
+      post:
+        # The binaries are not notarized; drop the quarantine flag so
+        # Gatekeeper does not block the first run.
+        install: |
+          if OS.mac?
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/graphmaster"]
+          end

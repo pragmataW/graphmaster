@@ -9,6 +9,9 @@
 coverage.*
 *.prof
 
+# Benchmark results (make bench / perf-gates)
+/bench-out/
+
 # graphmaster's own index data
 .graphmaster/
 
