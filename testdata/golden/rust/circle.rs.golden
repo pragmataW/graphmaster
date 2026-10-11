@@ -1,0 +1,34 @@
+lang rust
+package ""
+testfile false
+
+defs 5
+  #0 struct Circle  4:0-6:1  [exported]
+      sig "pub struct Circle"
+  #1 field Circle.radius  5:4-5:19  parent=#0  [exported]
+      sig "pub radius: f64"
+  #2 method Circle.new  9:4-11:5  parent=#0  [exported]
+      sig "pub fn new(radius: f64) -> Self"
+  #3 method Circle.area  15:4-17:5  parent=#0
+      sig "fn area(&self) -> f64"
+  #4 method Circle.name  19:4-21:5  parent=#0
+      sig "fn name(&self) -> String"
+
+refs 7
+  10:8 type Circle  in #2 Circle.new
+  14:5 type Shape  in #0 Circle
+  16:26 member PI  qual=/std/f64/consts  in #3 Circle.area
+  16:31 call square_of  in #3 Circle.area
+  16:46 member radius  recv=self  in #3 Circle.area
+  19:22 type String  in #4 Circle.name
+  20:16 call from  qual=String  in #4 Circle.name
+
+imports 3
+  1 "super::Shape"  names=Shape
+  2 "crate::geometry::square_of"  names=square_of
+  16 "std::f64::consts"  alias=/std/f64/consts
+
+inherits 1
+  14:5 #0 Circle implements Shape
+
+tests 0

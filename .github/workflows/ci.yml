@@ -1,0 +1,76 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  CGO_ENABLED: "1"
+  GO_TAGS: sqlite_fts5 sqlite_omit_load_extension
+
+jobs:
+  test:
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, ubuntu-24.04]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: false # GOCACHE is cached explicitly below (cgo grammars are slow to build)
+
+      - name: Resolve Go cache paths
+        id: gopaths
+        shell: bash
+        run: |
+          echo "gocache=$(go env GOCACHE)" >> "$GITHUB_OUTPUT"
+          echo "gomodcache=$(go env GOMODCACHE)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Go build and module cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.gopaths.outputs.gocache }}
+            ${{ steps.gopaths.outputs.gomodcache }}
+          key: go-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('go.sum') }}-${{ github.sha }}
+          restore-keys: |
+            go-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('go.sum') }}-
+            go-${{ runner.os }}-${{ runner.arch }}-
+
+      - name: Verify modules
+        run: go mod verify
+
+      - name: Build
+        run: go build -tags "$GO_TAGS" ./...
+
+      - name: Vet
+        run: go vet -tags "$GO_TAGS" ./...
+
+      - name: Test
+        run: go test -race -tags "$GO_TAGS" ./...
+
+      - name: Smoke --version
+        run: |
+          go build -tags "$GO_TAGS" -o graphmaster ./cmd/graphmaster
+          ./graphmaster --version
+
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: golangci/golangci-lint-action@v8
+        with:
+          version: latest
+          args: --build-tags "sqlite_fts5 sqlite_omit_load_extension"

@@ -1,0 +1,55 @@
+lang php
+package "Tests\\Shop"
+testfile true
+
+defs 10
+  #0 class CartTest  9:0-47:1  [exported]
+      sig "final class CartTest extends TestCase"
+  #1 property CartTest.cart  11:4-11:23  parent=#0
+      sig "private Cart $cart;"
+  #2 method CartTest.setUp  13:4-16:5  parent=#0
+      sig "protected function setUp(): void"
+  #3 method CartTest.testTotalIsZero  18:4-21:5  parent=#0  [exported|test]
+      sig "public function testTotalIsZero(): void"
+  #4 method CartTest.addsProducts  23:4-28:5  parent=#0  [exported|test]
+      sig "public function addsProducts(): void"
+  #5 method CartTest.it_formats  30:4-33:5  parent=#0  [exported|test]
+      sig "public function it_formats(): void"
+  #6 method CartTest.annotatedWithDocblock  36:4-38:5  parent=#0  [exported|test]
+      sig "public function annotatedWithDocblock(): void"
+  #7 method CartTest.test_formats_money  40:4-42:5  parent=#0  [exported|test]
+      sig "public function test_formats_money(): void"
+  #8 method CartTest.helper  44:4-46:5  parent=#0
+      sig "private function helper(): void"
+  #9 function make_product  49:0-52:1  [exported]
+      sig "function make_product(): \\App\\Model\\Product"
+
+refs 13
+  11:12 type Cart  qual=\App\Shop  in #1 CartTest.cart
+  15:15 member cart  recv=$this  in #2 CartTest.setUp
+  15:26 type Cart  qual=\App\Shop  in #2 CartTest.setUp
+  20:15 call assertSame  recv=$this  in #3 CartTest.testTotalIsZero
+  20:36 member cart  recv=$this  in #3 CartTest.testTotalIsZero
+  20:42 call total  recv=$this->cart  in #3 CartTest.testTotalIsZero
+  26:15 member cart  recv=$this  in #4 CartTest.addsProducts
+  26:21 call add  recv=$this->cart  in #4 CartTest.addsProducts
+  26:25 call make_product  in #4 CartTest.addsProducts
+  27:14 call assertCount  recv=self  in #4 CartTest.addsProducts
+  27:36 member cart  recv=$this  in #4 CartTest.addsProducts
+  49:36 type Product  qual=\App\Model  in #9 make_product
+  51:26 type Product  qual=\App\Model  in #9 make_product
+
+imports 3
+  5 "App\\Shop\\Cart"
+  6 "PHPUnit\\Framework\\Attributes\\Test"
+  7 "PHPUnit\\Framework\\TestCase"
+
+inherits 1
+  9:29 #0 CartTest extends \PHPUnit\Framework.TestCase
+
+tests 5
+  #3 CartTest.testTotalIsZero -> "totalIsZero"
+  #4 CartTest.addsProducts -> "addsProducts"
+  #5 CartTest.it_formats -> "it_formats"
+  #6 CartTest.annotatedWithDocblock -> "annotatedWithDocblock"
+  #7 CartTest.test_formats_money -> "formats_money"

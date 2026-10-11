@@ -1,0 +1,74 @@
+lang javascript
+package ""
+testfile false
+
+defs 21
+  #0 function Legacy  7:0-9:1
+      sig "function Legacy(name)"
+  #1 method Legacy.greet  11:0-13:1  scope=Legacy  [exported]
+      sig "Legacy.prototype.greet = function (other)"
+  #2 class Calculator  15:0-42:1
+      sig "class Calculator extends Base"
+  #3 field Calculator.#total  16:2-16:12  parent=#2
+      sig "#total = 0"
+  #4 field Calculator.precision  17:2-17:22  parent=#2  [exported]
+      sig "static precision = 2"
+  #5 field Calculator.history  18:2-18:14  parent=#2  [exported]
+      sig "history = []"
+  #6 constructor Calculator.constructor  20:2-23:3  parent=#2  [exported]
+      sig "constructor(start)"
+  #7 method Calculator.sum  25:2-29:3  parent=#2  [exported]
+      sig "sum(a, b)"
+  #8 method Calculator.product  31:2-33:3  parent=#2  [exported]
+      sig "product(a, b)"
+  #9 method Calculator.record  35:2-37:3  parent=#2  [exported]
+      sig "record(value)"
+  #10 method Calculator.total  39:2-41:3  parent=#2  [exported]
+      sig "get total()"
+  #11 class Scientific  44:0-48:1
+      sig "class Scientific extends mixins.Precise"
+  #12 method Scientific.square  45:2-47:3  parent=#11  [exported]
+      sig "square(x)"
+  #13 constant helpers  50:6-55:1
+      sig "const helpers = {"
+  #14 method helpers.double  51:2-53:3  parent=#13
+      sig "double(x)"
+  #15 method helpers.triple  54:2-54:22  parent=#13
+      sig "triple: (x) =>"
+  #16 constant VERSION  57:6-57:21
+      sig "const VERSION = \"1.0\""
+  #17 variable instances  58:4-58:17
+      sig "let instances = 0"
+  #18 variable legacyFlag  59:4-59:21
+      sig "var legacyFlag = true"
+  #19 function create  61:0-64:1  [exported]
+      sig "exports.create = function create()"
+  #20 function makeScientific  66:0-66:54  [exported]
+      sig "module.exports.makeScientific = () =>"
+
+refs 14
+  8:7 member name  recv=this  in #0 Legacy
+  12:23 member name  recv=other  in #1 Legacy.greet
+  12:35 member sep  qual=path  in #1 Legacy.greet
+  22:9 member #total  recv=this  in #6 Calculator.constructor
+  26:14 call add  in #7 Calculator.sum
+  27:9 call record  recv=this  in #7 Calculator.sum
+  32:11 call multiply  in #8 Calculator.product
+  36:9 member history  recv=this  in #9 Calculator.record
+  36:17 call push  recv=this.history  in #9 Calculator.record
+  40:16 member #total  recv=this  in #10 Calculator.total
+  44:32 member Precise  recv=mixins  in #11 Scientific
+  46:16 call product  recv=this  in #12 Scientific.square
+  63:13 call Calculator  in #19 create
+  66:42 call Scientific  in #20 makeScientific
+
+imports 3
+  3 "path"  alias=path
+  4 "./math"  names=add,multiply
+  5 "./polyfill"
+
+inherits 2
+  15:25 #2 Calculator extends Base
+  44:25 #11 Scientific extends mixins.Precise
+
+tests 0

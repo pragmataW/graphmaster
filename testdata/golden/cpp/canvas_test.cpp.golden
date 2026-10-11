@@ -1,0 +1,28 @@
+lang cpp
+package ""
+testfile true
+
+defs 2
+  #0 test test_total_area  6:0-10:1  [exported|test]
+      sig "void test_total_area()"
+  #1 function main  12:0-15:1  [exported]
+      sig "int main()"
+
+refs 7
+  7:9 type Canvas  qual=geo  in #0 test_total_area
+  8:11 call add  recv=canvas  in #0 test_total_area
+  8:20 call make_unique  qual=std  in #0 test_total_area
+  8:37 type Square  qual=geo  in #0 test_total_area
+  9:4 call assert  in #0 test_total_area
+  9:18 call totalArea  recv=canvas  in #0 test_total_area
+  13:4 call test_total_area  in #1 main
+
+imports 3
+  1 "<cassert>"
+  2 "<memory>"
+  4 "\"geo/canvas.hpp\""
+
+inherits 0
+
+tests 1
+  #0 test_total_area -> "total_area"

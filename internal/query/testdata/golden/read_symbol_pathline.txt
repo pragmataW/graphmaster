@@ -1,0 +1,10 @@
+graphmaster read_symbol · fresh
+method store.Memory.Get  go/internal/store/store.go:23-28  func (m *Memory) Get(id string) (Item, bool)
+22  // Get looks up an item.
+23  func (m *Memory) Get(id string) (Item, bool) {
+24  	m.mu.RLock()
+25  	defer m.mu.RUnlock()
+26  	it, ok := m.items[id]
+27  	return it, ok
+28  }
+29

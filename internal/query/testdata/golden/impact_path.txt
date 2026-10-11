@@ -1,0 +1,12 @@
+graphmaster impact · fresh
+impact of go/internal/util/format.go
+depth 3, min_confidence 30: 5 symbols in 4 files · affected tests: 2
+go/cmd/server/main.go
+  function server.main  14-24  d1
+go/internal/service/order.go
+  method service.OrderService.PlaceOrder  24-32  d1
+go/internal/util/slug.go
+  function util.Slug  6-8  d1
+go/internal/service/order_test.go
+  test service.TestPlaceOrder  9-21  d2
+  test service.TestPlaceOrderOutOfStock  23-28  d2

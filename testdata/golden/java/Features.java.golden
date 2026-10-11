@@ -1,0 +1,168 @@
+lang java
+package "com.example.features"
+testfile false
+
+defs 36
+  #0 class Features  13:0-134:1  [exported]
+      sig "public class Features<T extends Comparable<T>> extends Base<T> implements Runnable, Function<String, T>"
+  #1 field Features.LIMIT  15:4-15:49  parent=#0  [exported]
+      sig "public static final int LIMIT, MAX"
+  #2 field Features.MAX  15:4-15:49  parent=#0  [exported]
+      sig "public static final int LIMIT, MAX"
+  #3 field Features.items  16:4-16:32  parent=#0
+      sig "private final List<T> items"
+  #4 field Features.helper  17:4-17:41  parent=#0
+      sig "private Helper helper"
+  #5 field Features.names  18:4-18:19  parent=#0
+      sig "String[] names"
+  #6 constructor Features.Features  20:4-23:5  parent=#0  [exported]
+      sig "public Features(List<T> items)"
+  #7 method Features.run  25:4-53:5  parent=#0  [exported]
+      sig "public void run()"
+  #8 method Features.run.run  35:12-38:13  parent=#7  [exported]
+      sig "public void run()"
+  #9 method Features.apply  55:4-58:5  parent=#0  [exported]
+      sig "public T apply(String s)"
+  #10 method Features.first  60:4-62:5  parent=#0  [exported]
+      sig "public static <R> R first(List<R> rs)"
+  #11 method Features.open  64:4-66:5  parent=#0
+      sig "private BufferedReader open()"
+  #12 method Features.assist  68:4-70:5  parent=#0
+      sig "void assist(int n)"
+  #13 class Features.Helper  73:4-87:5  parent=#0
+      sig "static class Helper"
+  #14 field Features.Helper.count  74:8-74:18  parent=#13
+      sig "int count"
+  #15 method Features.Helper.assist  76:8-80:9  parent=#13
+      sig "void assist(int n)"
+  #16 class Features.Helper.Inner  82:8-86:9  parent=#13
+      sig "class Inner"
+  #17 method Features.Helper.Inner.poke  83:12-85:13  parent=#16
+      sig "void poke()"
+  #18 interface Features.Visitor  89:4-97:5  parent=#0
+      sig "interface Visitor<V>"
+  #19 constant Features.Visitor.VERSION  90:8-90:24  parent=#18  [exported]
+      sig "int VERSION"
+  #20 method Features.Visitor.visit  92:8-92:25  parent=#18  [exported]
+      sig "V visit(Shape s)"
+  #21 method Features.Visitor.fallback  94:8-96:9  parent=#18  [exported]
+      sig "default V fallback()"
+  #22 enum Features.Color  99:4-117:5  parent=#0
+      sig "enum Color implements Visitor<String>"
+  #23 enum_member Features.Color.RED  100:8-105:9  parent=#22  [exported]
+      sig "RED(\"r\")"
+  #24 method Features.Color.RED.visit  101:12-104:13  parent=#23  [exported]
+      sig "public String visit(Shape s)"
+  #25 enum_member Features.Color.GREEN  106:8-106:18  parent=#22  [exported]
+      sig "GREEN(\"g\")"
+  #26 field Features.Color.code  108:8-108:34  parent=#22
+      sig "private final String code"
+  #27 constructor Features.Color.Color  110:8-112:9  parent=#22
+      sig "Color(String code)"
+  #28 method Features.Color.visit  114:8-116:9  parent=#22  [exported]
+      sig "public String visit(Shape s)"
+  #29 class Features.Point  119:4-129:5  parent=#0
+      sig "record Point(int x, int y) implements Comparable<Point>"
+  #30 field Features.Point.x  119:17-119:22  parent=#29  [exported]
+      sig "int x"
+  #31 field Features.Point.y  119:24-119:29  parent=#29  [exported]
+      sig "int y"
+  #32 constructor Features.Point.Point  120:8-124:9  parent=#29
+      sig "Point"
+  #33 method Features.Point.compareTo  126:8-128:9  parent=#29  [exported]
+      sig "public int compareTo(Point other)"
+  #34 interface Features.Marker  131:4-133:5  parent=#0
+      sig "@interface Marker"
+  #35 method Features.Marker.value  132:8-132:34  parent=#34  [exported]
+      sig "String value() default \"\""
+
+refs 71
+  14:32 type Comparable  in #0 Features
+  14:55 type Base  in #0 Features
+  14:74 type Runnable  in #0 Features
+  14:84 type Function  in #0 Features
+  14:93 type String  in #0 Features
+  16:18 type List  in #3 Features.items
+  17:12 type Helper  in #4 Features.helper
+  17:32 call Helper  in #4 Features.helper
+  18:4 type String  in #5 Features.names
+  20:20 type List  in #6 Features.Features
+  21:20 call size  recv=items  in #6 Features.Features
+  22:13 member items  recv=this  in #6 Features.Features
+  22:21 call requireNonNull  in #6 Features.Features
+  27:23 call Helper  in #7 Features.run
+  28:13 call assist  recv=copy  in #7 Features.run
+  29:15 call assist  recv=helper  in #7 Features.run
+  30:13 member helper  recv=this  in #7 Features.run
+  30:20 call assist  recv=this.helper  in #7 Features.run
+  31:14 call reset  recv=super  in #7 Features.run
+  32:14 call forEach  recv=items  in #7 Features.run
+  32:29 member out  qual=System  in #7 Features.run
+  32:34 call println  recv=System.out  in #7 Features.run
+  33:8 type Runnable  in #7 Features.run
+  33:34 call assist  recv=helper  in #7 Features.run
+  34:8 type Runnable  in #7 Features.run
+  34:28 call Runnable  in #7 Features.run
+  37:16 call assist  in #8 Features.run.run
+  40:8 type Object  in #7 Features.run
+  41:25 type Helper  in #7 Features.run
+  42:14 call assist  recv=h  in #7 Features.run
+  44:13 type BufferedReader  in #7 Features.run
+  44:33 call open  in #7 Features.run
+  45:15 call readLine  recv=in  in #7 Features.run
+  46:25 type IOException  qual=java.io  in #7 Features.run
+  47:14 call printStackTrace  recv=e  in #7 Features.run
+  49:8 type Shape  in #7 Features.run
+  49:14 type Kind  qual=Shape  in #7 Features.run
+  49:28 member ROUND  qual=Kind  in #7 Features.run
+  50:34 type Checks  qual=com.example.features.util  in #7 Features.run
+  50:41 call verify  qual=com.example.features.util.Checks  in #7 Features.run
+  51:8 type Circle  in #7 Features.run
+  51:23 call Circle  in #7 Features.run
+  52:10 call area  recv=c  in #7 Features.run
+  52:17 call toString  recv=c.area()  in #7 Features.run
+  56:19 type String  in #9 Features.apply
+  57:21 call get  recv=items  in #9 Features.apply
+  57:33 call parseInt  qual=Integer  in #9 Features.apply
+  60:30 type List  in #10 Features.first
+  61:18 call get  recv=rs  in #10 Features.first
+  64:12 type BufferedReader  in #11 Features.open
+  69:8 call checkPositive  in #12 Features.assist
+  78:12 type Inner  in #15 Features.Helper.assist
+  78:30 call Inner  in #15 Features.Helper.assist
+  79:18 call poke  recv=inner  in #15 Features.Helper.assist
+  92:16 type Shape  in #20 Features.Visitor.visit
+  99:26 type Visitor  in #22 Features.Color
+  99:34 type String  in #22 Features.Color
+  102:19 type String  in #24 Features.Color.RED.visit
+  102:32 type Shape  in #24 Features.Color.RED.visit
+  108:22 type String  in #26 Features.Color.code
+  110:14 type String  in #27 Features.Color.Color
+  111:17 member code  recv=this  in #27 Features.Color.Color
+  114:15 type String  in #28 Features.Color.visit
+  114:28 type Shape  in #28 Features.Color.visit
+  119:42 type Comparable  in #29 Features.Point
+  119:53 type Point  in #29 Features.Point
+  122:26 call IllegalArgumentException  in #32 Features.Point.Point
+  126:29 type Point  in #33 Features.Point.compareTo
+  127:27 call compare  qual=Integer  in #33 Features.Point.compareTo
+  127:44 call x  recv=other  in #33 Features.Point.compareTo
+  132:8 type String  in #35 Features.Marker.value
+
+imports 7
+  3 "java.util.Objects.requireNonNull"  names=requireNonNull
+  4 "com.example.features.util.Checks"  names=*  wildcard
+  6 "com.example.features.model"  names=*  wildcard
+  7 "com.example.features.model.Shape.Kind"  names=Kind
+  8 "java.io.BufferedReader"  names=BufferedReader
+  9 "java.util.List"  names=List
+  10 "java.util.function.Function"  names=Function
+
+inherits 5
+  14:55 #0 Features extends Base
+  14:74 #0 Features implements Runnable
+  14:84 #0 Features implements Function
+  99:26 #22 Features.Color implements Visitor
+  119:42 #29 Features.Point implements Comparable
+
+tests 0

@@ -1,0 +1,24 @@
+# Codex CLI configuration (realistic seed for graphmaster install tests)
+model = "gpt-5-codex"
+model_reasoning_effort = "high"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+network_access = false
+
+# Documentation lookups
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"] # docs server
+startup_timeout_sec = 20
+
+[mcp_servers.github]
+command = "docker"
+args = ["run", "-i", "--rm", "ghcr.io/github/github-mcp-server"]
+
+[mcp_servers.github.env]
+GITHUB_TOOLSETS = "repos,issues"
+
+[profiles.fast]
+model = "gpt-5-codex-mini"

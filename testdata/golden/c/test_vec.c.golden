@@ -1,0 +1,35 @@
+lang c
+package ""
+testfile true
+
+defs 3
+  #0 test test_vec_add  5:0-8:1  [test|static]
+      sig "static void test_vec_add(void)"
+  #1 test test_vec_len  10:0-12:1  [test|static]
+      sig "static void test_vec_len(void)"
+  #2 function main  14:0-18:1  [exported]
+      sig "int main(void)"
+
+refs 12
+  6:4 type Vec2  in #0 test_vec_add
+  6:13 call vec_add  in #0 test_vec_add
+  6:22 type Vec2  in #0 test_vec_add
+  6:36 type Vec2  in #0 test_vec_add
+  7:4 call assert  in #0 test_vec_add
+  7:13 member x  recv=r  in #0 test_vec_add
+  7:25 member y  recv=r  in #0 test_vec_add
+  11:4 call assert  in #1 test_vec_len
+  11:11 call vec_len  in #1 test_vec_len
+  11:20 type Vec2  in #1 test_vec_len
+  15:4 call test_vec_add  in #2 main
+  16:4 call test_vec_len  in #2 main
+
+imports 2
+  1 "<assert.h>"
+  3 "\"../include/vec.h\""
+
+inherits 0
+
+tests 2
+  #0 test_vec_add -> "vec_add"
+  #1 test_vec_len -> "vec_len"

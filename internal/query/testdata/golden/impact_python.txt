@@ -1,0 +1,17 @@
+graphmaster impact · fresh
+impact of class shop.models.Item  python/shop/models.py:6-16
+depth 3, min_confidence 30: 10 symbols in 4 files · affected tests: 2
+python/shop/models.py
+  class shop.models.PerishableItem  19-25  d1
+  method shop.models.PerishableItem.total  23-25  d1
+python/shop/repository.py
+  constructor shop.repository.Repository.__init__  9-10  d1
+  method shop.repository.Repository.add  12-13  d1
+  method shop.repository.Repository.get  15-16  d1
+python/shop/services/orders.py
+  method shop.services.orders.OrderService.place_order  16-21  d1
+  method shop.services.orders.OrderService._can_fulfil  23-24  d1
+python/tests/test_orders.py
+  function tests.test_orders.make_service  8-11  d1
+  test tests.test_orders.test_place_order  14-16  d2
+  test tests.test_orders.test_place_order_out_of_stock  19-21  d2

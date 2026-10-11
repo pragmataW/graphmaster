@@ -1,0 +1,28 @@
+lang csharp
+package "Fixture.Billing"
+testfile false
+
+defs 4
+  #0 class Fixture.Billing.Invoice  6:4-16:5  scope=Fixture.Billing  [exported]
+      sig "public partial class Invoice"
+  #1 field Fixture.Billing.Invoice._lines  8:8-8:54  parent=#0
+      sig "private readonly List<decimal> _lines"
+  #2 method Fixture.Billing.Invoice.AddLine  10:8-10:66  parent=#0  [exported]
+      sig "public void AddLine(decimal amount)"
+  #3 method Fixture.Billing.Invoice.Total  12:8-15:9  parent=#0  [exported]
+      sig "public decimal Total()"
+
+refs 4
+  8:25 type List  in #1 Fixture.Billing.Invoice._lines
+  10:54 call Add  recv=_lines  in #2 Fixture.Billing.Invoice.AddLine
+  14:19 call ApplyTax  in #3 Fixture.Billing.Invoice.Total
+  14:35 call Sum  recv=_lines  in #3 Fixture.Billing.Invoice.Total
+
+imports 2
+  1 "System.Collections.Generic"  names=*  wildcard
+  2 "System.Linq"  names=*  wildcard
+
+inherits 1
+  6:4 #0 Fixture.Billing.Invoice embeds <partial>.Invoice
+
+tests 0

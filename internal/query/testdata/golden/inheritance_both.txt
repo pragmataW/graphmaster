@@ -1,0 +1,7 @@
+graphmaster inheritance · fresh
+class com.example.zoo.Animal  java/src/main/java/com/example/zoo/Animal.java:6-23  public abstract class Animal implements Named
+supertypes:
+  implements interface com.example.zoo.Named  java/src/main/java/com/example/zoo/Named.java:4-6
+subtypes:
+  extended by class com.example.zoo.Cat  java/src/main/java/com/example/zoo/Cat.java:3-20
+  extended by class com.example.zoo.Dog  java/src/main/java/com/example/zoo/Dog.java:3-16

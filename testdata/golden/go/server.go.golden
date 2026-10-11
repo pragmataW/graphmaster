@@ -1,0 +1,134 @@
+lang go
+package "server"
+testfile false
+
+defs 35
+  #0 constant Version  18:1-18:16  [exported]
+      sig "const Version = \"1.0\""
+  #1 constant maxConn  19:1-19:13
+      sig "const maxConn = 10"
+  #2 constant Single  22:6-22:23  [exported]
+      sig "const Single int = iota"
+  #3 variable DefaultServer  25:1-25:22  [exported]
+      sig "var DefaultServer *Server"
+  #4 variable counter  26:1-26:18
+      sig "var counter int"
+  #5 variable a  29:4-29:15
+      sig "var a, B = 1, 2"
+  #6 variable B  29:4-29:15  [exported]
+      sig "var a, B = 1, 2"
+  #7 type Handler  32:5-32:44  [exported]
+      sig "type Handler func(ctx context.Context) error"
+  #8 type ID  35:5-35:16  [exported]
+      sig "type ID = string"
+  #9 struct Server  50:5-56:1  [exported]
+      sig "type Server struct"
+  #10 method Server.Start  38:0-47:1  parent=#9  [exported]
+      sig "func (s *Server) Start(ctx context.Context) error"
+  #11 field Server.addr  53:1-53:16  parent=#9
+      sig "addr string"
+  #12 field Server.log  54:1-54:24  parent=#9
+      sig "log, Log *stdlog.Logger"
+  #13 field Server.Log  54:1-54:24  parent=#9  [exported]
+      sig "log, Log *stdlog.Logger"
+  #14 field Server.db  55:1-55:30  parent=#9
+      sig "db store.DB"
+  #15 method Server.String  104:0-104:70  parent=#9  [exported]
+      sig "func (s Server) String() string"
+  #16 struct Base  59:5-59:31  [exported]
+      sig "type Base struct"
+  #17 field Base.Name  59:18-59:29  parent=#16  [exported]
+      sig "Name string"
+  #18 interface Store  62:5-67:1  [exported]
+      sig "type Store interface"
+  #19 method Store.Get  65:1-65:47  parent=#18  [exported]
+      sig "Get(ctx context.Context, id ID) (*Item, error)"
+  #20 method Store.put  66:1-66:21  parent=#18
+      sig "put(item Item) error"
+  #21 interface Reader  70:5-72:1  [exported]
+      sig "type Reader interface"
+  #22 method Reader.Read  71:1-71:28  parent=#21  [exported]
+      sig "Read(p []byte) (int, error)"
+  #23 struct Item  75:5-78:1  [exported]
+      sig "type Item struct"
+  #24 field Item.Key  76:1-76:13  parent=#23  [exported]
+      sig "Key string"
+  #25 field Item.Value  77:1-77:13  parent=#23  [exported]
+      sig "Value []byte"
+  #26 interface Number  81:5-83:1  [exported]
+      sig "type Number interface"
+  #27 struct List  86:5-88:1  [exported]
+      sig "type List[T any] struct"
+  #28 field List.items  87:1-87:10  parent=#27
+      sig "items []T"
+  #29 method List.Push  91:0-93:1  parent=#27  [exported]
+      sig "func (l *List[T]) Push(v T)"
+  #30 function Map  96:0-102:1  [exported]
+      sig "func Map[T, U any](in []T, f func(T) U) []U"
+  #31 function helper  106:0-115:1
+      sig "func helper(addr string)"
+  #32 struct helper.local  107:6-107:27  parent=#31
+      sig "type local struct"
+  #33 field helper.local.n  107:20-107:25  parent=#32
+      sig "n int"
+  #34 function NewServer  118:0-120:1  [exported]
+      sig "func NewServer(addr string) *Server"
+
+refs 40
+  25:16 type Server  in #3 DefaultServer
+  32:30 type Context  qual=context  in #7 Handler
+  38:9 type Server  in #10 Server.Start
+  38:35 type Context  qual=context  in #10 Server.Start
+  39:3 member log  recv=s  in #10 Server.Start
+  39:7 call Printf  recv=s.log  in #10 Server.Start
+  39:31 member addr  recv=s  in #10 Server.Start
+  40:13 member db  recv=s  in #10 Server.Start
+  40:16 call Open  recv=s.db  in #10 Server.Start
+  41:13 call Errorf  qual=fmt  in #10 Server.Start
+  44:2 call helper  in #10 Server.Start
+  44:11 member addr  recv=s  in #10 Server.Start
+  51:1 type Base  in #9 Server
+  52:8 type Client  qual=store  in #9 Server
+  54:18 type Logger  qual=stdlog  in #13 Server.Log
+  55:16 type DB  qual=store  in #14 Server.db
+  63:5 type Stringer  qual=fmt  in #18 Store
+  64:1 type Reader  in #18 Store
+  65:17 type Context  qual=context  in #19 Store.Get
+  65:29 type ID  in #19 Store.Get
+  65:35 type Item  in #19 Store.Get
+  66:10 type Item  in #20 Store.put
+  91:9 type List  in #29 List.Push
+  92:3 member items  recv=l  in #29 List.Push
+  92:20 member items  recv=l  in #29 List.Push
+  99:20 call f  in #30 Map
+  104:8 type Server  in #15 Server.String
+  104:41 call Join  in #15 Server.String
+  104:57 member addr  recv=s  in #15 Server.String
+  108:6 type local  in #31 helper
+  110:14 call Marshal  qual=yaml  in #31 helper
+  110:22 type Item  in #31 helper
+  111:8 call Println  qual=stdlog  in #31 helper
+  112:8 call NewServer  in #31 helper
+  113:5 call Start  recv=srv  in #31 helper
+  113:19 call Background  qual=context  in #31 helper
+  114:19 member addr  recv=DefaultServer  in #31 helper
+  118:29 type Server  in #34 NewServer
+  119:9 type Server  in #34 NewServer
+  119:38 call Open  qual=store  in #34 NewServer
+
+imports 7
+  4 "fmt"
+  7 "context"
+  8 "log"  alias=stdlog
+  9 "strings"  alias=.
+  10 "embed"  alias=_
+  12 "example.com/app/internal/store"
+  13 "gopkg.in/yaml.v3"
+
+inherits 4
+  51:1 #9 Server embeds Base
+  52:2 #9 Server embeds store.Client
+  63:1 #18 Store embeds fmt.Stringer
+  64:1 #18 Store embeds Reader
+
+tests 0

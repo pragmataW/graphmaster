@@ -1,0 +1,75 @@
+lang cpp
+package ""
+testfile false
+
+defs 14
+  #0 method geo.Shape.~Shape  12:0-12:26  scope=geo.Shape  [exported]
+      sig "Shape::~Shape()"
+  #1 method geo.Shape.label  14:0-14:52  scope=geo.Shape  [exported]
+      sig "std::string Shape::label() const"
+  #2 constructor geo.Rect.Rect  16:0-16:58  scope=geo.Rect  [exported]
+      sig "Rect::Rect(double w, double h)"
+  #3 method geo.Rect.area  18:0-20:1  scope=geo.Rect  [exported]
+      sig "double Rect::area() const"
+  #4 method geo.Rect.operator==  22:0-24:1  scope=geo.Rect  [exported]
+      sig "bool Rect::operator==(const Rect& other) const"
+  #5 method geo.Box.set  27:0-29:1  scope=geo.Box  [exported]
+      sig "void Box<T>::set(const T& v)"
+  #6 namespace geo  31:0-39:1  [exported]
+      sig "namespace geo"
+  #7 constructor geo.Square.Square  32:0-32:49  scope=geo.Square  [exported]
+      sig "Square::Square(double side)"
+  #8 method geo.Square.label  34:0-34:72  scope=geo.Square  [exported]
+      sig "std::string Square::label() const"
+  #9 namespace geo.util  36:0-38:1  parent=#6  [exported]
+      sig "namespace util"
+  #10 function geo.util.clamp  37:0-37:86  parent=#9  [exported]
+      sig "double clamp(double v, double lo, double hi)"
+  #11 method geo.detail.impl.helper  41:0-41:54  scope=geo.detail.impl  [exported]
+      sig "int geo::detail::impl::helper(int x)"
+  #12 function report  43:0-45:1  [static]
+      sig "static void report(const Shape& s)"
+  #13 function main  47:0-57:1  [exported]
+      sig "int main()"
+
+refs 28
+  14:5 type string  qual=std  in #1 geo.Shape.label
+  19:17 call clamp  qual=util  in #3 geo.Rect.area
+  19:48 call clamp  qual=geo::util  in #3 geo.Rect.area
+  22:28 type Rect  in #4 geo.Rect.operator==
+  23:17 call area  recv=this  in #4 geo.Rect.operator==
+  23:33 call area  recv=other  in #4 geo.Rect.operator==
+  23:43 call width  in #4 geo.Rect.operator==
+  23:60 call width  recv=other  in #4 geo.Rect.operator==
+  27:5 type Box  in #5 geo.Box.set
+  34:5 type string  qual=std  in #8 geo.Square.label
+  34:62 call label  qual=Shape  in #8 geo.Square.label
+  37:59 call min  qual=std  in #10 geo.util.clamp
+  37:68 call max  qual=std  in #10 geo.util.clamp
+  43:25 type Shape  in #12 report
+  44:14 call label  recv=s  in #12 report
+  44:34 call area  recv=s  in #12 report
+  48:18 call make_unique  qual=std  in #13 main
+  48:35 type Rect  qual=geo  in #13 main
+  49:4 type Shape  in #13 main
+  49:20 call Square  in #13 main
+  50:4 type ShapeList  in #13 main
+  51:9 call push_back  recv=list  in #13 main
+  51:24 call move  qual=std  in #13 main
+  52:4 call report  in #13 main
+  53:4 type Box  in #13 main
+  54:8 call set  recv=box  in #13 main
+  54:23 call clamp  qual=geo::util  in #13 main
+  56:15 call get  recv=box  in #13 main
+
+imports 6
+  1 "\"shapes.hpp\""
+  3 "<algorithm>"
+  4 "<iostream>"
+  6 "geo"  names=*  wildcard
+  7 "std"  names=cout
+  8 "std::filesystem"  alias=fs
+
+inherits 0
+
+tests 0

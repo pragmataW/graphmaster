@@ -1,0 +1,31 @@
+lang javascript
+package ""
+testfile true
+
+defs 3
+  #0 test Calculator  5:0-10:2  [test]
+      sig "describe(\"Calculator\", function ()"
+  #1 test Calculator.sums  6:2-9:4  parent=#0  [test]
+      sig "it(\"sums\", () =>"
+  #2 test Calculator#product multiplies  12:0-14:2  [test]
+      sig "test(\"Calculator#product multiplies\", () =>"
+
+refs 6
+  7:18 call Calculator  in #1 Calculator.sums
+  8:11 call strictEqual  qual=assert  in #1 Calculator.sums
+  8:25 call sum  recv=c  in #1 Calculator.sums
+  13:9 call strictEqual  qual=assert  in #2 Calculator#product multiplies
+  13:25 call Calculator  in #2 Calculator#product multiplies
+  13:39 call product  recv=new Calculator(0)  in #2 Calculator#product multiplies
+
+imports 3
+  1 "node:test"  alias=test
+  2 "node:assert"  alias=assert
+  3 "./calc"  names=Calculator
+
+inherits 0
+
+tests 3
+  #0 Calculator -> "Calculator"
+  #1 Calculator.sums -> ""
+  #2 Calculator#product multiplies -> "product"

@@ -1,0 +1,3 @@
+graphmaster imports · fresh
+importers of example.com/fixture/internal/service (1):
+  go/cmd/server/main.go:9  example.com/fixture/internal/service

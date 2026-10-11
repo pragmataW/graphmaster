@@ -1,0 +1,20 @@
+lang c
+package ""
+testfile false
+
+defs 2
+  #0 function log_msg  5:0-7:1  [exported]
+      sig "void log_msg(const char *msg)"
+  #1 function clamp_int  9:0-14:1  [exported]
+      sig "int clamp_int(int v, int lo, int hi)"
+
+refs 1
+  6:4 call fprintf  in #0 log_msg
+
+imports 2
+  1 "<stdio.h>"
+  3 "\"util.h\""
+
+inherits 0
+
+tests 0

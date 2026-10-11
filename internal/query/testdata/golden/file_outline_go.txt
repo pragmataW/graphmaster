@@ -1,0 +1,15 @@
+graphmaster file_outline · fresh
+go/internal/store/store.go  go, 52 loc, 13 symbols
+interface Store  6-9  type Store interface
+  method Get  7-7  Get(id string) (Item, bool)
+  method Put  8-8  Put(item Item)
+struct Memory  12-15  type Memory struct
+  field mu  13-13  mu sync.RWMutex
+  field items  14-14  items map[string]Item
+  method Get  23-28  func (m *Memory) Get(id string) (Item, bool)
+  method Put  31-35  func (m *Memory) Put(item Item)
+function NewMemory  18-20  func NewMemory() *Memory
+struct Audited  38-41  type Audited struct
+  field Writes  40-40  Writes int
+  method Put  49-52  func (a *Audited) Put(item Item)
+function NewAudited  44-46  func NewAudited() *Audited

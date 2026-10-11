@@ -1,0 +1,58 @@
+lang python
+package ""
+testfile true
+
+defs 11
+  #0 function box  8:0-10:17  [exported]
+      sig "@pytest.fixture def box()"
+  #1 test test_box_size  13:0-14:24  [exported|test]
+      sig "def test_box_size(box)"
+  #2 test test_fetch  17:0-19:24  [exported|test|async]
+      sig "@pytest.mark.asyncio async def test_fetch(box)"
+  #3 class TestBox  22:0-27:19  [exported|test]
+      sig "class TestBox"
+  #4 test TestBox.test_peek  23:4-24:32  parent=#3  [exported|test]
+      sig "def test_peek(self, box)"
+  #5 method TestBox.helper  26:4-27:19  parent=#3  [exported]
+      sig "def helper(self)"
+  #6 class BoxCase  30:0-35:43  [exported|test]
+      sig "class BoxCase(unittest.TestCase)"
+  #7 method BoxCase.setUp  31:4-32:25  parent=#6  [exported]
+      sig "def setUp(self)"
+  #8 test BoxCase.test_empty  34:4-35:43  parent=#6  [exported|test]
+      sig "def test_empty(self)"
+  #9 function nested_test_holder  38:0-40:12  [exported]
+      sig "def nested_test_holder()"
+  #10 function nested_test_holder.test_not_collected  39:4-40:12  parent=#9
+      sig "def test_not_collected()"
+
+refs 13
+  8:8 call fixture  qual=pytest  in #0 box
+  10:11 call Box  in #0 box
+  14:15 member size  recv=box  in #1 test_box_size
+  17:8 member mark  qual=pytest  in #2 test_fetch
+  17:13 call asyncio  qual=pytest.mark  in #2 test_fetch
+  19:14 call fetch  recv=box  in #2 test_fetch
+  24:19 call peek  recv=box  in #4 TestBox.test_peek
+  30:23 member TestCase  qual=unittest  in #6 BoxCase
+  32:13 member box  recv=self  in #7 BoxCase.setUp
+  32:19 call Box  in #7 BoxCase.setUp
+  35:13 call assertIsNone  recv=self  in #8 BoxCase.test_empty
+  35:30 call empty  qual=Box  in #8 BoxCase.test_empty
+  35:38 member item  recv=Box.empty()  in #8 BoxCase.test_empty
+
+imports 3
+  1 "unittest"
+  3 "pytest"
+  5 "misc.Box"  names=Box
+
+inherits 1
+  30:14 #6 BoxCase extends unittest.TestCase
+
+tests 6
+  #1 test_box_size -> "box_size"
+  #2 test_fetch -> "fetch"
+  #3 TestBox -> "Box"
+  #4 TestBox.test_peek -> "peek"
+  #6 BoxCase -> "BoxCase"
+  #8 BoxCase.test_empty -> "empty"

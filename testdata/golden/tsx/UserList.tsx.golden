@@ -1,0 +1,75 @@
+lang tsx
+package ""
+testfile false
+
+defs 14
+  #0 interface Props  6:0-9:1
+      sig "interface Props"
+  #1 field Props.users  7:2-7:15  parent=#0  [exported]
+      sig "users: User[]"
+  #2 field Props.onSelect  8:2-8:30  parent=#0  [exported]
+      sig "onSelect?: (u: User) => void"
+  #3 function UserList  11:7-24:1  [exported]
+      sig "function UserList({ users, onSelect }: Props)"
+  #4 function UserList.handleClick  13:8-16:3  parent=#3
+      sig "const handleClick = (u: User) =>"
+  #5 function Row  26:6-31:1
+      sig "const Row = ({ user, active, onClick }: RowProps) =>"
+  #6 type RowProps  33:0-33:76
+      sig "type RowProps = { user: User; active: boolean; onClick: (u: User) => void };"
+  #7 field RowProps.user  33:18-33:28  parent=#6  [exported]
+      sig "user: User"
+  #8 field RowProps.active  33:30-33:45  parent=#6  [exported]
+      sig "active: boolean"
+  #9 field RowProps.onClick  33:47-33:73  parent=#6  [exported]
+      sig "onClick: (u: User) => void"
+  #10 class Counter  35:15-43:1  [exported]
+      sig "class Counter extends React.Component<{ start: number }, { n: number }>"
+  #11 field Counter.state  36:2-36:33  parent=#10  [exported]
+      sig "state = { n: this.props.start }"
+  #12 method Counter.increment  38:2-38:58  parent=#10  [exported]
+      sig "increment = () =>"
+  #13 method Counter.render  40:2-42:3  parent=#10  [exported]
+      sig "render()"
+
+refs 29
+  7:9 type User  in #1 Props.users
+  8:17 type User  in #2 Props.onSelect
+  11:46 type Props  in #3 UserList
+  12:34 call useState  in #3 UserList
+  12:43 type User  in #3 UserList
+  13:26 type User  in #4 UserList.handleClick
+  14:4 call setSelected  in #4 UserList.handleClick
+  15:4 call onSelect  in #4 UserList.handleClick
+  18:8 call Panel  qual=UI  in #3 UserList
+  19:13 call map  recv=users  in #3 UserList
+  20:9 call Row  in #3 UserList
+  20:20 member id  recv=u  in #3 UserList
+  22:9 member Panel  qual=UI  in #3 UserList
+  26:40 type RowProps  in #5 Row
+  27:56 call onClick  in #5 Row
+  28:5 call Avatar  in #5 Row
+  28:22 member avatarUrl  recv=user  in #5 Row
+  29:10 member name  recv=user  in #5 Row
+  33:24 type User  in #7 RowProps.user
+  33:60 type User  in #9 RowProps.onClick
+  35:43 member Component  recv=React  in #10 Counter
+  36:20 member props  recv=this  in #11 Counter.state
+  36:26 member start  recv=this.props  in #11 Counter.state
+  38:25 call setState  recv=this  in #12 Counter.increment
+  38:44 member state  recv=this  in #12 Counter.increment
+  38:50 member n  recv=this.state  in #12 Counter.increment
+  41:33 member increment  recv=this  in #13 Counter.render
+  41:50 member state  recv=this  in #13 Counter.render
+  41:56 member n  recv=this.state  in #13 Counter.render
+
+imports 4
+  1 "react"  names=React,useState
+  2 "./Avatar"  names=Avatar
+  3 "@acme/ui"  alias=UI
+  4 "../models/user"  names=User
+
+inherits 1
+  35:37 #10 Counter extends React.Component
+
+tests 0

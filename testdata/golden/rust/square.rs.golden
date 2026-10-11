@@ -1,0 +1,28 @@
+lang rust
+package ""
+testfile false
+
+defs 4
+  #0 struct Square  5:0-7:1  [exported]
+      sig "pub struct Square"
+  #1 field Square.side  6:4-6:17  parent=#0  [exported]
+      sig "pub side: f64"
+  #2 method Square.new  10:4-12:5  parent=#0  [exported]
+      sig "pub fn new(side: f64) -> Self"
+  #3 method Square.area  16:4-18:5  parent=#0
+      sig "fn area(&self) -> f64"
+
+refs 4
+  11:8 type Square  in #2 Square.new
+  15:5 type Shape  in #0 Square
+  17:18 call square_of  qual=geometry  in #3 Square.area
+  17:33 member side  recv=self  in #3 Square.area
+
+imports 2
+  1 "crate::geometry"  names=geometry
+  2 "crate::shapes::Shape"  names=Shape
+
+inherits 1
+  15:5 #0 Square implements Shape
+
+tests 0

@@ -1,0 +1,129 @@
+lang typescript
+package ""
+testfile false
+
+defs 31
+  #0 interface Shape  12:7-15:1  [exported]
+      sig "interface Shape extends Named, geo.Bounded"
+  #1 field Shape.name  13:2-13:23  parent=#0  [exported]
+      sig "readonly name: string"
+  #2 method Shape.area  14:2-14:16  parent=#0  [exported]
+      sig "area(): number"
+  #3 type ShapeKind  17:7-17:44  [exported]
+      sig "type ShapeKind = \"circle\" | \"square\";"
+  #4 enum Unit  19:7-22:1  [exported]
+      sig "enum Unit"
+  #5 enum_member Unit.Px  20:2-20:11  parent=#4  [exported]
+      sig "Px = \"px\""
+  #6 enum_member Unit.Em  21:2-21:4  parent=#4  [exported]
+      sig "Em"
+  #7 class Base  24:7-50:1  [exported]
+      sig "abstract class Base<T extends Shape> implements Shape"
+  #8 field Base.count  25:2-25:18  parent=#7  [exported]
+      sig "static count = 0"
+  #9 field Base.#secret  26:2-26:13  parent=#7
+      sig "#secret = 1"
+  #10 field Base.log  27:2-27:59  parent=#7
+      sig "protected readonly log: Logger = new Logger(config.level)"
+  #11 method Base.onChange  28:2-30:3  parent=#7
+      sig "private onChange = (next: T): void =>"
+  #12 constructor Base.constructor  32:2-38:3  parent=#7  [exported]
+      sig "constructor( public name: string, private unit: Unit, )"
+  #13 field Base.name  33:4-33:23  parent=#7  [exported]
+      sig "public name: string"
+  #14 field Base.unit  34:4-34:22  parent=#7
+      sig "private unit: Unit"
+  #15 method Base.area  40:2-40:25  parent=#7  [exported]
+      sig "abstract area(): number"
+  #16 method Base.label  42:2-44:3  parent=#7  [exported]
+      sig "get label(): string"
+  #17 method Base.describe  46:2-49:3  parent=#7  [exported]
+      sig "describe(other: T): string"
+  #18 class Circle  52:7-60:1  [exported]
+      sig "class Circle extends Base<Circle>"
+  #19 constructor Circle.constructor  53:2-55:3  parent=#18  [exported]
+      sig "constructor(private radius: number)"
+  #20 field Circle.radius  53:14-53:36  parent=#18
+      sig "private radius: number"
+  #21 method Circle.area  57:2-59:3  parent=#18  [exported]
+      sig "area(): number"
+  #22 namespace Registry  62:7-66:1  [exported]
+      sig "namespace Registry"
+  #23 function Registry.register  63:9-65:3  parent=#22  [exported]
+      sig "function register(s: Shape): void"
+  #24 constant registry  68:6-68:41
+      sig "const registry = new Map<string, Shape>()"
+  #25 variable current  69:11-69:37  [exported]
+      sig "let current: Shape | undefined"
+  #26 constant DEFAULT_UNIT  70:13-70:35  [exported]
+      sig "const DEFAULT_UNIT = Unit.Px"
+  #27 function square  72:7-74:1  [exported]
+      sig "function square(n: number): number"
+  #28 function makeCircle  76:13-76:62  [exported]
+      sig "const makeCircle = (r: number): Circle =>"
+  #29 function ids  78:0-80:1
+      sig "function* ids(): Generator<number>"
+  #30 function main  82:15-90:1  [exported]
+      sig "function main(): void"
+
+refs 42
+  12:31 type Named  in #0 Shape
+  12:42 type Bounded  qual=geo  in #0 Shape
+  24:37 type Shape  in #7 Base
+  24:55 type Shape  in #7 Base
+  27:26 type Logger  in #10 Base.log
+  27:39 call Logger  in #10 Base.log
+  27:53 member level  qual=config  in #10 Base.log
+  29:9 member log  recv=this  in #11 Base.onChange
+  29:13 call info  recv=this.log  in #11 Base.onChange
+  29:18 call format  in #11 Base.onChange
+  29:27 member name  recv=next  in #11 Base.onChange
+  34:18 type Unit  in #14 Base.unit
+  37:9 member count  recv=Base  in #12 Base.constructor
+  43:19 member name  recv=this  in #16 Base.label
+  43:33 member unit  recv=this  in #16 Base.label
+  47:19 type Box  qual=geo  in #17 Base.describe
+  47:29 call boundsOf  qual=geo  in #17 Base.describe
+  48:16 member label  recv=this  in #17 Base.describe
+  48:28 member width  recv=box  in #17 Base.describe
+  48:42 call area  recv=other  in #17 Base.describe
+  52:33 type Circle  in #18 Circle
+  54:25 member Px  recv=Unit  in #19 Circle.constructor
+  58:16 member PI  recv=Math  in #21 Circle.area
+  58:21 call square  in #21 Circle.area
+  58:33 member radius  recv=this  in #21 Circle.area
+  63:30 type Shape  in #23 Registry.register
+  64:13 call set  recv=registry  in #23 Registry.register
+  64:19 member name  recv=s  in #23 Registry.register
+  68:21 call Map  in #24 registry
+  68:33 type Shape  in #24 registry
+  69:20 type Shape  in #25 current
+  70:33 member Px  recv=Unit  in #26 DEFAULT_UNIT
+  76:39 type Circle  in #28 makeCircle
+  76:53 call Circle  in #28 makeCircle
+  78:17 type Generator  in #29 ids
+  83:12 call makeCircle  in #30 main
+  84:22 call EventEmitter  in #30 main
+  85:10 call emit  recv=emitter  in #30 main
+  85:26 call describe  recv=c  in #30 main
+  86:11 call register  recv=Registry  in #30 main
+  87:19 call ids  in #30 main
+  88:12 call log  recv=console  in #30 main
+
+imports 8
+  1 "node:events"  names=EventEmitter
+  2 "./logger"  names=Logger,Level,format
+  3 "./geo"  alias=geo
+  4 "./config"  alias=config
+  5 "./polyfills"
+  7 "./units"  names=*  wildcard
+  8 "./colors"  alias=colors
+  9 "./scale"  names=Scale,Ratio
+
+inherits 4
+  12:31 #0 Shape extends Named
+  12:38 #0 Shape extends geo.Bounded
+  24:55 #7 Base implements Shape
+  52:28 #18 Circle extends Base
+
+tests 0

@@ -1,0 +1,26 @@
+lang typescript
+package ""
+testfile false
+
+defs 6
+  #0 function legacy  2:9-2:44  [exported]
+      sig "function legacy(x: number): string"
+  #1 function globalHelper  5:8-5:53  [exported]
+      sig "function globalHelper(input: string): number"
+  #2 interface Window  8:2-10:3
+      sig "interface Window"
+  #3 field Window.appVersion  9:4-9:22  parent=#2  [exported]
+      sig "appVersion: string"
+  #4 class Widget  13:15-15:1  [exported]
+      sig "class Widget"
+  #5 method Widget.render  14:2-14:35  parent=#4  [exported]
+      sig "render(target: HTMLElement): void"
+
+refs 1
+  14:17 type HTMLElement  in #5 Widget.render
+
+imports 0
+
+inherits 0
+
+tests 0

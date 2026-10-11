@@ -1,0 +1,35 @@
+lang java
+package "com.example.legacy"
+testfile true
+
+defs 5
+  #0 class LegacyTest  6:0-18:1  [exported]
+      sig "public class LegacyTest extends TestCase"
+  #1 method LegacyTest.testFetchItem  7:4-9:5  parent=#0  [exported|test]
+      sig "public void testFetchItem()"
+  #2 method LegacyTest.helper  11:4-11:27  parent=#0  [exported]
+      sig "public void helper()"
+  #3 method LegacyTest.qualifiedAnnotation  13:4-14:40  parent=#0  [exported|test]
+      sig "public void qualifiedAnnotation()"
+  #4 method LegacyTest.parameterized  16:4-17:32  parent=#0  [test]
+      sig "void parameterized(int n)"
+
+refs 6
+  6:32 type TestCase  in #0 LegacyTest
+  8:8 call assertTrue  in #1 LegacyTest.testFetchItem
+  8:23 call Fetcher  in #1 LegacyTest.testFetchItem
+  8:33 call fetchItem  recv=new Fetcher()  in #1 LegacyTest.testFetchItem
+  13:15 type Test  qual=org.junit  in #3 LegacyTest.qualifiedAnnotation
+  16:5 type ParameterizedTest  in #4 LegacyTest.parameterized
+
+imports 2
+  3 "junit.framework.TestCase"  names=TestCase
+  4 "org.junit.jupiter.params.ParameterizedTest"  names=ParameterizedTest
+
+inherits 1
+  6:32 #0 LegacyTest extends TestCase
+
+tests 3
+  #1 LegacyTest.testFetchItem -> "fetchItem"
+  #3 LegacyTest.qualifiedAnnotation -> ""
+  #4 LegacyTest.parameterized -> ""

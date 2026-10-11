@@ -1,0 +1,39 @@
+lang c
+package ""
+testfile true
+
+defs 5
+  #0 function setUp  4:0-4:19  [exported]
+      sig "void setUp(void)"
+  #1 test test_point_make  6:0-9:1  [exported|test]
+      sig "void test_point_make(void)"
+  #2 test test_shape_area  11:0-15:1  [test|static]
+      sig "static void test_shape_area(void **state)"
+  #3 function test_helper  17:0-17:36  [exported]
+      sig "int test_helper(int x)"
+  #4 function main  19:0-23:1  [exported]
+      sig "int main(void)"
+
+refs 12
+  7:4 type Point  in #1 test_point_make
+  7:14 call point_make  in #1 test_point_make
+  8:4 call TEST_ASSERT_EQUAL  in #1 test_point_make
+  8:32 member x  recv=p  in #1 test_point_make
+  13:11 type Shape  in #2 test_shape_area
+  13:22 call shape_new  in #2 test_shape_area
+  13:32 member KIND_SQUARE  in #2 test_shape_area
+  14:4 call assert_true  in #2 test_shape_area
+  14:16 call shape_area  in #2 test_shape_area
+  20:4 call UNITY_BEGIN  in #4 main
+  21:4 call RUN_TEST  in #4 main
+  22:11 call UNITY_END  in #4 main
+
+imports 2
+  1 "\"unity.h\""
+  2 "\"shapes.h\""
+
+inherits 0
+
+tests 2
+  #1 test_point_make -> "point_make"
+  #2 test_shape_area -> "shape_area"

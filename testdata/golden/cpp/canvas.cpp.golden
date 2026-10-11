@@ -1,0 +1,24 @@
+lang cpp
+package ""
+testfile false
+
+defs 2
+  #0 method geo.Canvas.add  5:0-7:1  scope=geo.Canvas  [exported]
+      sig "void Canvas::add(std::unique_ptr<Shape> shape)"
+  #1 method geo.Canvas.totalArea  9:0-15:1  scope=geo.Canvas  [exported]
+      sig "double Canvas::totalArea() const"
+
+refs 5
+  5:22 type unique_ptr  qual=std  in #0 geo.Canvas.add
+  5:33 type Shape  in #0 geo.Canvas.add
+  6:12 call push_back  recv=shapes_  in #0 geo.Canvas.add
+  6:27 call move  qual=std  in #0 geo.Canvas.add
+  12:18 call area  recv=s  in #1 geo.Canvas.totalArea
+
+imports 2
+  1 "\"geo/canvas.hpp\""
+  3 "geo"  names=*  wildcard
+
+inherits 0
+
+tests 0

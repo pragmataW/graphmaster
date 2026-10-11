@@ -1,0 +1,18 @@
+lang java
+package "com.example.zoo"
+testfile false
+
+defs 2
+  #0 interface Named  4:0-6:1  [exported]
+      sig "public interface Named"
+  #1 method Named.name  5:4-5:18  parent=#0  [exported]
+      sig "String name()"
+
+refs 1
+  5:4 type String  in #1 Named.name
+
+imports 0
+
+inherits 0
+
+tests 0

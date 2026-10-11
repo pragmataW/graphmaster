@@ -1,0 +1,38 @@
+lang python
+package ""
+testfile false
+
+defs 5
+  #0 class OutOfStock  8:0-9:8  [exported]
+      sig "class OutOfStock(Exception)"
+  #1 class OrderService  12:0-24:39  [exported]
+      sig "class OrderService"
+  #2 constructor OrderService.__init__  13:4-14:24  parent=#1  [exported]
+      sig "def __init__(self, repo: Repository) -> None"
+  #3 method OrderService.place_order  16:4-21:55  parent=#1  [exported]
+      sig "def place_order(self, sku: str, qty: int) -> int"
+  #4 method OrderService._can_fulfil  23:4-24:39  parent=#1
+      sig "def _can_fulfil(self, item: Item, qty: int) -> bool"
+
+refs 11
+  13:29 type Repository  in #2 OrderService.__init__
+  14:13 member repo  recv=self  in #2 OrderService.__init__
+  17:20 member repo  recv=self  in #3 OrderService.place_order
+  17:25 call get  recv=self.repo  in #3 OrderService.place_order
+  18:36 call _can_fulfil  recv=self  in #3 OrderService.place_order
+  19:18 call OutOfStock  in #3 OrderService.place_order
+  20:13 member quantity  recv=item  in #3 OrderService.place_order
+  21:23 call apply_discount  qual=pricing  in #3 OrderService.place_order
+  21:43 member price  recv=item  in #3 OrderService.place_order
+  23:32 type Item  in #4 OrderService._can_fulfil
+  24:31 member quantity  recv=item  in #4 OrderService._can_fulfil
+
+imports 3
+  3 "..models.Item"  names=Item
+  4 "..repository.Repository"  names=Repository
+  5 ".pricing"  names=pricing
+
+inherits 1
+  8:17 #0 OutOfStock extends Exception
+
+tests 0

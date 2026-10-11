@@ -1,0 +1,21 @@
+lang csharp
+package "Fixture.Billing"
+testfile false
+
+defs 3
+  #0 class Fixture.Billing.Invoice  3:4-11:5  scope=Fixture.Billing  [exported]
+      sig "public partial class Invoice"
+  #1 constant Fixture.Billing.Invoice.TaxRate  5:8-5:44  parent=#0  [exported]
+      sig "public const decimal TaxRate"
+  #2 method Fixture.Billing.Invoice.ApplyTax  7:8-10:9  parent=#0
+      sig "private decimal ApplyTax(decimal net)"
+
+refs 1
+  9:27 call Round  recv=decimal  in #2 Fixture.Billing.Invoice.ApplyTax
+
+imports 0
+
+inherits 1
+  3:4 #0 Fixture.Billing.Invoice embeds <partial>.Invoice
+
+tests 0

@@ -1,0 +1,27 @@
+lang rust
+package ""
+testfile true
+
+defs 1
+  #0 test squares_add_up  6:0-9:1  [test]
+      sig "fn squares_add_up()"
+
+refs 8
+  7:16 type Vec  in #0 squares_add_up
+  7:20 type Box  in #0 squares_add_up
+  7:28 type Shape  in #0 squares_add_up
+  7:48 call new  qual=Box  in #0 squares_add_up
+  7:60 call new  qual=Square  in #0 squares_add_up
+  7:76 call new  qual=Box  in #0 squares_add_up
+  7:88 call new  qual=Square  in #0 squares_add_up
+  8:15 call total_area  in #0 squares_add_up
+
+imports 3
+  1 "fixture_shapes::geometry::total_area"  names=total_area
+  2 "fixture_shapes::shapes::square::Square"  names=Square
+  3 "fixture_shapes::Shape"  names=Shape
+
+inherits 0
+
+tests 1
+  #0 squares_add_up -> "squares_add_up"

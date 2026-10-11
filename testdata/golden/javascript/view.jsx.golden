@@ -1,0 +1,18 @@
+lang javascript
+package ""
+testfile false
+
+defs 1
+  #0 function Toolbar  3:7-10:1  [exported]
+      sig "function Toolbar({ onSave })"
+
+refs 2
+  6:7 call Button  in #0 Toolbar
+  7:13 call Gear  recv=Icons  in #0 Toolbar
+
+imports 1
+  1 "./Button"  names=Button
+
+inherits 0
+
+tests 0

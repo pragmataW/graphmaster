@@ -1,0 +1,6 @@
+graphmaster imports · fresh
+imports of package example.com/fixture/internal/service (go/internal/service/) (4):
+  errors  (1 file)  (external)
+  example.com/fixture/internal/store  (2 files)  → go/internal/store/
+  example.com/fixture/internal/util  (1 file)  → go/internal/util/
+  testing  (1 file)  (external)

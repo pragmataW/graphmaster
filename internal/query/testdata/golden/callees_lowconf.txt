@@ -1,0 +1,8 @@
+graphmaster callees · fresh
+function server.main  go/cmd/server/main.go:14-24  func main()
+  function service.NewOrderService  go/internal/service/order.go:19-21  @18
+  method service.OrderService.PlaceOrder  go/internal/service/order.go:24-32  @19
+  function store.NewAudited  go/internal/store/store.go:44-46  @15
+  method store.Audited.Put  go/internal/store/store.go:49-52  @16
+  function util.Mirror  go/internal/util/format.go:21-23  @23
+unresolved: Fatal, Println, String

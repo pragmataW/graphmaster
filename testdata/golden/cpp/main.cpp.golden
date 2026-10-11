@@ -1,0 +1,27 @@
+lang cpp
+package ""
+testfile false
+
+defs 1
+  #0 function main  6:0-12:1  [exported]
+      sig "int main()"
+
+refs 9
+  7:9 type Canvas  qual=geo  in #0 main
+  8:11 call add  recv=canvas  in #0 main
+  8:20 call make_unique  qual=std  in #0 main
+  8:37 type Rect  qual=geo  in #0 main
+  9:11 call add  recv=canvas  in #0 main
+  9:20 call make_unique  qual=std  in #0 main
+  9:37 type Square  qual=geo  in #0 main
+  10:24 call totalArea  recv=canvas  in #0 main
+  10:58 call size  recv=canvas  in #0 main
+
+imports 3
+  1 "<iostream>"
+  2 "<memory>"
+  4 "\"geo/canvas.hpp\""
+
+inherits 0
+
+tests 0

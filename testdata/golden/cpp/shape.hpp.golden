@@ -1,0 +1,50 @@
+lang cpp
+package ""
+testfile false
+
+defs 15
+  #0 namespace geo  5:0-34:1  [exported]
+      sig "namespace geo"
+  #1 class geo.Shape  7:0-12:1  parent=#0  [exported]
+      sig "class Shape"
+  #2 method geo.Shape.~Shape  9:4-9:21  parent=#1  [exported|declaration]
+      sig "virtual ~Shape()"
+  #3 method geo.Shape.area  10:4-10:36  parent=#1  [exported|abstract|declaration]
+      sig "virtual double area() const = 0"
+  #4 method geo.Shape.label  11:4-11:38  parent=#1  [exported|declaration]
+      sig "virtual std::string label() const"
+  #5 class geo.Rect  14:0-22:1  parent=#0  [exported]
+      sig "class Rect : public Shape"
+  #6 constructor geo.Rect.Rect  16:4-16:29  parent=#5  [exported|declaration]
+      sig "Rect(double w, double h)"
+  #7 method geo.Rect.area  17:4-17:33  parent=#5  [exported|declaration]
+      sig "double area() const override"
+  #8 field geo.Rect.w_  20:4-20:14  parent=#5
+      sig "double w_"
+  #9 field geo.Rect.h_  21:4-21:14  parent=#5
+      sig "double h_"
+  #10 class geo.Square  24:0-28:1  parent=#0  [exported]
+      sig "class Square final : public Rect"
+  #11 constructor geo.Square.Square  26:4-26:33  parent=#10  [exported|declaration]
+      sig "explicit Square(double side)"
+  #12 method geo.Square.label  27:4-27:39  parent=#10  [exported|declaration]
+      sig "std::string label() const override"
+  #13 namespace geo.util  30:0-32:1  parent=#0  [exported]
+      sig "namespace util"
+  #14 function geo.util.clamp  31:0-31:45  parent=#13  [exported|declaration]
+      sig "double clamp(double v, double lo, double hi)"
+
+refs 4
+  11:17 type string  qual=std  in #4 geo.Shape.label
+  14:20 type Shape  in #5 geo.Rect
+  24:28 type Rect  in #10 geo.Square
+  27:9 type string  qual=std  in #12 geo.Square.label
+
+imports 1
+  3 "<string>"
+
+inherits 2
+  14:20 #5 geo.Rect extends Shape
+  24:28 #10 geo.Square extends Rect
+
+tests 0

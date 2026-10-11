@@ -1,0 +1,8 @@
+{
+  "logLevel": "info",
+  "retries": 3,
+  "services": {
+    "orders": { "enabled": true, "timeoutMs": 1500 },
+    "billing": { "enabled": false }
+  }
+}

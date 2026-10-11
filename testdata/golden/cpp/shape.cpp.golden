@@ -1,0 +1,39 @@
+lang cpp
+package ""
+testfile false
+
+defs 9
+  #0 namespace geo  5:0-25:1  [exported]
+      sig "namespace geo"
+  #1 method geo.Shape.~Shape  7:0-7:26  scope=geo.Shape  [exported]
+      sig "Shape::~Shape()"
+  #2 method geo.Shape.label  9:0-9:52  scope=geo.Shape  [exported]
+      sig "std::string Shape::label() const"
+  #3 constructor geo.Rect.Rect  11:0-11:48  scope=geo.Rect  [exported]
+      sig "Rect::Rect(double w, double h)"
+  #4 method geo.Rect.area  13:0-15:1  scope=geo.Rect  [exported]
+      sig "double Rect::area() const"
+  #5 constructor geo.Square.Square  17:0-17:49  scope=geo.Square  [exported]
+      sig "Square::Square(double side)"
+  #6 method geo.Square.label  19:0-19:54  scope=geo.Square  [exported]
+      sig "std::string Square::label() const"
+  #7 namespace geo.util  21:0-23:1  parent=#0  [exported]
+      sig "namespace util"
+  #8 function geo.util.clamp  22:0-22:86  parent=#7  [exported]
+      sig "double clamp(double v, double lo, double hi)"
+
+refs 6
+  9:5 type string  qual=std  in #2 geo.Shape.label
+  14:17 call clamp  qual=util  in #4 geo.Rect.area
+  14:43 call clamp  qual=util  in #4 geo.Rect.area
+  19:5 type string  qual=std  in #6 geo.Square.label
+  22:59 call min  qual=std  in #8 geo.util.clamp
+  22:68 call max  qual=std  in #8 geo.util.clamp
+
+imports 2
+  1 "\"geo/shape.hpp\""
+  3 "<algorithm>"
+
+inherits 0
+
+tests 0

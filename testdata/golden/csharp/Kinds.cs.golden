@@ -1,0 +1,91 @@
+lang csharp
+package "Outer"
+testfile false
+
+defs 23
+  #0 type Outer.Inner.Deep.Handler  10:8-10:52  scope=Outer.Inner.Deep  [exported]
+      sig "public delegate void Handler(object sender)"
+  #1 enum Outer.Inner.Deep.Color  12:8-16:9  scope=Outer.Inner.Deep  [exported]
+      sig "public enum Color : byte"
+  #2 enum_member Outer.Inner.Deep.Color.Red  14:12-14:19  parent=#1  [exported]
+      sig "Red = 1"
+  #3 enum_member Outer.Inner.Deep.Color.Green  15:12-15:17  parent=#1  [exported]
+      sig "Green"
+  #4 interface Outer.Inner.Deep.IShape  18:8-22:9  scope=Outer.Inner.Deep
+      sig "internal interface IShape : IComparable<IShape>, Fixture.Contracts.IDrawable"
+  #5 method Outer.Inner.Deep.IShape.Area  20:12-20:26  parent=#4  [exported]
+      sig "double Area()"
+  #6 property Outer.Inner.Deep.IShape.Name  21:12-21:32  parent=#4  [exported]
+      sig "string Name"
+  #7 struct Outer.Inner.Deep.Point  24:8-24:66  scope=Outer.Inner.Deep  [exported]
+      sig "public partial record struct Point(int X, int Y) : IShape"
+  #8 class Outer.Inner.Deep.Labeled  26:8-26:97  scope=Outer.Inner.Deep  [exported]
+      sig "public record Labeled<T>(string Label, T Value) : Base<T>(Value), IShape where T : class"
+  #9 class Outer.Inner.Deep.Shape  28:8-65:9  scope=Outer.Inner.Deep  [exported]
+      sig "public sealed class Shape<T> : Fixture.Billing.PaymentBase, IShape"
+  #10 constant Outer.Inner.Deep.Shape.Sides  30:12-30:39  parent=#9  [exported]
+      sig "public const int Sides"
+  #11 field Outer.Inner.Deep.Shape.cache  31:12-31:72  parent=#9
+      sig "private static readonly List<T> cache, spare"
+  #12 field Outer.Inner.Deep.Shape.spare  31:12-31:72  parent=#9
+      sig "private static readonly List<T> cache, spare"
+  #13 field Outer.Inner.Deep.Shape.Changed  32:12-32:41  parent=#9  [exported]
+      sig "public event Handler Changed"
+  #14 property Outer.Inner.Deep.Shape.Moved  33:12-33:61  parent=#9  [exported]
+      sig "public event Handler Moved"
+  #15 constructor Outer.Inner.Deep.Shape.Shape  35:12-39:13  parent=#9  [exported]
+      sig "public Shape(int sides) : base()"
+  #16 method Outer.Inner.Deep.Shape.Area  41:12-41:53  parent=#9  [exported]
+      sig "public double Area()"
+  #17 property Outer.Inner.Deep.Shape.Name  43:12-43:59  parent=#9  [exported]
+      sig "public string Name"
+  #18 method Outer.Inner.Deep.Shape.Pick  45:12-53:13  parent=#9  [exported]
+      sig "protected internal T Pick(Fixture.Billing.Invoice invoice, int index)"
+  #19 function Outer.Inner.Deep.Shape.Pick.Local  52:16-52:43  parent=#18
+      sig "T Local(int i)"
+  #20 method Outer.Inner.Deep.Shape.Reset  55:12-59:13  parent=#9
+      sig "private void Reset<U>() where U : T"
+  #21 class Outer.Inner.Deep.Shape.Nested  61:12-64:13  parent=#9  [exported]
+      sig "public class Nested"
+  #22 constructor Outer.Inner.Deep.Shape.Nested.Nested  63:16-63:37  parent=#21
+      sig "internal Nested()"
+
+refs 20
+  18:48 type IShape  in #4 Outer.Inner.Deep.IShape
+  26:58 type Base  in #8 Outer.Inner.Deep.Labeled
+  31:36 type List  in #12 Outer.Inner.Deep.Shape.spare
+  32:25 type Handler  in #13 Outer.Inner.Deep.Shape.Changed
+  33:25 type Handler  in #14 Outer.Inner.Deep.Shape.Moved
+  37:21 call Reset  recv=this  in #15 Outer.Inner.Deep.Shape.Shape
+  38:25 call Invoke  recv=Changed  in #15 Outer.Inner.Deep.Shape.Shape
+  41:36 call Abs  in #16 Outer.Inner.Deep.Shape.Area
+  45:54 type Invoice  recv=Fixture.Billing  in #18 Outer.Inner.Deep.Shape.Pick
+  47:33 type Color  recv=Outer.Inner.Deep  in #18 Outer.Inner.Deep.Shape.Pick
+  47:44 type Color  in #18 Outer.Inner.Deep.Shape.Pick
+  48:32 call SerializeObject  recv=Json  in #18 Outer.Inner.Deep.Shape.Pick
+  49:31 type Invoice  in #18 Outer.Inner.Deep.Shape.Pick
+  49:47 call WithFee  recv=base  in #18 Outer.Inner.Deep.Shape.Pick
+  50:23 call Local  in #18 Outer.Inner.Deep.Shape.Pick
+  57:26 call ToString  recv=typeof(U)  in #20 Outer.Inner.Deep.Shape.Reset
+  58:25 type Point  in #20 Outer.Inner.Deep.Shape.Reset
+  58:40 call List  in #20 Outer.Inner.Deep.Shape.Reset
+  58:45 type Point  in #20 Outer.Inner.Deep.Shape.Reset
+  58:59 call Area  recv=p  in #20 Outer.Inner.Deep.Shape.Reset
+
+imports 4
+  1 "System.Text"  names=*,global  wildcard
+  2 "System.Math"  names=*,static  wildcard
+  3 "Newtonsoft.Json.JsonConvert"  alias=Json
+  4 "Fixture.Billing"  names=*  wildcard
+
+inherits 8
+  18:36 #4 Outer.Inner.Deep.IShape extends IComparable
+  18:57 #4 Outer.Inner.Deep.IShape extends Fixture.Contracts.IDrawable
+  24:59 #7 Outer.Inner.Deep.Point implements IShape
+  26:58 #8 Outer.Inner.Deep.Labeled extends Base
+  26:74 #8 Outer.Inner.Deep.Labeled implements IShape
+  28:39 #9 Outer.Inner.Deep.Shape extends Fixture.Billing.PaymentBase
+  28:68 #9 Outer.Inner.Deep.Shape implements IShape
+  24:8 #7 Outer.Inner.Deep.Point embeds <partial>.Point
+
+tests 0

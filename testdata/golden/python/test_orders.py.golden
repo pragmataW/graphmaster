@@ -1,0 +1,44 @@
+lang python
+package ""
+testfile true
+
+defs 5
+  #0 function make_service  8:0-11:29  [exported]
+      sig "def make_service() -> OrderService"
+  #1 test test_place_order  14:0-16:43  [exported|test]
+      sig "def test_place_order()"
+  #2 test test_place_order_out_of_stock  19:0-21:43  [exported|test]
+      sig "def test_place_order_out_of_stock()"
+  #3 class TestPricing  24:0-28:47  [exported|test]
+      sig "class TestPricing"
+  #4 test TestPricing.test_discount_applies  25:4-28:47  parent=#3  [exported|test]
+      sig "def test_discount_applies(self)"
+
+refs 11
+  8:22 type OrderService  in #0 make_service
+  9:11 call Repository  in #0 make_service
+  10:9 call add  recv=repo  in #0 make_service
+  10:13 call Item  in #0 make_service
+  11:11 call OrderService  in #0 make_service
+  15:10 call make_service  in #1 test_place_order
+  16:15 call place_order  recv=svc  in #1 test_place_order
+  20:16 call raises  qual=pytest  in #2 test_place_order_out_of_stock
+  21:8 call make_service  in #2 test_place_order_out_of_stock
+  21:23 call place_order  recv=make_service()  in #2 test_place_order_out_of_stock
+  28:15 call apply_discount  in #4 TestPricing.test_discount_applies
+
+imports 6
+  1 "pytest"
+  3 "shop.models.Item"  names=Item
+  4 "shop.repository.Repository"  names=Repository
+  5 "shop.services.orders.OrderService"  names=OrderService
+  5 "shop.services.orders.OutOfStock"  names=OutOfStock
+  26 "shop.services.pricing.apply_discount"  names=apply_discount
+
+inherits 0
+
+tests 4
+  #1 test_place_order -> "place_order"
+  #2 test_place_order_out_of_stock -> "place_order_out_of_stock"
+  #3 TestPricing -> "Pricing"
+  #4 TestPricing.test_discount_applies -> "discount_applies"

@@ -1,0 +1,17 @@
+lang csharp
+package "Fixture.Billing"
+testfile false
+
+defs 2
+  #0 interface Fixture.Billing.IPayment  3:0-6:1  scope=Fixture.Billing  [exported]
+      sig "public interface IPayment"
+  #1 method Fixture.Billing.IPayment.Charge  5:4-5:35  parent=#0  [exported]
+      sig "decimal Charge(decimal amount)"
+
+refs 0
+
+imports 0
+
+inherits 0
+
+tests 0

@@ -1,0 +1,7 @@
+graphmaster tests_for · fresh
+tests for function shop.services.pricing.apply_discount  python/shop/services/pricing.py:6-9
+reaching it within 2 hops (3):
+  test tests.test_orders.TestPricing.test_discount_applies  python/tests/test_orders.py:25-28  d1
+  test tests.test_orders.test_place_order  python/tests/test_orders.py:14-16  d2
+  test tests.test_orders.test_place_order_out_of_stock  python/tests/test_orders.py:19-21  d2
+by name: none

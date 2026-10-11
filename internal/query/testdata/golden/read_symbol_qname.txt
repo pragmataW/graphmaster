@@ -1,0 +1,11 @@
+graphmaster read_symbol · fresh
+method service.OrderService.PlaceOrder  go/internal/service/order.go:24-32  func (s *OrderService) PlaceOrder(id string, qty int) (string, error)
+24  func (s *OrderService) PlaceOrder(id string, qty int) (string, error) {
+25  	item, ok := s.store.Get(id)
+26  	if !ok || !validate(item, qty) {
+27  		return "", ErrOutOfStock
+28  	}
+29  	item.Quantity -= qty
+30  	s.store.Put(item)
+31  	return util.FormatID(id) + " " + util.FormatMoney(item.Price*qty), nil
+32  }

@@ -1,0 +1,35 @@
+lang cpp
+package ""
+testfile false
+
+defs 6
+  #0 namespace geo  8:0-20:1  [exported]
+      sig "namespace geo"
+  #1 class geo.Canvas  10:0-18:1  parent=#0  [exported]
+      sig "class Canvas"
+  #2 method geo.Canvas.add  12:4-12:43  parent=#1  [exported|declaration]
+      sig "void add(std::unique_ptr<Shape> shape)"
+  #3 method geo.Canvas.totalArea  13:4-13:29  parent=#1  [exported|declaration]
+      sig "double totalArea() const"
+  #4 method geo.Canvas.size  14:4-14:55  parent=#1  [exported]
+      sig "std::size_t size() const"
+  #5 field geo.Canvas.shapes_  17:4-17:48  parent=#1
+      sig "std::vector<std::unique_ptr<Shape>> shapes_"
+
+refs 7
+  12:18 type unique_ptr  qual=std  in #2 geo.Canvas.add
+  12:29 type Shape  in #2 geo.Canvas.add
+  14:9 type size_t  qual=std  in #4 geo.Canvas.size
+  14:46 call size  recv=shapes_  in #4 geo.Canvas.size
+  17:9 type vector  qual=std  in #5 geo.Canvas.shapes_
+  17:21 type unique_ptr  qual=std  in #5 geo.Canvas.shapes_
+  17:32 type Shape  in #5 geo.Canvas.shapes_
+
+imports 3
+  3 "<memory>"
+  4 "<vector>"
+  6 "\"geo/shape.hpp\""
+
+inherits 0
+
+tests 0

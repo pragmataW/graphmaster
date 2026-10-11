@@ -1,0 +1,34 @@
+lang java
+package "com.example.zoo"
+testfile false
+
+defs 5
+  #0 class Cat  3:0-20:1  [exported]
+      sig "public class Cat extends Animal implements Comparable<Cat>"
+  #1 field Cat.lives  4:4-4:28  parent=#0
+      sig "private final int lives"
+  #2 constructor Cat.Cat  6:4-9:5  parent=#0  [exported]
+      sig "public Cat(String name, int lives)"
+  #3 method Cat.sound  11:4-14:5  parent=#0  [exported]
+      sig "public String sound()"
+  #4 method Cat.compareTo  16:4-19:5  parent=#0  [exported]
+      sig "public int compareTo(Cat other)"
+
+refs 9
+  3:25 type Animal  in #0 Cat
+  3:43 type Comparable  in #0 Cat
+  3:54 type Cat  in #0 Cat
+  6:15 type String  in #2 Cat.Cat
+  8:13 member lives  recv=this  in #2 Cat.Cat
+  12:11 type String  in #3 Cat.sound
+  17:25 type Cat  in #4 Cat.compareTo
+  18:23 call compare  qual=Integer  in #4 Cat.compareTo
+  18:44 member lives  recv=other  in #4 Cat.compareTo
+
+imports 0
+
+inherits 2
+  3:25 #0 Cat extends Animal
+  3:43 #0 Cat implements Comparable
+
+tests 0

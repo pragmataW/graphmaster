@@ -1,0 +1,9 @@
+graphmaster repo_map · fresh
+go/  8 files, 185 loc
+  cmd/  1 file, 24 loc
+    server/  1 file, 24 loc  pkg example.com/fixture/cmd/server
+  internal/  7 files, 161 loc
+    gen/  1 file, 0 loc
+    service/  2 files, 65 loc  pkg example.com/fixture/internal/service  · OrderService, NewOrderService
+    store/  2 files, 65 loc  pkg example.com/fixture/internal/store  · Item, Memory, Audited
+    util/  2 files, 31 loc  pkg example.com/fixture/internal/util  · FormatID, FormatMoney, Mirror

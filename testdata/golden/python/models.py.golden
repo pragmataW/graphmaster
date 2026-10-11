@@ -1,0 +1,41 @@
+lang python
+package ""
+testfile false
+
+defs 9
+  #0 class Item  6:0-16:45  [exported]
+      sig "@dataclass class Item"
+  #1 field Item.sku  8:4-8:12  parent=#0  [exported]
+      sig "sku: str"
+  #2 field Item.price  9:4-9:14  parent=#0  [exported]
+      sig "price: int"
+  #3 field Item.quantity  10:4-10:21  parent=#0  [exported]
+      sig "quantity: int = 0"
+  #4 method Item.total  12:4-13:41  parent=#0  [exported]
+      sig "def total(self) -> int"
+  #5 method Item.describe  15:4-16:45  parent=#0  [exported]
+      sig "def describe(self) -> str"
+  #6 class PerishableItem  19:0-25:56  [exported]
+      sig "@dataclass class PerishableItem(Item)"
+  #7 field PerishableItem.days_left  21:4-21:22  parent=#6  [exported]
+      sig "days_left: int = 7"
+  #8 method PerishableItem.total  23:4-25:56  parent=#6  [exported]
+      sig "def total(self) -> int"
+
+refs 8
+  6:1 call dataclass  in #0 Item
+  13:20 member price  recv=self  in #4 Item.total
+  13:33 member quantity  recv=self  in #4 Item.total
+  16:23 member sku  recv=self  in #5 Item.describe
+  16:35 member quantity  recv=self  in #5 Item.describe
+  19:1 call dataclass  in #6 PerishableItem
+  24:23 call total  recv=super()  in #8 PerishableItem.total
+  25:33 member days_left  recv=self  in #8 PerishableItem.total
+
+imports 1
+  3 "dataclasses.dataclass"  names=dataclass
+
+inherits 1
+  20:21 #6 PerishableItem extends Item
+
+tests 0

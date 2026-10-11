@@ -1,0 +1,17 @@
+lang c
+package ""
+testfile false
+
+defs 2
+  #0 function log_msg  4:0-4:30  [exported|declaration]
+      sig "void log_msg(const char *msg)"
+  #1 function clamp_int  5:0-5:37  [exported|declaration]
+      sig "int clamp_int(int v, int lo, int hi)"
+
+refs 0
+
+imports 0
+
+inherits 0
+
+tests 0

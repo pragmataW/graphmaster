@@ -1,0 +1,68 @@
+lang c
+package ""
+testfile false
+
+defs 9
+  #0 variable shape_count  6:0-6:20  [exported]
+      sig "int shape_count"
+  #1 variable shape_names  7:0-7:49  [exported]
+      sig "const char *shape_names[]"
+  #2 constant PI_APPROX  8:0-8:40  [static]
+      sig "static const double PI_APPROX"
+  #3 function circle_area  10:0-12:1  [static]
+      sig "static double circle_area(const struct Shape *self)"
+  #4 function point_make  14:0-17:1  [exported]
+      sig "Point point_make(double x, double y)"
+  #5 function shape_area  19:0-24:1  [exported]
+      sig "double shape_area(const struct Shape *s)"
+  #6 function shape_new  26:0-35:1  [exported]
+      sig "struct Shape *shape_new(enum Kind kind)"
+  #7 function shape_grid  37:0-43:1  [exported]
+      sig "int **shape_grid(size_t n)"
+  #8 function main  45:0-52:1  [exported]
+      sig "int main(int argc, char **argv)"
+
+refs 34
+  10:39 type Shape  in #3 circle_area
+  11:11 member PI_APPROX  in #3 circle_area
+  11:23 call SQUARE  in #3 circle_area
+  11:36 member dim  recv=self  in #3 circle_area
+  11:40 member radius  recv=self->dim  in #3 circle_area
+  14:0 type Point  in #4 point_make
+  15:4 type Point  in #4 point_make
+  19:31 type Shape  in #5 shape_area
+  20:9 call shape_valid  in #5 shape_area
+  23:14 call area  recv=s  in #5 shape_area
+  26:7 type Shape  in #6 shape_new
+  26:29 type Kind  in #6 shape_new
+  27:11 type Shape  in #6 shape_new
+  27:22 call calloc  in #6 shape_new
+  27:46 type Shape  in #6 shape_new
+  28:7 member id  recv=s  in #6 shape_new
+  28:13 type shape_id  in #6 shape_new
+  29:7 member origin  recv=s  in #6 shape_new
+  29:16 call point_make  in #6 shape_new
+  30:16 member KIND_CIRCLE  in #6 shape_new
+  31:11 member area  recv=s  in #6 shape_new
+  32:11 member dim  recv=s  in #6 shape_new
+  32:15 member radius  recv=s->dim  in #6 shape_new
+  38:14 call malloc  in #7 shape_grid
+  39:36 member SHAPES_MAX  in #7 shape_grid
+  46:11 type Shape  in #8 main
+  46:22 call shape_new  in #8 main
+  46:32 member KIND_CIRCLE  in #8 main
+  47:4 type Node_t  in #8 main
+  48:9 member value  recv=head  in #8 main
+  49:4 call printf  in #8 main
+  49:22 call shape_area  in #8 main
+  49:42 member value  recv=head  in #8 main
+  50:5 call free  in #8 main
+
+imports 3
+  1 "<math.h>"
+  2 "<stdlib.h>"
+  4 "\"shapes.h\""
+
+inherits 0
+
+tests 0

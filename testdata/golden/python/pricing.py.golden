@@ -1,0 +1,20 @@
+lang python
+package ""
+testfile false
+
+defs 3
+  #0 constant DISCOUNT_THRESHOLD  3:0-3:27  [exported]
+      sig "DISCOUNT_THRESHOLD = 10_000"
+  #1 function apply_discount  6:0-9:17  [exported]
+      sig "def apply_discount(amount: int) -> int"
+  #2 function round_cents  12:0-13:28  [exported]
+      sig "def round_cents(value: float) -> int"
+
+refs 1
+  8:15 call round_cents  in #1 apply_discount
+
+imports 0
+
+inherits 0
+
+tests 0

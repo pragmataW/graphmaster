@@ -1,0 +1,28 @@
+lang csharp
+package "Fixture.App"
+testfile false
+
+defs 2
+  #0 class Fixture.App.Program  7:4-17:5  scope=Fixture.App  [exported]
+      sig "public static class Program"
+  #1 method Fixture.App.Program.Main  9:8-16:9  parent=#0  [exported]
+      sig "public static void Main()"
+
+refs 8
+  11:30 call Invoice  in #1 Fixture.App.Program.Main
+  12:20 call AddLine  recv=invoice  in #1 Fixture.App.Program.Main
+  13:20 call AddLine  recv=invoice  in #1 Fixture.App.Program.Main
+  14:12 type Pay  in #1 Fixture.App.Program.Main
+  14:30 call CardPayment  in #1 Fixture.App.Program.Main
+  15:20 call WriteLine  recv=Console  in #1 Fixture.App.Program.Main
+  15:38 call Charge  recv=payment  in #1 Fixture.App.Program.Main
+  15:53 call Total  recv=invoice  in #1 Fixture.App.Program.Main
+
+imports 3
+  1 "System"  names=*  wildcard
+  2 "Fixture.Billing"  names=*  wildcard
+  3 "Fixture.Billing.IPayment"  alias=Pay
+
+inherits 0
+
+tests 0

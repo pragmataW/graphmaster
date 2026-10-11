@@ -1,0 +1,179 @@
+lang rust
+package ""
+testfile false
+
+defs 41
+  #0 constant LIMIT  12:0-12:27  [exported]
+      sig "pub const LIMIT: usize = 8;"
+  #1 variable COUNTER  13:0-13:28
+      sig "static mut COUNTER: u32 = 0;"
+  #2 type Registry  15:0-15:47  [exported]
+      sig "pub type Registry<T> = HashMap<String, Vec<T>>;"
+  #3 struct Point  19:0-22:1  [exported]
+      sig "pub struct Point<T>"
+  #4 field Point.x  20:4-20:12  parent=#3  [exported]
+      sig "pub x: T"
+  #5 field Point.y  21:4-21:8  parent=#3
+      sig "y: T"
+  #6 constant Point.ORIGIN_NAME  49:4-49:51  parent=#3  [exported]
+      sig "pub const ORIGIN_NAME: &'static str = \"origin\";"
+  #7 method Point.new  51:4-53:5  parent=#3  [exported]
+      sig "pub fn new(x: T, y: T) -> Self"
+  #8 method Point.norm  55:4-59:5  parent=#3  [exported]
+      sig "pub fn norm(&self) -> f64"
+  #9 method Point.twice  61:4-63:5  parent=#3
+      sig "fn twice(&self) -> Self"
+  #10 method Point.fmt  67:4-69:5  parent=#3
+      sig "fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result"
+  #11 constant Point.KIND  73:4-73:39  parent=#3
+      sig "const KIND: &'static str = \"point\";"
+  #12 method Point.name  76:4-78:5  parent=#3
+      sig "fn name(&self) -> String"
+  #13 struct Meters  24:0-24:27  [exported]
+      sig "pub struct Meters"
+  #14 method Meters.area  82:4-84:5  parent=#13
+      sig "fn area(&self) -> f64"
+  #15 struct Bits  26:0-29:1  [exported]
+      sig "pub union Bits"
+  #16 field Bits.int  27:4-27:12  parent=#15
+      sig "int: u32"
+  #17 field Bits.float  28:4-28:14  parent=#15
+      sig "float: f32"
+  #18 enum Event  31:0-35:1  [exported]
+      sig "pub enum Event"
+  #19 enum_member Event.Click  32:4-32:28  parent=#18  [exported]
+      sig "Click"
+  #20 field Event.Click.x  32:12-32:18  parent=#19
+      sig "x: i32"
+  #21 field Event.Click.y  32:20-32:26  parent=#19
+      sig "y: i32"
+  #22 enum_member Event.Key  33:4-33:13  parent=#18  [exported]
+      sig "Key"
+  #23 enum_member Event.Quit  34:4-34:8  parent=#18  [exported]
+      sig "Quit"
+  #24 trait Named  37:0-46:1  [exported]
+      sig "pub trait Named: Display + fmt::Debug"
+  #25 constant Named.KIND  38:4-38:29  parent=#24  [exported]
+      sig "const KIND: &'static str;"
+  #26 type Named.Id  39:4-39:12  parent=#24  [exported]
+      sig "type Id;"
+  #27 method Named.name  41:4-41:29  parent=#24  [exported]
+      sig "fn name(&self) -> String;"
+  #28 method Named.describe  43:4-45:5  parent=#24  [exported]
+      sig "fn describe(&self) -> String"
+  #29 method Remote.clone  90:4-92:5  scope=Remote
+      sig "fn clone(&self) -> Self"
+  #30 macro square  95:0-99:1
+      sig "macro_rules! square"
+  #31 function handle  101:0-117:1  [exported]
+      sig "pub fn handle(event: Event, reg: &mut Registry<Point<i32>>) -> Option<usize>"
+  #32 function handle.local_helper  102:4-104:5  parent=#31
+      sig "fn local_helper(n: usize) -> usize"
+  #33 function abs  120:4-120:30
+      sig "fn abs(input: i32) -> i32;"
+  #34 module inner  123:0-134:1
+      sig "mod inner"
+  #35 struct inner.Helper  126:4-126:22  parent=#34  [exported]
+      sig "pub struct Helper;"
+  #36 method inner.Helper.run  129:8-132:9  parent=#35  [exported]
+      sig "pub fn run() -> Point<i32>"
+  #37 module tests  137:0-155:1  [test]
+      sig "mod tests"
+  #38 test tests.test_point_new  141:4-144:5  parent=#37  [test]
+      sig "fn test_point_new()"
+  #39 test tests.handles_quit  148:4-150:5  parent=#37  [test]
+      sig "async fn handles_quit()"
+  #40 function tests.fixture  152:4-154:5  parent=#37
+      sig "fn fixture() -> Point<i32>"
+
+refs 60
+  15:23 type HashMap  in #2 Registry
+  15:31 type String  in #2 Registry
+  15:39 type Vec  in #2 Registry
+  37:17 type Display  in #24 Named
+  37:32 type Debug  qual=fmt  in #24 Named
+  41:22 type String  in #27 Named.name
+  43:26 type String  in #28 Named.describe
+  44:8 call format  in #28 Named.describe
+  44:42 call name  recv=self  in #28 Named.describe
+  48:8 type Copy  in #3 Point
+  48:15 type Into  in #3 Point
+  52:8 type Point  in #7 Point.new
+  56:27 member x  recv=self  in #8 Point.norm
+  56:29 call into  recv=self.x  in #8 Point.norm
+  57:27 member y  recv=self  in #8 Point.norm
+  57:29 call into  recv=self.y  in #8 Point.norm
+  58:18 call hypot  qual=geometry  in #8 Point.norm
+  62:14 call new  qual=Point  in #9 Point.twice
+  62:23 member x  recv=self  in #9 Point.twice
+  62:31 member y  recv=self  in #9 Point.twice
+  66:8 type Display  in #3 Point
+  67:31 type Formatter  qual=fmt  in #10 Point.fmt
+  67:54 type Result  qual=fmt  in #10 Point.fmt
+  68:8 call write  in #10 Point.fmt
+  72:13 type Debug  qual=fmt  in #3 Point
+  72:20 type Named  in #3 Point
+  76:22 type String  in #12 Point.name
+  77:16 call from  qual=String  in #12 Point.name
+  81:20 type Shape  qual=/crate/shapes  in #13 Meters
+  83:25 call square_of  qual=/crate/geometry  in #14 Meters.area
+  87:5 type Remote  in #13 Meters
+  89:5 type Clone  in -
+  91:16 call make  qual=Remote  in #29 Remote.clone
+  101:21 type Event  in #31 handle
+  101:38 type Registry  in #31 handle
+  101:47 type Point  in #31 handle
+  101:63 type Option  in #31 handle
+  105:19 call new  qual=Point  in #31 handle
+  106:16 call square  in #31 handle
+  106:24 call local_helper  in #31 handle
+  106:39 call norm  recv=p  in #31 handle
+  108:15 type Click  qual=Event  in #31 handle
+  109:15 member Key  qual=Event  in #31 handle
+  109:41 call log  qual=/super/helpers  in #31 handle
+  110:15 member Quit  qual=Event  in #31 handle
+  112:29 call default  qual=util::Config  in #31 handle
+  113:8 call entry  recv=reg  in #31 handle
+  113:18 call to_string  recv="k"  in #31 handle
+  113:31 call or_default  recv=reg.entry("k".to_string())  in #31 handle
+  114:14 call drop  qual=/std/mem  in #31 handle
+  115:25 call render  qual=util  in #31 handle
+  129:24 type Point  in #36 inner.Helper.run
+  130:19 call handle_inner  qual=/self  in #36 inner.Helper.run
+  131:19 call new  qual=Point  in #36 inner.Helper.run
+  142:23 call new  qual=Point  in #38 tests.test_point_new
+  143:21 call norm  recv=p  in #38 tests.test_point_new
+  149:16 call handle  in #39 tests.handles_quit
+  149:50 call new  qual=HashMap  in #39 tests.handles_quit
+  152:20 type Point  in #40 tests.fixture
+  153:15 call new  qual=Point  in #40 tests.fixture
+
+imports 16
+  3 "std::collections::HashMap"  names=HashMap
+  3 "std::collections::hash_map::Entry"  alias=MapEntry  names=Entry
+  4 "std::fmt"  names=fmt
+  4 "std::fmt::Display"  names=Display
+  5 "crate::shapes::Shape"  names=Shape
+  6 "super::helpers"  names=*  wildcard
+  7 "self::inner::Helper"  alias=InnerHelper  names=Helper
+  9 "self::geometry"  names=geometry
+  10 "self::util"  names=util
+  81 "crate::shapes"  alias=/crate/shapes
+  83 "crate::geometry"  alias=/crate/geometry
+  109 "super::helpers"  alias=/super/helpers
+  114 "std::mem"  alias=/std/mem
+  124 "self::Point"  names=Point
+  130 "self"  alias=/self
+  138 "self"  names=*  wildcard
+
+inherits 6
+  37:17 #24 Named extends Display
+  37:27 #24 Named extends fmt.Debug
+  66:8 #3 Point implements Display
+  72:20 #3 Point implements Named
+  81:5 #13 Meters implements /crate/shapes.Shape
+  87:5 #13 Meters implements Remote
+
+tests 2
+  #38 tests.test_point_new -> "point_new"
+  #39 tests.handles_quit -> "handles_quit"

@@ -1,0 +1,49 @@
+lang go
+package "misc"
+testfile false
+
+defs 8
+  #0 type Celsius  11:1-11:16  [exported]
+      sig "type Celsius float64"
+  #1 struct Pair  12:1-15:2  [exported]
+      sig "type Pair struct"
+  #2 method Config.Load  19:0-21:1  scope=Config  [exported]
+      sig "func (c *Config) Load(path string) error"
+  #3 variable handler  24:4-26:1
+      sig "var handler = func(name string) error {"
+  #4 interface Error  29:5-33:1  [exported]
+      sig "type Error interface"
+  #5 method Error.Code  32:1-32:11  parent=#4  [exported]
+      sig "Code() int"
+  #6 function chains  35:0-42:1
+      sig "func chains(p *tsitter.Parser)"
+  #7 function helper  44:0-44:16
+      sig "func helper()"
+
+refs 14
+  13:2 type List  in #1 Pair
+  14:5 type Thing  qual=y  in #1 Pair
+  19:9 type Config  in #2 Config.Load
+  20:10 call parse  recv=c  in #2 Config.Load
+  25:15 call New  qual=errors  in #3 handler
+  31:1 type Wrapper  in #4 Error
+  35:23 type Parser  qual=tsitter  in #6 chains
+  36:3 call Language  recv=p  in #6 chains
+  36:14 call Name  recv=p.Language()  in #6 chains
+  37:2 call helper  in #6 chains
+  38:6 call Celsius  in #6 chains
+  39:5 call Map  in #6 chains
+  40:7 call New  qual=y  in #6 chains
+  40:13 call Do  recv=y.New()  in #6 chains
+
+imports 3
+  4 "errors"
+  5 "github.com/tree-sitter/go-tree-sitter"  alias=tsitter
+  6 "github.com/x/y/v2"
+
+inherits 3
+  13:2 #1 Pair embeds List
+  14:3 #1 Pair embeds y.Thing
+  31:1 #4 Error embeds Wrapper
+
+tests 0

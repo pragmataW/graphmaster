@@ -1,0 +1,115 @@
+lang php
+package "App\\Shop"
+testfile false
+
+defs 24
+  #0 constant TAX_RATE  14:0-14:21  [exported]
+      sig "const TAX_RATE = 0.2;"
+  #1 interface HasTotal  16:0-19:1  [exported]
+      sig "interface HasTotal extends \\Countable, Priceable"
+  #2 method HasTotal.total  18:4-18:33  parent=#1  [exported]
+      sig "public function total(): int;"
+  #3 trait Loggable  21:0-29:1  [exported]
+      sig "trait Loggable"
+  #4 property Loggable.logger  23:4-23:37  parent=#3
+      sig "protected ?Logger $logger = null;"
+  #5 method Loggable.log  25:4-28:5  parent=#3  [exported]
+      sig "public function log(string $msg): void"
+  #6 enum Status  31:0-40:1  [exported]
+      sig "enum Status: string implements HasLabel"
+  #7 enum_member Status.Open  33:4-33:23  parent=#6  [exported]
+      sig "case Open = 'open';"
+  #8 enum_member Status.Closed  34:4-34:27  parent=#6  [exported]
+      sig "case Closed = 'closed';"
+  #9 method Status.label  36:4-39:5  parent=#6  [exported]
+      sig "public function label(): string"
+  #10 class Base  42:0-47:1  [exported]
+      sig "abstract class Base"
+  #11 constant Base.LIMIT  44:4-44:28  parent=#10  [exported]
+      sig "public const LIMIT = 10;"
+  #12 method Base.items  46:4-46:47  parent=#10
+      sig "abstract protected function items(): array;"
+  #13 class Cart  49:0-100:1  [exported]
+      sig "final class Cart extends Base implements HasTotal, \\JsonSerializable"
+  #14 property Cart.lines  53:4-53:30  parent=#13
+      sig "private array $lines = [];"
+  #15 property Cart.count  54:4-54:44  parent=#13  [exported]
+      sig "public static int $count = 0, $made = 0;"
+  #16 property Cart.made  54:4-54:44  parent=#13  [exported]
+      sig "public static int $count = 0, $made = 0;"
+  #17 constructor Cart.__construct  56:4-60:5  parent=#13  [exported]
+      sig "public function __construct(private Product $first, protected readonly Promo $promo)"
+  #18 method Cart.add  62:4-69:5  parent=#13  [exported]
+      sig "public function add(Product $product, ?Promo $promo = null): static"
+  #19 method Cart.total  71:4-81:5  parent=#13  [exported]
+      sig "public function total(): int"
+  #20 method Cart.jsonSerialize  83:4-86:5  parent=#13  [exported]
+      sig "public function jsonSerialize(): mixed"
+  #21 method Cart.items  88:4-91:5  parent=#13
+      sig "protected function items(): array"
+  #22 method Cart.bump  93:4-99:5  parent=#13
+      sig "private static function bump(): void"
+  #23 function make_cart  102:0-105:1  [exported]
+      sig "function make_cart(Product $first): Cart"
+
+refs 38
+  23:15 type LoggerInterface  qual=\Psr\Log  in #4 Loggable.logger
+  27:15 member logger  recv=$this  in #5 Loggable.log
+  27:24 call info  recv=$this->logger  in #5 Loggable.log
+  38:30 member value  recv=$this  in #9 Status.label
+  56:40 type Product  qual=\App\Model  in #17 Cart.__construct
+  56:75 type Discount  qual=\App\Model  in #17 Cart.__construct
+  58:16 call __construct  recv=parent  in #17 Cart.__construct
+  59:15 member count  recv=self  in #17 Cart.__construct
+  62:24 type Product  qual=\App\Model  in #18 Cart.add
+  62:43 type Discount  qual=\App\Model  in #18 Cart.add
+  64:15 member lines  recv=$this  in #18 Cart.add
+  65:18 call rename  recv=$product  in #18 Cart.add
+  65:25 call slug  qual=\App\Util  in #18 Cart.add
+  65:40 member name  recv=$product  in #18 Cart.add
+  66:17 call apply  recv=$promo  in #18 Cart.add
+  67:16 call bump  recv=static  in #18 Cart.add
+  74:20 type Calculator  qual=\App\Shop  in #19 Cart.total
+  75:24 member lines  recv=$this  in #19 Cart.total
+  76:27 call price  recv=$line  in #19 Cart.total
+  78:22 call apply  recv=$calc  in #19 Cart.total
+  78:36 type Discount  qual=\App\Model  in #19 Cart.total
+  78:43 call flat  qual=\App\Model\Discount  in #19 Cart.total
+  78:63 type Discount  qual=\App\Model  in #19 Cart.total
+  78:73 member LIMIT  qual=\App\Model\Discount  in #19 Cart.total
+  79:15 call log  recv=$this  in #19 Cart.total
+  79:19 call format_money  qual=\App\Util  in #19 Cart.total
+  80:25 call round_cents  qual=\App\Util  in #19 Cart.total
+  80:50 call cents  qual=\App\Shop\Util  in #19 Cart.total
+  80:77 member lines  recv=$this  in #19 Cart.total
+  85:34 call total  recv=$this  in #20 Cart.jsonSerialize
+  85:61 member first  recv=$this  in #20 Cart.jsonSerialize
+  85:68 call sku  recv=$this->first  in #20 Cart.jsonSerialize
+  90:22 member lines  recv=$this  in #21 Cart.items
+  98:31 type Product  qual=\App\Model  in #22 Cart.bump
+  102:19 type Product  qual=\App\Model  in #23 make_cart
+  102:36 type Cart  qual=\App\Shop  in #23 make_cart
+  104:15 type Cart  qual=\App\Shop  in #23 make_cart
+  104:32 type Discount  qual=\App\Model  in #23 make_cart
+
+imports 8
+  7 "App\\Model\\Product"
+  8 "App\\Model\\Priceable"
+  8 "App\\Model\\Discount"  alias=Promo
+  9 "App\\Util\\format_money"
+  10 "App\\Util\\slug"
+  10 "App\\Util\\trim_all"
+  11 "App\\Config\\CURRENCY"
+  12 "Psr\\Log\\LoggerInterface"  alias=Logger
+
+inherits 8
+  16:27 #1 HasTotal extends \.Countable
+  16:39 #1 HasTotal extends \App\Model.Priceable
+  31:31 #6 Status implements \App\Shop.HasLabel
+  49:25 #13 Cart extends \App\Shop.Base
+  49:41 #13 Cart implements \App\Shop.HasTotal
+  49:51 #13 Cart implements \.JsonSerializable
+  51:8 #13 Cart embeds \App\Shop.Loggable
+  51:18 #13 Cart embeds \App\Traits.Cacheable
+
+tests 0

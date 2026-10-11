@@ -1,0 +1,33 @@
+lang c
+package ""
+testfile false
+
+defs 7
+  #0 struct Vec2  5:0-8:7  [exported]
+      sig "typedef struct Vec2"
+  #1 field Vec2.x  6:4-6:13  parent=#0  [exported]
+      sig "double x"
+  #2 field Vec2.y  7:4-7:13  parent=#0  [exported]
+      sig "double y"
+  #3 macro VEC2_ZERO  10:0-11:0  [exported]
+      sig "#define VEC2_ZERO ((Vec2){0.0, 0.0})"
+  #4 function vec_add  12:0-12:29  [exported|declaration]
+      sig "Vec2 vec_add(Vec2 a, Vec2 b)"
+  #5 function vec_scale  13:0-13:33  [exported|declaration]
+      sig "Vec2 vec_scale(Vec2 v, double k)"
+  #6 function vec_len  14:0-14:23  [exported|declaration]
+      sig "double vec_len(Vec2 v)"
+
+refs 6
+  12:0 type Vec2  in #4 vec_add
+  12:13 type Vec2  in #4 vec_add
+  12:21 type Vec2  in #4 vec_add
+  13:0 type Vec2  in #5 vec_scale
+  13:15 type Vec2  in #5 vec_scale
+  14:15 type Vec2  in #6 vec_len
+
+imports 0
+
+inherits 0
+
+tests 0

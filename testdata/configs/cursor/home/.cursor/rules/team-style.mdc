@@ -1,0 +1,7 @@
+---
+description: Team coding conventions
+alwaysApply: true
+---
+
+- Prefer small, reviewable diffs.
+- Never commit generated files.

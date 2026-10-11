@@ -1,0 +1,100 @@
+lang cpp
+package ""
+testfile false
+
+defs 33
+  #0 namespace geo  9:0-66:1  [exported]
+      sig "namespace geo"
+  #1 class geo.Shape  11:0-21:1  parent=#0  [exported]
+      sig "class Shape"
+  #2 constructor geo.Shape.Shape  13:4-13:22  parent=#1  [exported]
+      sig "Shape()"
+  #3 method geo.Shape.~Shape  14:4-14:21  parent=#1  [exported|declaration]
+      sig "virtual ~Shape()"
+  #4 method geo.Shape.area  15:4-15:36  parent=#1  [exported|abstract|declaration]
+      sig "virtual double area() const = 0"
+  #5 method geo.Shape.label  16:4-16:38  parent=#1  [exported|declaration]
+      sig "virtual std::string label() const"
+  #6 field geo.Shape.count  17:4-17:21  parent=#1  [exported|static]
+      sig "static int count"
+  #7 field geo.Shape.id_  20:4-20:16  parent=#1
+      sig "int id_"
+  #8 class geo.Rect  23:0-35:1  parent=#0  [exported]
+      sig "class Rect : public Shape"
+  #9 constructor geo.Rect.Rect  25:4-25:29  parent=#8  [exported|declaration]
+      sig "Rect(double w, double h)"
+  #10 method geo.Rect.area  26:4-26:33  parent=#8  [exported|declaration]
+      sig "double area() const override"
+  #11 method geo.Rect.width  27:4-27:39  parent=#8  [exported]
+      sig "double width() const"
+  #12 method geo.Rect.operator==  28:4-28:45  parent=#8  [exported|declaration]
+      sig "bool operator==(const Rect& other) const"
+  #13 field geo.Rect.w_  31:4-31:14  parent=#8
+      sig "double w_"
+  #14 field geo.Rect.h_  32:4-32:14  parent=#8
+      sig "double h_"
+  #15 struct geo.Square  37:0-40:1  parent=#0  [exported]
+      sig "struct Square final : public Rect, private detail::Tagged<Square>"
+  #16 constructor geo.Square.Square  38:4-38:33  parent=#15  [exported|declaration]
+      sig "explicit Square(double side)"
+  #17 method geo.Square.label  39:4-39:39  parent=#15  [exported|declaration]
+      sig "std::string label() const override"
+  #18 class geo.Box  43:0-50:1  parent=#0  [exported]
+      sig "class Box"
+  #19 method geo.Box.get  45:4-45:36  parent=#18  [exported]
+      sig "T get() const"
+  #20 method geo.Box.set  46:4-46:25  parent=#18  [exported|declaration]
+      sig "void set(const T& v)"
+  #21 field geo.Box.value_  49:4-49:13  parent=#18
+      sig "T value_"
+  #22 enum geo.Color  52:0-52:35  parent=#0  [exported]
+      sig "enum class Color"
+  #23 enum_member geo.Color.Red  52:19-52:22  parent=#22  [exported]
+      sig "Red"
+  #24 enum_member geo.Color.Green  52:24-52:33  parent=#22  [exported]
+      sig "Green = 3"
+  #25 type geo.ShapePtr  54:0-54:40  parent=#0  [exported]
+      sig "using ShapePtr = std::unique_ptr<Shape>"
+  #26 type geo.ShapeList  55:0-55:40  parent=#0  [exported]
+      sig "typedef std::vector<ShapePtr> ShapeList"
+  #27 namespace geo.util  57:0-60:1  parent=#0  [exported]
+      sig "namespace util"
+  #28 function geo.util.clamp  58:0-58:45  parent=#27  [exported|declaration]
+      sig "double clamp(double v, double lo, double hi)"
+  #29 constant geo.util.kEpsilon  59:0-59:33  parent=#27  [exported]
+      sig "constexpr double kEpsilon"
+  #30 namespace geo.detail.impl  62:0-64:1  parent=#0  scope=detail  [exported]
+      sig "namespace detail::impl"
+  #31 function geo.detail.impl.helper  63:0-63:18  parent=#30  [exported|declaration]
+      sig "int helper(int x)"
+  #32 variable hidden_counter  69:0-69:23
+      sig "int hidden_counter"
+
+refs 14
+  16:17 type string  qual=std  in #5 geo.Shape.label
+  23:20 type Shape  in #8 geo.Rect
+  28:26 type Rect  in #12 geo.Rect.operator==
+  33:17 type Canvas  in #8 geo.Rect
+  34:27 type Rect  in #8 geo.Rect
+  34:42 type Rect  in #8 geo.Rect
+  37:29 type Rect  in #15 geo.Square
+  37:51 type Tagged  qual=detail  in #15 geo.Square
+  37:58 type Square  in #15 geo.Square
+  39:9 type string  qual=std  in #17 geo.Square.label
+  54:22 type unique_ptr  qual=std  in #25 geo.ShapePtr
+  54:33 type Shape  in #25 geo.ShapePtr
+  55:13 type vector  qual=std  in #26 geo.ShapeList
+  55:20 type ShapePtr  in #26 geo.ShapeList
+
+imports 4
+  3 "<memory>"
+  4 "<string>"
+  5 "<vector>"
+  7 "\"geo/base.hpp\""
+
+inherits 3
+  23:20 #8 geo.Rect extends Shape
+  37:29 #15 geo.Square extends Rect
+  37:43 #15 geo.Square extends detail.Tagged
+
+tests 0

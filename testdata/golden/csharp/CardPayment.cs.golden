@@ -1,0 +1,20 @@
+lang csharp
+package "Fixture.Billing"
+testfile false
+
+defs 2
+  #0 class Fixture.Billing.CardPayment  3:4-9:5  scope=Fixture.Billing  [exported]
+      sig "public class CardPayment : PaymentBase, IPayment"
+  #1 method Fixture.Billing.CardPayment.Charge  5:8-8:9  parent=#0  [exported]
+      sig "public decimal Charge(decimal amount)"
+
+refs 1
+  7:19 call WithFee  in #1 Fixture.Billing.CardPayment.Charge
+
+imports 0
+
+inherits 2
+  3:31 #0 Fixture.Billing.CardPayment extends PaymentBase
+  3:44 #0 Fixture.Billing.CardPayment implements IPayment
+
+tests 0

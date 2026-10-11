@@ -1,0 +1,6 @@
+{
+  "name": "fixture-js",
+  "version": "0.1.0",
+  "main": "lib/calc.js",
+  "scripts": { "test": "node --test test/*.test.js" }
+}

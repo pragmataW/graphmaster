@@ -1,0 +1,7 @@
+graphmaster file_outline · fresh
+go/internal/store/store.go  go, 52 loc, 13 symbols
+interface Store  6-9  type Store interface
+struct Memory  12-15  type Memory struct
+function NewMemory  18-20  func NewMemory() *Memory
+struct Audited  38-41  type Audited struct
+function NewAudited  44-46  func NewAudited() *Audited

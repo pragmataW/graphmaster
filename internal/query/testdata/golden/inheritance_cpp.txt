@@ -1,0 +1,6 @@
+graphmaster inheritance · fresh
+class geo::Square  cpp/include/geo/shape.hpp:24-28  class Square final : public Rect
+supertypes:
+  extends class geo::Rect  cpp/include/geo/shape.hpp:14-22
+    extends class geo::Shape  cpp/include/geo/shape.hpp:7-12
+subtypes: none

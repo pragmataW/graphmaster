@@ -1,0 +1,6 @@
+graphmaster inheritance · fresh
+class com.example.zoo.Cat  java/src/main/java/com/example/zoo/Cat.java:3-20  public class Cat extends Animal implements Comparable<Cat>
+supertypes:
+  extends class com.example.zoo.Animal  java/src/main/java/com/example/zoo/Animal.java:6-23
+    implements interface com.example.zoo.Named  java/src/main/java/com/example/zoo/Named.java:4-6
+  implements ? Comparable (unresolved)

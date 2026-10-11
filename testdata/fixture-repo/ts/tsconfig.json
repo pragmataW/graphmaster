@@ -1,0 +1,15 @@
+{
+  // Path aliases are resolved by graphmaster's TS resolver.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@app/*": ["src/*"]
+    }
+  },
+  "include": ["src", "test"]
+}

@@ -1,0 +1,9 @@
+graphmaster impact · fresh
+impact of method store.Memory.Put  go/internal/store/store.go:31-35
+depth 3, min_confidence 30: 3 symbols in 3 files · affected tests: 1
+go/internal/service/order_test.go
+  test service.TestPlaceOrder  9-21  d1
+go/internal/store/store.go
+  method store.Audited.Put  49-52  d1
+go/cmd/server/main.go
+  function server.main  14-24  d2

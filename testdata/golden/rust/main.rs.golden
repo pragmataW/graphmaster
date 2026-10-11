@@ -1,0 +1,27 @@
+lang rust
+package ""
+testfile false
+
+defs 1
+  #0 function main  5:0-8:1
+      sig "fn main()"
+
+refs 8
+  6:16 type Vec  in #0 main
+  6:20 type Box  in #0 main
+  6:28 type Shape  in #0 main
+  6:48 call new  qual=Box  in #0 main
+  6:60 call new  qual=Circle  in #0 main
+  6:76 call new  qual=Box  in #0 main
+  6:88 call new  qual=Square  in #0 main
+  7:34 call total_area  in #0 main
+
+imports 4
+  1 "fixture_shapes::geometry::total_area"  names=total_area
+  2 "fixture_shapes::shapes::circle::Circle"  names=Circle
+  2 "fixture_shapes::shapes::square::Square"  names=Square
+  3 "fixture_shapes::Shape"  names=Shape
+
+inherits 0
+
+tests 0

@@ -1,0 +1,6 @@
+graphmaster callers · fresh
+function store.NewMemory  go/internal/store/store.go:18-20  func NewMemory() *Memory
+  test service.TestPlaceOrder  go/internal/service/order_test.go:9-21  @10
+  test service.TestPlaceOrderOutOfStock  go/internal/service/order_test.go:23-28  @24
+  function store.NewAudited  go/internal/store/store.go:44-46  @45
+    function server.main  go/cmd/server/main.go:14-24  @15

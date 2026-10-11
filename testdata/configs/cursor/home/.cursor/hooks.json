@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "hooks": {
+    // audit every shell command before it runs
+    "beforeShellExecution": [
+      { "command": "./hooks/audit-shell.sh" }
+    ],
+    "afterFileEdit": [
+      { "command": "~/.cursor/hooks/format.sh", "timeout": 30 }
+    ],
+    "stop": [
+      { "command": "say done" }
+    ]
+  }
+}

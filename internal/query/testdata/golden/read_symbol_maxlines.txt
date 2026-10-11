@@ -1,0 +1,6 @@
+graphmaster read_symbol · fresh
+method service.OrderService.PlaceOrder  go/internal/service/order.go:24-32  func (s *OrderService) PlaceOrder(id string, qty int) (string, error)
+24  func (s *OrderService) PlaceOrder(id string, qty int) (string, error) {
+25  	item, ok := s.store.Get(id)
+26  	if !ok || !validate(item, qty) {
+… +6 more lines (raise max_lines)

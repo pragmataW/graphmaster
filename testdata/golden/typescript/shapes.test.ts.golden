@@ -1,0 +1,44 @@
+lang typescript
+package ""
+testfile true
+
+defs 6
+  #0 test Circle  4:0-24:2  [test]
+      sig "describe(\"Circle\", () =>"
+  #1 test Circle.computes area  11:2-13:4  parent=#0  [test]
+      sig "it(\"computes area\", () =>"
+  #2 test Circle.handles %d  15:2-17:4  parent=#0  [test]
+      sig "it.each([1, 2])(\"handles %d\", (n) =>"
+  #3 test Circle.Circle.describe  19:2-23:4  parent=#0  [test]
+      sig "describe(\"Circle.describe\", () =>"
+  #4 test Circle.Circle.describe.mentions the name  20:4-22:6  parent=#3  [test]
+      sig "it.skip(\"mentions the name\", async () =>"
+  #5 test square  26:0-28:2  [test]
+      sig "test(\"square\", () =>"
+
+refs 11
+  5:9 type Circle  in #0 Circle
+  8:12 call Circle  in #0 Circle
+  12:13 call area  recv=c  in #1 Circle.computes area
+  12:21 call toBeCloseTo  recv=expect(c.area())  in #1 Circle.computes area
+  12:38 member PI  recv=Math  in #1 Circle.computes area
+  16:11 call square  in #2 Circle.handles %d
+  16:22 call toBe  recv=expect(square(n))  in #2 Circle.handles %d
+  21:15 call describe  recv=c  in #4 Circle.Circle.describe.mentions the name
+  21:28 call toContain  recv=expect(c.describe(c))  in #4 Circle.Circle.describe.mentions the name
+  27:9 call square  in #5 square
+  27:20 call toBe  recv=expect(square(3))  in #5 square
+
+imports 2
+  1 "vitest"  names=describe,expect,it,beforeEach
+  2 "./shapes"  names=Circle,square
+
+inherits 0
+
+tests 6
+  #0 Circle -> "Circle"
+  #1 Circle.computes area -> ""
+  #2 Circle.handles %d -> ""
+  #3 Circle.Circle.describe -> "describe"
+  #4 Circle.Circle.describe.mentions the name -> ""
+  #5 square -> ""

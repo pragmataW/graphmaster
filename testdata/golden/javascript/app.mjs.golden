@@ -1,0 +1,30 @@
+lang javascript
+package ""
+testfile false
+
+defs 3
+  #0 function run  5:7-10:1  [exported]
+      sig "async function run(file)"
+  #1 class App  12:15-16:1  [exported]
+      sig "class App"
+  #2 method App.start  13:2-15:3  parent=#1  [exported]
+      sig "start()"
+
+refs 7
+  6:24 member promises  recv=fs  in #0 run
+  6:33 call readFile  recv=fs.promises  in #0 run
+  8:7 call init  recv=lazy  in #0 run
+  9:9 call formatTotal  in #0 run
+  9:26 call parse  qual=util  in #0 run
+  9:41 call pad  in #0 run
+  14:11 call run  in #2 App.start
+
+imports 4
+  1 "node:fs"  names=fs
+  2 "./format.mjs"  names=formatTotal,pad
+  3 "./util.js"  alias=util
+  7 "./lazy.js"
+
+inherits 0
+
+tests 0

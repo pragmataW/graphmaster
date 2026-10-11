@@ -1,0 +1,7 @@
+graphmaster find_symbol · fresh
+function util.FormatID  go/internal/util/format.go:11-13  func FormatID(id string) string
+function util.FormatMoney  go/internal/util/format.go:16-18  func FormatMoney(cents int) string
+function formatName  ts/src/utils/format.ts:1-3  function formatName(name: string): string
+function formatTotal  js/src/format.mjs:1-3  function formatTotal(value, currency = "EUR")
+function App.format_money  php/src/helpers.php:7-10  function format_money(int $cents): string
+… +1 more (narrow path_prefix / raise limit)

@@ -1,0 +1,8 @@
+graphmaster imports · fresh
+imports of go/cmd/server/main.go (6):
+  5  fmt  (external)
+  6  log  (external)
+  8  example.com/fixture/internal/gen  (external)
+  9  example.com/fixture/internal/service  → go/internal/service/
+  10  example.com/fixture/internal/store  → go/internal/store/
+  11  example.com/fixture/internal/util  → go/internal/util/

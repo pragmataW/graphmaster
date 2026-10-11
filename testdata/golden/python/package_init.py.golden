@@ -1,0 +1,17 @@
+lang python
+package ""
+testfile false
+
+defs 1
+  #0 variable __all__  5:0-5:36  [exported]
+      sig "__all__ = [\"Item\", \"PerishableItem\"]"
+
+refs 0
+
+imports 2
+  3 ".models.Item"  names=Item
+  3 ".models.PerishableItem"  names=PerishableItem
+
+inherits 0
+
+tests 0

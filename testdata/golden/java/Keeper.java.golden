@@ -1,0 +1,52 @@
+lang java
+package "com.example.zoo.keeper"
+testfile false
+
+defs 5
+  #0 class Keeper  9:0-30:1  [exported]
+      sig "public class Keeper"
+  #1 field Keeper.animals  10:4-10:59  parent=#0
+      sig "private final List<Animal> animals"
+  #2 method Keeper.admit  12:4-14:5  parent=#0  [exported]
+      sig "public void admit(Animal animal)"
+  #3 method Keeper.rollCall  16:4-22:5  parent=#0  [exported]
+      sig "public List<String> rollCall()"
+  #4 method Keeper.main  24:4-29:5  parent=#0  [exported]
+      sig "public static void main(String[] args)"
+
+refs 24
+  10:18 type List  in #1 Keeper.animals
+  10:23 type Animal  in #1 Keeper.animals
+  10:45 call ArrayList  in #1 Keeper.animals
+  12:22 type Animal  in #2 Keeper.admit
+  13:16 call add  recv=animals  in #2 Keeper.admit
+  16:11 type List  in #3 Keeper.rollCall
+  16:16 type String  in #3 Keeper.rollCall
+  17:8 type List  in #3 Keeper.rollCall
+  17:13 type String  in #3 Keeper.rollCall
+  17:31 call ArrayList  in #3 Keeper.rollCall
+  18:13 type Animal  in #3 Keeper.rollCall
+  19:16 call add  recv=out  in #3 Keeper.rollCall
+  19:22 call describe  recv=a  in #3 Keeper.rollCall
+  24:28 type String  in #4 Keeper.main
+  25:8 type Keeper  in #4 Keeper.main
+  25:28 call Keeper  in #4 Keeper.main
+  26:15 call admit  recv=keeper  in #4 Keeper.main
+  26:25 call Dog  in #4 Keeper.main
+  27:15 call admit  recv=keeper  in #4 Keeper.main
+  27:25 call Cat  in #4 Keeper.main
+  28:15 call rollCall  recv=keeper  in #4 Keeper.main
+  28:26 call forEach  recv=keeper.rollCall()  in #4 Keeper.main
+  28:41 member out  qual=System  in #4 Keeper.main
+  28:46 call println  recv=System.out  in #4 Keeper.main
+
+imports 5
+  3 "com.example.zoo.Animal"  names=Animal
+  4 "com.example.zoo.Cat"  names=Cat
+  5 "com.example.zoo.Dog"  names=Dog
+  6 "java.util.ArrayList"  names=ArrayList
+  7 "java.util.List"  names=List
+
+inherits 0
+
+tests 0

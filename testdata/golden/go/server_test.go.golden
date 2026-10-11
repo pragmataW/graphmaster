@@ -1,0 +1,48 @@
+lang go
+package "server_test"
+testfile true
+
+defs 7
+  #0 test TestNewServer  9:0-14:1  [exported|test]
+      sig "func TestNewServer(t *testing.T)"
+  #1 test TestServer_Start  16:0-18:1  [exported|test]
+      sig "func TestServer_Start(t *testing.T)"
+  #2 test BenchmarkMap  20:0-24:1  [exported|test]
+      sig "func BenchmarkMap(b *testing.B)"
+  #3 test FuzzParse  26:0-28:1  [exported|test]
+      sig "func FuzzParse(f *testing.F)"
+  #4 function TestMain  31:0-31:39  [exported]
+      sig "func TestMain(m *testing.M)"
+  #5 function Testify  34:0-34:29  [exported]
+      sig "func Testify(t *testing.T)"
+  #6 function helperT  37:0-37:29
+      sig "func helperT(t *testing.T)"
+
+refs 15
+  9:30 type T  qual=testing  in #0 TestNewServer
+  10:13 call NewServer  qual=server  in #0 TestNewServer
+  12:4 call Fatal  recv=t  in #0 TestNewServer
+  16:33 type T  qual=testing  in #1 TestServer_Start
+  17:3 call Helper  recv=t  in #1 TestServer_Start
+  20:29 type B  qual=testing  in #2 BenchmarkMap
+  21:7 call Loop  recv=b  in #2 BenchmarkMap
+  22:9 call Map  qual=server  in #2 BenchmarkMap
+  26:26 type F  qual=testing  in #3 FuzzParse
+  27:3 call Fuzz  recv=f  in #3 FuzzParse
+  27:24 type T  qual=testing  in #3 FuzzParse
+  31:25 type M  qual=testing  in #4 TestMain
+  31:32 call Run  recv=m  in #4 TestMain
+  34:24 type T  qual=testing  in #5 Testify
+  37:24 type T  qual=testing  in #6 helperT
+
+imports 2
+  4 "testing"
+  6 "example.com/app/server"
+
+inherits 0
+
+tests 4
+  #0 TestNewServer -> "NewServer"
+  #1 TestServer_Start -> "Server.Start"
+  #2 BenchmarkMap -> "Map"
+  #3 FuzzParse -> "Parse"

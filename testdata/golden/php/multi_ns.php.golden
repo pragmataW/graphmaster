@@ -1,0 +1,28 @@
+lang php
+package "Legacy"
+testfile false
+
+defs 5
+  #0 function helper  4:4-7:5  [exported]
+      sig "function helper($a)"
+  #1 class Widget  9:4-18:5  [exported]
+      sig "class Widget"
+  #2 property Widget.name  11:8-11:18  parent=#1  [exported]
+      sig "var $name;"
+  #3 method Widget.render  13:8-17:9  parent=#1  [exported]
+      sig "function render()"
+  #4 function global_fn  22:4-26:5  [exported]
+      sig "function global_fn(): void"
+
+refs 5
+  15:17 call helper  in #3 Widget.render
+  15:31 member name  recv=$this  in #3 Widget.render
+  16:24 call render_widget  qual=\Other  in #3 Widget.render
+  24:15 call helper  qual=\Legacy  in #4 global_fn
+  25:24 type Widget  qual=\Legacy  in #4 global_fn
+
+imports 0
+
+inherits 0
+
+tests 0

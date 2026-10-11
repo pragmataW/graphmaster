@@ -1,0 +1,23 @@
+lang rust
+package ""
+testfile false
+
+defs 3
+  #0 trait Shape  5:0-11:1  [exported]
+      sig "pub trait Shape"
+  #1 method Shape.area  6:4-6:26  parent=#0  [exported]
+      sig "fn area(&self) -> f64;"
+  #2 method Shape.name  8:4-10:5  parent=#0  [exported]
+      sig "fn name(&self) -> String"
+
+refs 2
+  8:22 type String  in #2 Shape.name
+  9:16 call from  qual=String  in #2 Shape.name
+
+imports 2
+  1 "self::circle"  names=circle
+  2 "self::square"  names=square
+
+inherits 0
+
+tests 0

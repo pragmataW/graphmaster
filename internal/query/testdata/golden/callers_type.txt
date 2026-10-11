@@ -1,0 +1,13 @@
+graphmaster callers · fresh
+struct store.Item  go/internal/store/item.go:4-8  type Item struct
+  function server.main  go/cmd/server/main.go:14-24  @16
+  function service.validate  go/internal/service/order.go:35-37  @35
+  test service.TestPlaceOrder  go/internal/service/order_test.go:9-21  @11
+  method store.Item.Total  go/internal/store/item.go:11-13  @11
+  method store.Store.Get  go/internal/store/store.go:7-7  @7
+  method store.Store.Put  go/internal/store/store.go:8-8  @8
+  field store.Memory.items  go/internal/store/store.go:14-14  @14
+  function store.NewMemory  go/internal/store/store.go:18-20  @19
+  method store.Memory.Get  go/internal/store/store.go:23-28  @23
+  method store.Memory.Put  go/internal/store/store.go:31-35  @31
+  method store.Audited.Put  go/internal/store/store.go:49-52  @49

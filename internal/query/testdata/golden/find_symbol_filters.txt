@@ -1,0 +1,2 @@
+graphmaster find_symbol · fresh
+function fixture_shapes::geometry::total_area  rust/src/geometry.rs:7-9  pub fn total_area(shapes: &[Box<dyn Shape>]) -> f64

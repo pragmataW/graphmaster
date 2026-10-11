@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="light dark">
+<title>graphmaster</title>
+<!-- The id stops cytoscape from injecting its own inline <style>, which the CSP forbids; style.css carries that rule. -->
+<link id="__________cytoscape_stylesheet" rel="stylesheet" href="style.css?token=__GRAPHMASTER_TOKEN__">
+</head>
+<body>
+<header class="bar">
+  <a class="brand" id="brand" href="#">graphmaster</a>
+  <div class="search">
+    <input id="q" type="search" placeholder="Search symbols and files…" autocomplete="off" spellcheck="false"
+           aria-label="Search symbols and files" aria-controls="results" aria-expanded="false">
+    <ul id="results" class="results" role="listbox" hidden></ul>
+  </div>
+  <nav class="tools" aria-label="View options">
+    <button id="btn-packages" type="button" title="Browse directories">Packages</button>
+    <label title="Hops shown around a symbol">Depth
+      <select id="depth"><option>1</option><option>2</option><option>3</option></select>
+    </label>
+    <label title="Nest symbols inside their files"><input id="group" type="checkbox"> Group by file</label>
+    <button id="btn-fit" type="button" title="Fit graph to screen">Fit</button>
+    <button id="btn-clear" type="button" title="Remove impact highlight" hidden>Clear impact</button>
+  </nav>
+  <span id="status" class="status" role="status" aria-live="polite"></span>
+</header>
+<main>
+  <section class="canvas">
+    <nav id="crumbs" class="crumbs" aria-label="Location"></nav>
+    <div id="graph" class="graph" aria-label="Code graph"></div>
+    <p id="empty" class="empty" hidden></p>
+    <ul class="legend" aria-label="Legend">
+      <li><i class="dot func"></i>function</li>
+      <li><i class="dot type"></i>type</li>
+      <li><i class="dot test"></i>test</li>
+      <li><i class="dot dir"></i>directory</li>
+      <li><i class="dot seed"></i>changed</li>
+      <li><i class="dot impact"></i>impacted</li>
+    </ul>
+  </section>
+  <aside id="panel" class="panel" aria-label="Details" hidden>
+    <div class="panel-head">
+      <span id="p-kind" class="kind"></span>
+      <h2 id="p-name"></h2>
+      <button id="p-close" class="close" type="button" aria-label="Close details">×</button>
+    </div>
+    <div id="p-body" class="panel-body"></div>
+  </aside>
+</main>
+<script src="cytoscape.min.js?token=__GRAPHMASTER_TOKEN__"></script>
+<script src="app.js?token=__GRAPHMASTER_TOKEN__"></script>
+</body>
+</html>

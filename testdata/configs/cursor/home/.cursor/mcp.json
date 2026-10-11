@@ -1,0 +1,15 @@
+{
+  // Personal MCP servers (Cursor accepts JSONC here).
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_TOKEN}"
+      }
+    },
+    "context7": {
+      "url": "https://mcp.context7.com/mcp" // remote server
+    },
+  }
+}

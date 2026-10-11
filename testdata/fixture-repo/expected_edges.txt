@@ -1,0 +1,363 @@
+# Machine-readable resolver expectations for fixture-repo, derived from
+# EXPECTED.md (the human-readable source; keep both in sync).
+#
+# Line format (one edge per line):
+#
+#   [prefix]<kind> <src> -> <dst> [conf>=N]
+#
+#   <src>/<dst>  path::Symbol, Symbol = container chain joined with "."
+#                (e.g. OrderService.PlaceOrder). A bare path (imports,
+#                includes) names a file or package directory.
+#                external:<name> = target outside the indexed code; the
+#                reference must exist and stay unresolved (dst NULL).
+#   conf>=N      minimum confidence (100 T1, 90 T2, 80 T3, 50 T4).
+#   prefix       none = must exist; "?" = desirable, optional;
+#                "!" = must NOT exist.
+#
+# Sections start with "[<lang>]" (model.Lang names). Each language unit owns
+# its section and its resolver test (internal/resolve/<lang>_test.go) reads
+# only that section. Kinds "imports"/"includes" are produced by the indexer
+# (imports table), not by the resolver; resolver tests skip them.
+# Blank lines and lines starting with "#" are ignored.
+
+[go]
+# U26 (resolve/go.go)
+imports go/cmd/server/main.go -> go/internal/store
+imports go/cmd/server/main.go -> go/internal/service
+imports go/cmd/server/main.go -> go/internal/util
+imports go/internal/service/order.go -> go/internal/store
+imports go/internal/service/order.go -> go/internal/util
+calls go/cmd/server/main.go::main -> go/internal/store/store.go::NewAudited conf>=100
+calls go/cmd/server/main.go::main -> go/internal/service/order.go::NewOrderService conf>=100
+calls go/cmd/server/main.go::main -> go/internal/util/format.go::Mirror conf>=100
+calls go/cmd/server/main.go::main -> go/internal/service/order.go::OrderService.PlaceOrder conf>=50
+calls go/internal/service/order.go::OrderService.PlaceOrder -> go/internal/service/order.go::validate conf>=90
+calls go/internal/service/order.go::OrderService.PlaceOrder -> go/internal/util/format.go::FormatID conf>=100
+calls go/internal/service/order.go::OrderService.PlaceOrder -> go/internal/util/format.go::FormatMoney conf>=100
+?calls go/internal/service/order.go::OrderService.PlaceOrder -> go/internal/store/store.go::Store.Get conf>=80
+calls go/internal/store/store.go::NewAudited -> go/internal/store/store.go::NewMemory conf>=90
+calls go/internal/store/store.go::Audited.Put -> go/internal/store/store.go::Memory.Put conf>=80
+calls go/internal/util/slug.go::Slug -> go/internal/util/format.go::FormatID conf>=90
+calls go/internal/service/order_test.go::TestPlaceOrder -> go/internal/service/order.go::NewOrderService conf>=90
+calls go/internal/service/order_test.go::TestPlaceOrder -> go/internal/store/store.go::NewMemory conf>=100
+calls go/internal/service/order_test.go::TestPlaceOrder -> go/internal/service/order.go::OrderService.PlaceOrder conf>=50
+calls go/internal/util/format.go::Mirror -> external:strutil.Reverse
+embeds go/internal/store/store.go::Audited -> go/internal/store/store.go::Memory
+?implements go/internal/store/store.go::Memory -> go/internal/store/store.go::Store
+?tests go/internal/service/order_test.go::TestPlaceOrder -> go/internal/service/order.go::OrderService.PlaceOrder
+!calls go/cmd/server/main.go::main -> go/internal/gen/status_string.go::Status.String
+!calls go/internal/util/format.go::Mirror -> go/vendor/github.com/acme/strutil/strutil.go::Reverse
+# Additional resolver checks (not in EXPECTED.md).
+calls go/internal/service/order.go::OrderService.PlaceOrder -> go/internal/store/store.go::Store.Put conf>=80
+calls go/cmd/server/main.go::main -> go/internal/store/store.go::Audited.Put conf>=80
+calls go/internal/service/order_test.go::TestPlaceOrder -> go/internal/store/store.go::Memory.Put conf>=80
+calls go/cmd/server/main.go::main -> external:fmt.Println
+calls go/internal/service/order_test.go::TestPlaceOrder -> external:testing.Fatal
+!calls go/internal/service/order.go::OrderService.PlaceOrder -> go/internal/store/store.go::Memory.Get
+!calls go/cmd/server/main.go::main -> go/internal/store/store.go::Memory.Put
+
+[python]
+# U20 (parse/lang_python*.go, resolve/python*.go)
+imports python/shop/services/orders.py -> python/shop/models.py
+imports python/shop/services/orders.py -> python/shop/repository.py
+imports python/shop/services/orders.py -> python/shop/services/pricing.py
+imports python/shop/__init__.py -> python/shop/models.py
+imports python/tests/test_orders.py -> python/shop/services/orders.py
+extends python/shop/models.py::PerishableItem -> python/shop/models.py::Item
+extends python/shop/services/orders.py::OutOfStock -> external:Exception
+calls python/shop/services/orders.py::OrderService.place_order -> python/shop/services/orders.py::OrderService._can_fulfil conf>=80
+calls python/shop/services/orders.py::OrderService.place_order -> python/shop/services/pricing.py::apply_discount conf>=100
+?calls python/shop/services/orders.py::OrderService.place_order -> python/shop/repository.py::Repository.get conf>=80
+calls python/shop/services/pricing.py::apply_discount -> python/shop/services/pricing.py::round_cents conf>=90
+calls python/shop/experimental.py::flash_sale -> python/shop/services/pricing.py::apply_discount conf>=100
+calls python/tests/test_orders.py::test_place_order -> python/tests/test_orders.py::make_service conf>=90
+calls python/tests/test_orders.py::TestPricing.test_discount_applies -> python/shop/services/pricing.py::apply_discount conf>=100
+?calls python/shop/models.py::PerishableItem.total -> python/shop/models.py::Item.total conf>=80
+?tests python/tests/test_orders.py::test_place_order -> python/shop/services/orders.py::OrderService.place_order
+# Additional resolver checks (not in EXPECTED.md).
+calls python/shop/services/orders.py::OrderService.place_order -> python/shop/repository.py::Repository.get conf>=80
+calls python/shop/models.py::PerishableItem.total -> python/shop/models.py::Item.total conf>=80
+tests python/tests/test_orders.py::test_place_order -> python/shop/services/orders.py::OrderService.place_order conf>=50
+calls python/shop/services/orders.py::OrderService.place_order -> python/shop/services/orders.py::OutOfStock conf>=90
+calls python/tests/test_orders.py::make_service -> python/shop/repository.py::Repository conf>=100
+calls python/tests/test_orders.py::make_service -> python/shop/models.py::Item conf>=100
+calls python/tests/test_orders.py::make_service -> python/shop/services/orders.py::OrderService conf>=100
+calls python/tests/test_orders.py::make_service -> python/shop/repository.py::Repository.add conf>=80
+calls python/tests/test_orders.py::test_place_order -> python/shop/services/orders.py::OrderService.place_order conf>=80
+calls python/tests/test_orders.py::test_place_order_out_of_stock -> python/shop/services/orders.py::OrderService.place_order conf>=80
+calls python/tests/test_orders.py::test_place_order_out_of_stock -> external:pytest.raises
+calls python/shop/repository.py::Repository.get -> external:dict.get
+references python/shop/services/orders.py::OrderService.__init__ -> python/shop/repository.py::Repository conf>=100
+references python/shop/services/orders.py::OrderService._can_fulfil -> python/shop/models.py::Item conf>=100
+references python/shop/services/orders.py::OrderService._can_fulfil -> python/shop/models.py::Item.quantity conf>=80
+references python/shop/services/orders.py::OrderService.place_order -> python/shop/models.py::Item.price conf>=80
+references python/shop/models.py::Item.total -> python/shop/models.py::Item.price conf>=80
+references python/shop/models.py::PerishableItem.total -> python/shop/models.py::PerishableItem.days_left conf>=80
+references python/shop/repository.py::Repository.add -> python/shop/models.py::Item.sku conf>=80
+!calls python/shop/repository.py::Repository.get -> python/shop/repository.py::Repository.get
+!calls python/shop/models.py::PerishableItem.total -> python/shop/models.py::PerishableItem.total
+!calls python/shop/services/orders.py::OrderService.place_order -> python/shop/models.py::Item.total
+
+[typescript]
+# U21 (resolve/typescript.go; TS and TSX share this section)
+imports ts/src/services/userService.ts -> ts/src/models/user.ts
+imports ts/src/services/userService.ts -> ts/src/utils/format.ts
+imports ts/src/components/UserCard.tsx -> ts/src/services/userService.ts
+imports ts/src/index.ts -> ts/src/models/user.ts
+imports ts/src/index.ts -> ts/src/services/userService.ts
+imports ts/test/userService.test.ts -> ts/src/services/userService.ts
+implements ts/src/models/user.ts::User -> ts/src/models/user.ts::Entity conf>=90
+extends ts/src/models/user.ts::Admin -> ts/src/models/user.ts::User conf>=90
+calls ts/src/services/userService.ts::UserService.greet -> ts/src/utils/format.ts::formatName conf>=100
+calls ts/src/services/userService.ts::UserService.greet -> ts/src/services/userService.ts::UserService.find conf>=80
+calls ts/src/services/userService.ts::UserService.promote -> ts/src/services/userService.ts::UserService.find conf>=80
+calls ts/src/utils/format.ts::formatName -> ts/src/utils/format.ts::capitalize conf>=90
+calls ts/src/models/user.ts::Admin.canDelete -> ts/src/models/user.ts::User.role conf>=80
+calls ts/src/components/UserCard.tsx::UserCard -> ts/src/services/userService.ts::UserService.greet conf>=50
+calls ts/src/components/UserCard.tsx::UserCard -> ts/src/components/UserCard.tsx::Badge conf>=90
+# Test callbacks are named by their titles (with spaces), so the
+# test-file edges of EXPECTED.md are checked in typescript_fixture_test.go.
+# Additional resolver checks (not in EXPECTED.md).
+imports ts/test/userService.test.ts -> ts/src/models/user.ts
+calls ts/src/components/UserCard.tsx::UserCard -> ts/src/services/userService.ts::UserService.greet conf>=80
+calls ts/src/services/userService.ts::UserService.greet -> ts/src/models/user.ts::User.role conf>=80
+calls ts/src/services/userService.ts::UserService.promote -> ts/src/models/user.ts::Admin conf>=100
+references ts/src/services/userService.ts::UserService.add -> ts/src/models/user.ts::User conf>=100
+references ts/src/services/userService.ts::UserService.greet -> ts/src/models/user.ts::User.name conf>=80
+references ts/src/components/UserCard.tsx::UserCardProps.service -> ts/src/services/userService.ts::UserService conf>=100
+references ts/src/models/user.ts::User.role -> ts/src/models/user.ts::Role conf>=90
+calls ts/src/utils/format.ts::formatName -> external:String.trim
+calls ts/src/services/userService.ts::UserService.add -> external:Map.set
+!calls ts/src/services/userService.ts::UserService.greet -> ts/src/models/user.ts::Admin.role
+!calls ts/src/models/user.ts::Admin.canDelete -> ts/src/models/user.ts::Admin.role
+!calls ts/src/services/userService.ts::UserService.add -> ts/src/services/userService.ts::UserService.find
+
+[javascript]
+# U21 (resolve/typescript.go; the JS resolver is shared with TS)
+imports js/lib/calc.js -> js/lib/math.js
+imports js/src/main.mjs -> js/src/format.mjs
+imports js/test/calc.test.js -> js/lib/calc.js
+extends js/lib/calc.js::ScientificCalculator -> js/lib/calc.js::Calculator conf>=90
+calls js/lib/math.js::multiply -> js/lib/math.js::add conf>=90
+calls js/lib/calc.js::Calculator.sum -> js/lib/math.js::add conf>=100
+calls js/lib/calc.js::Calculator.sum -> js/lib/calc.js::Calculator.record conf>=80
+calls js/lib/calc.js::Calculator.product -> js/lib/math.js::multiply conf>=100
+calls js/lib/calc.js::ScientificCalculator.square -> js/lib/calc.js::Calculator.product conf>=80
+calls js/src/format.mjs::formatTotal -> js/src/format.mjs::pad conf>=90
+calls js/src/main.mjs::run -> js/src/format.mjs::formatTotal conf>=100
+calls js/src/main.mjs::run -> js/lib/calc.js::ScientificCalculator.square conf>=80
+calls js/src/main.mjs::run -> js/lib/calc.js::Calculator.sum conf>=80
+# Additional resolver checks (not in EXPECTED.md).
+imports js/src/main.mjs -> js/lib/calc.js
+calls js/src/main.mjs::run -> js/lib/calc.js::ScientificCalculator conf>=100
+calls js/lib/calc.js::Calculator.record -> external:Array.push
+calls js/src/format.mjs::pad -> external:String.padStart
+!calls js/lib/calc.js::Calculator.sum -> js/lib/calc.js::ScientificCalculator.square
+!calls js/lib/math.js::multiply -> js/lib/calc.js::Calculator.sum
+!calls js/src/main.mjs::run -> js/public/widgets.min.js::w0
+
+[rust]
+# U23 (parse/lang_rust.go, resolve/rust.go)
+imports rust/src/lib.rs -> rust/src/geometry.rs
+imports rust/src/lib.rs -> rust/src/shapes/mod.rs
+imports rust/src/main.rs -> rust/src/geometry.rs
+imports rust/src/main.rs -> rust/src/shapes/circle.rs
+imports rust/src/main.rs -> rust/src/shapes/mod.rs
+imports rust/src/shapes/circle.rs -> rust/src/shapes/mod.rs
+imports rust/src/shapes/square.rs -> rust/src/geometry.rs
+imports rust/tests/area_test.rs -> rust/src/shapes/square.rs
+implements rust/src/shapes/circle.rs::Circle -> rust/src/shapes/mod.rs::Shape conf>=100
+implements rust/src/shapes/square.rs::Square -> rust/src/shapes/mod.rs::Shape conf>=100
+calls rust/src/shapes/circle.rs::Circle.area -> rust/src/geometry.rs::square_of conf>=100
+calls rust/src/shapes/square.rs::Square.area -> rust/src/geometry.rs::square_of conf>=100
+calls rust/src/main.rs::main -> rust/src/geometry.rs::total_area conf>=100
+calls rust/src/main.rs::main -> rust/src/shapes/circle.rs::Circle.new conf>=100
+calls rust/src/main.rs::main -> rust/src/shapes/square.rs::Square.new conf>=100
+calls rust/src/geometry.rs::tests.square_of_negative -> rust/src/geometry.rs::square_of conf>=90
+calls rust/tests/area_test.rs::squares_add_up -> rust/src/geometry.rs::total_area conf>=100
+calls rust/tests/area_test.rs::squares_add_up -> rust/src/shapes/square.rs::Square.new conf>=100
+?calls rust/src/geometry.rs::total_area -> rust/src/shapes/mod.rs::Shape.area conf>=80
+# Additional resolver checks (not in EXPECTED.md).
+# `use fixture_shapes::Shape` goes through lib.rs's `pub use shapes::Shape`.
+references rust/src/main.rs::main -> rust/src/shapes/mod.rs::Shape conf>=100
+references rust/tests/area_test.rs::squares_add_up -> rust/src/shapes/mod.rs::Shape conf>=100
+references rust/src/geometry.rs::total_area -> rust/src/shapes/mod.rs::Shape conf>=100
+references rust/src/shapes/circle.rs::Circle.area -> rust/src/shapes/circle.rs::Circle.radius conf>=80
+references rust/src/shapes/square.rs::Square.area -> rust/src/shapes/square.rs::Square.side conf>=80
+references rust/src/shapes/square.rs::Square.new -> rust/src/shapes/square.rs::Square conf>=90
+calls rust/src/shapes/circle.rs::Circle.name -> external:String.from
+calls rust/src/shapes/mod.rs::Shape.name -> external:String.from
+references rust/src/shapes/circle.rs::Circle.area -> external:std.f64.consts.PI
+references rust/src/main.rs::main -> external:Vec
+!calls rust/tests/area_test.rs::squares_add_up -> rust/src/shapes/circle.rs::Circle.new
+!calls rust/src/geometry.rs::total_area -> rust/src/geometry.rs::square_of
+!calls rust/src/geometry.rs::tests.square_of_negative -> rust/src/geometry.rs::total_area
+
+[java]
+# U24 (resolve/java.go)
+implements java/src/main/java/com/example/zoo/Animal.java::Animal -> java/src/main/java/com/example/zoo/Named.java::Named
+extends java/src/main/java/com/example/zoo/Dog.java::Dog -> java/src/main/java/com/example/zoo/Animal.java::Animal
+extends java/src/main/java/com/example/zoo/Cat.java::Cat -> java/src/main/java/com/example/zoo/Animal.java::Animal
+implements java/src/main/java/com/example/zoo/Cat.java::Cat -> external:Comparable
+imports java/src/main/java/com/example/zoo/keeper/Keeper.java -> java/src/main/java/com/example/zoo/Animal.java
+calls java/src/main/java/com/example/zoo/Animal.java::Animal.name -> java/src/main/java/com/example/zoo/util/Strings.java::Strings.capitalize conf>=100
+calls java/src/main/java/com/example/zoo/Animal.java::Animal.describe -> java/src/main/java/com/example/zoo/Animal.java::Animal.name conf>=80
+calls java/src/main/java/com/example/zoo/Animal.java::Animal.describe -> java/src/main/java/com/example/zoo/Animal.java::Animal.sound conf>=80
+calls java/src/main/java/com/example/zoo/Dog.java::Dog.fetch -> java/src/main/java/com/example/zoo/Animal.java::Animal.describe conf>=80
+calls java/src/main/java/com/example/zoo/keeper/Keeper.java::Keeper.rollCall -> java/src/main/java/com/example/zoo/Animal.java::Animal.describe conf>=80
+calls java/src/main/java/com/example/zoo/keeper/Keeper.java::Keeper.main -> java/src/main/java/com/example/zoo/keeper/Keeper.java::Keeper.admit conf>=80
+calls java/src/main/java/com/example/zoo/keeper/Keeper.java::Keeper.main -> java/src/main/java/com/example/zoo/keeper/Keeper.java::Keeper.rollCall conf>=80
+calls java/src/test/java/com/example/zoo/DogTest.java::DogTest.describeIncludesSound -> java/src/main/java/com/example/zoo/Animal.java::Animal.describe conf>=80
+calls java/src/test/java/com/example/zoo/DogTest.java::DogTest.fetchMentionsItem -> java/src/main/java/com/example/zoo/Dog.java::Dog.fetch conf>=50
+?calls java/src/main/java/com/example/zoo/keeper/Keeper.java::Keeper.main -> java/src/main/java/com/example/zoo/Dog.java::Dog.Dog
+# Additional resolver checks (not in EXPECTED.md).
+calls java/src/main/java/com/example/zoo/keeper/Keeper.java::Keeper.main -> java/src/main/java/com/example/zoo/Dog.java::Dog.Dog conf>=80
+calls java/src/main/java/com/example/zoo/keeper/Keeper.java::Keeper.main -> java/src/main/java/com/example/zoo/Cat.java::Cat.Cat conf>=80
+calls java/src/test/java/com/example/zoo/DogTest.java::DogTest.describeIncludesSound -> java/src/main/java/com/example/zoo/Dog.java::Dog.Dog conf>=80
+references java/src/main/java/com/example/zoo/keeper/Keeper.java::Keeper.admit -> java/src/main/java/com/example/zoo/Animal.java::Animal conf>=100
+references java/src/main/java/com/example/zoo/Cat.java::Cat.compareTo -> java/src/main/java/com/example/zoo/Cat.java::Cat conf>=90
+references java/src/main/java/com/example/zoo/Cat.java::Cat.compareTo -> java/src/main/java/com/example/zoo/Cat.java::Cat.lives conf>=80
+?references java/src/main/java/com/example/zoo/Animal.java::Animal.Animal -> java/src/main/java/com/example/zoo/Animal.java::Animal.name conf>=80
+calls java/src/main/java/com/example/zoo/keeper/Keeper.java::Keeper.admit -> external:java.util.List.add
+calls java/src/main/java/com/example/zoo/keeper/Keeper.java::Keeper.main -> external:java.util.List.forEach
+calls java/src/main/java/com/example/zoo/keeper/Keeper.java::Keeper.main -> external:java.io.PrintStream.println
+calls java/src/main/java/com/example/zoo/util/Strings.java::Strings.capitalize -> external:Character.toUpperCase
+calls java/src/main/java/com/example/zoo/util/Strings.java::Strings.capitalize -> external:String.isEmpty
+calls java/src/main/java/com/example/zoo/Cat.java::Cat.compareTo -> external:Integer.compare
+calls java/src/test/java/com/example/zoo/DogTest.java::DogTest.describeIncludesSound -> external:org.junit.jupiter.api.Assertions.assertEquals
+!references java/src/main/java/com/example/zoo/Cat.java::Cat.compareTo -> java/src/main/java/com/example/zoo/Cat.java::Cat.Cat
+!references java/src/main/java/com/example/zoo/Dog.java::Dog -> java/src/main/java/com/example/zoo/Animal.java::Animal.Animal
+!calls java/src/main/java/com/example/zoo/Animal.java::Animal.describe -> java/src/main/java/com/example/zoo/Named.java::Named.name
+
+[c]
+# U27 (resolve/c.go). includes lines are checked against ResolveImport and
+# declares lines against resolve.DeclarationResolver by c_test.go (the
+# framework does not emit declares edges yet).
+includes c/src/vec.c -> c/include/vec.h
+includes c/src/main.c -> c/include/vec.h
+includes c/src/main.c -> c/src/util.h
+includes c/src/util.c -> c/src/util.h
+includes c/tests/test_vec.c -> c/include/vec.h
+declares c/include/vec.h::vec_add -> c/src/vec.c::vec_add
+declares c/include/vec.h::vec_len -> c/src/vec.c::vec_len
+declares c/src/util.h::log_msg -> c/src/util.c::log_msg
+calls c/src/vec.c::vec_len -> c/src/vec.c::sq conf>=90
+calls c/src/main.c::main -> c/src/vec.c::vec_add conf>=50
+calls c/src/main.c::main -> c/src/vec.c::vec_scale conf>=50
+calls c/src/main.c::main -> c/src/vec.c::vec_len conf>=50
+calls c/src/main.c::main -> c/src/util.c::log_msg conf>=50
+calls c/src/main.c::main -> c/src/util.c::clamp_int conf>=50
+calls c/tests/test_vec.c::test_vec_add -> c/src/vec.c::vec_add conf>=50
+calls c/tests/test_vec.c::main -> c/tests/test_vec.c::test_vec_add conf>=90
+calls c/src/vec.c::vec_len -> external:sqrt
+!calls c/src/main.c::main -> c/tests/test_vec.c::test_vec_add
+# Additional resolver checks (not in EXPECTED.md).
+declares c/include/vec.h::vec_scale -> c/src/vec.c::vec_scale
+declares c/src/util.h::clamp_int -> c/src/util.c::clamp_int
+calls c/tests/test_vec.c::test_vec_len -> c/src/vec.c::vec_len conf>=50
+calls c/tests/test_vec.c::main -> c/tests/test_vec.c::test_vec_len conf>=90
+calls c/src/util.c::log_msg -> external:fprintf
+calls c/src/main.c::main -> external:printf
+calls c/tests/test_vec.c::test_vec_add -> external:assert
+references c/src/main.c::main -> c/include/vec.h::Vec2 conf>=90
+references c/tests/test_vec.c::test_vec_add -> c/include/vec.h::Vec2.x conf>=80
+references c/src/vec.c::vec_len -> c/include/vec.h::Vec2.y conf>=80
+!calls c/src/main.c::main -> c/include/vec.h::vec_add
+!calls c/src/main.c::main -> c/src/util.h::log_msg
+!calls c/tests/test_vec.c::test_vec_add -> c/include/vec.h::vec_add
+
+[cpp]
+# U28 (resolve/cpp.go). includes/declares lines: see [c]. Lines marked
+# "framework gap" in cpp_test.go need the framework to prefer definitions
+# over declarations (declared in-class, defined out-of-line).
+extends cpp/include/geo/shape.hpp::geo.Rect -> cpp/include/geo/shape.hpp::geo.Shape
+extends cpp/include/geo/shape.hpp::geo.Square -> cpp/include/geo/shape.hpp::geo.Rect
+includes cpp/src/shape.cpp -> cpp/include/geo/shape.hpp
+includes cpp/include/geo/canvas.hpp -> cpp/include/geo/shape.hpp
+includes cpp/src/canvas.cpp -> cpp/include/geo/canvas.hpp
+includes cpp/src/main.cpp -> cpp/include/geo/canvas.hpp
+calls cpp/src/shape.cpp::geo.Rect.area -> cpp/src/shape.cpp::geo.util.clamp conf>=90
+calls cpp/src/main.cpp::main -> cpp/src/canvas.cpp::geo.Canvas.add conf>=80
+calls cpp/src/main.cpp::main -> cpp/src/canvas.cpp::geo.Canvas.totalArea conf>=80
+calls cpp/src/main.cpp::main -> cpp/include/geo/canvas.hpp::geo.Canvas.size conf>=80
+calls cpp/tests/canvas_test.cpp::test_total_area -> cpp/src/canvas.cpp::geo.Canvas.totalArea conf>=80
+?calls cpp/src/canvas.cpp::geo.Canvas.totalArea -> cpp/include/geo/shape.hpp::geo.Shape.area conf>=80
+?declares cpp/include/geo/shape.hpp::geo.Rect.area -> cpp/src/shape.cpp::geo.Rect.area
+# Additional resolver checks (not in EXPECTED.md).
+includes cpp/tests/canvas_test.cpp -> cpp/include/geo/canvas.hpp
+declares cpp/include/geo/canvas.hpp::geo.Canvas.add -> cpp/src/canvas.cpp::geo.Canvas.add
+declares cpp/include/geo/canvas.hpp::geo.Canvas.totalArea -> cpp/src/canvas.cpp::geo.Canvas.totalArea
+declares cpp/include/geo/shape.hpp::geo.Rect.area -> cpp/src/shape.cpp::geo.Rect.area
+declares cpp/include/geo/shape.hpp::geo.Shape.~Shape -> cpp/src/shape.cpp::geo.Shape.~Shape
+declares cpp/include/geo/shape.hpp::geo.util.clamp -> cpp/src/shape.cpp::geo.util.clamp
+calls cpp/tests/canvas_test.cpp::main -> cpp/tests/canvas_test.cpp::test_total_area conf>=90
+calls cpp/tests/canvas_test.cpp::test_total_area -> cpp/src/canvas.cpp::geo.Canvas.add conf>=80
+calls cpp/src/main.cpp::main -> external:std.make_unique
+calls cpp/src/canvas.cpp::geo.Canvas.add -> external:std.move
+calls cpp/src/canvas.cpp::geo.Canvas.add -> external:push_back
+calls cpp/src/shape.cpp::geo.util.clamp -> external:std.min
+references cpp/src/main.cpp::main -> cpp/include/geo/canvas.hpp::geo.Canvas conf>=90
+references cpp/src/main.cpp::main -> cpp/include/geo/shape.hpp::geo.Rect conf>=90
+references cpp/src/main.cpp::main -> cpp/include/geo/shape.hpp::geo.Square conf>=90
+references cpp/include/geo/canvas.hpp::geo.Canvas.add -> cpp/include/geo/shape.hpp::geo.Shape conf>=80
+references cpp/src/canvas.cpp::geo.Canvas.add -> cpp/include/geo/shape.hpp::geo.Shape conf>=80
+!calls cpp/src/shape.cpp::geo.Rect.area -> cpp/include/geo/shape.hpp::geo.util.clamp
+!calls cpp/src/main.cpp::main -> cpp/include/geo/canvas.hpp::geo.Canvas.add
+!calls cpp/src/main.cpp::main -> cpp/include/geo/canvas.hpp::geo.Canvas.totalArea
+
+[csharp]
+# U29 (resolve/csharp.go). The module identity is the project (.csproj path)
+# and namespaces lead the chain, so chains match EXPECTED.md verbatim.
+# Partial parts embed each other; bare references to a partial type pick
+# its primary part (lowest path: Invoice.Tax.cs before Invoice.cs).
+extends csharp/src/Billing/CardPayment.cs::Fixture.Billing.CardPayment -> csharp/src/Billing/PaymentBase.cs::Fixture.Billing.PaymentBase conf>=90
+implements csharp/src/Billing/CardPayment.cs::Fixture.Billing.CardPayment -> csharp/src/Billing/IPayment.cs::Fixture.Billing.IPayment conf>=90
+embeds csharp/src/Billing/Invoice.cs::Fixture.Billing.Invoice -> csharp/src/Billing/Invoice.Tax.cs::Fixture.Billing.Invoice conf>=90
+embeds csharp/src/Billing/Invoice.Tax.cs::Fixture.Billing.Invoice -> csharp/src/Billing/Invoice.cs::Fixture.Billing.Invoice conf>=90
+calls csharp/src/Billing/Invoice.cs::Fixture.Billing.Invoice.Total -> csharp/src/Billing/Invoice.Tax.cs::Fixture.Billing.Invoice.ApplyTax conf>=80
+calls csharp/src/Billing/CardPayment.cs::Fixture.Billing.CardPayment.Charge -> csharp/src/Billing/PaymentBase.cs::Fixture.Billing.PaymentBase.WithFee conf>=80
+calls csharp/src/App/Program.cs::Fixture.App.Program.Main -> csharp/src/Billing/Invoice.cs::Fixture.Billing.Invoice.AddLine conf>=80
+calls csharp/src/App/Program.cs::Fixture.App.Program.Main -> csharp/src/Billing/Invoice.cs::Fixture.Billing.Invoice.Total conf>=80
+calls csharp/src/App/Program.cs::Fixture.App.Program.Main -> csharp/src/Billing/IPayment.cs::Fixture.Billing.IPayment.Charge conf>=80
+calls csharp/src/App/Program.cs::Fixture.App.Program.Main -> csharp/src/Billing/Invoice.Tax.cs::Fixture.Billing.Invoice conf>=90
+calls csharp/src/App/Program.cs::Fixture.App.Program.Main -> csharp/src/Billing/CardPayment.cs::Fixture.Billing.CardPayment conf>=90
+calls csharp/tests/InvoiceTests.cs::Fixture.Tests.InvoiceTests.TotalIncludesTax -> csharp/src/Billing/Invoice.cs::Fixture.Billing.Invoice.Total conf>=80
+calls csharp/tests/InvoiceTests.cs::Fixture.Tests.InvoiceTests.TotalIncludesTax -> csharp/src/Billing/Invoice.cs::Fixture.Billing.Invoice.AddLine conf>=80
+calls csharp/tests/InvoiceTests.cs::Fixture.Tests.InvoiceTests.CardPaymentAddsFee -> csharp/src/Billing/CardPayment.cs::Fixture.Billing.CardPayment.Charge conf>=80
+calls csharp/src/App/Program.cs::Fixture.App.Program.Main -> external:System.Console.WriteLine
+calls csharp/src/Billing/Invoice.cs::Fixture.Billing.Invoice.AddLine -> external:System.Collections.Generic.List.Add
+calls csharp/src/Billing/Invoice.cs::Fixture.Billing.Invoice.Total -> external:System.Linq.Enumerable.Sum
+calls csharp/src/Billing/Invoice.Tax.cs::Fixture.Billing.Invoice.ApplyTax -> external:System.Decimal.Round
+calls csharp/tests/InvoiceTests.cs::Fixture.Tests.InvoiceTests.TotalIncludesTax -> external:Xunit.Assert.Equal
+!calls csharp/src/App/Program.cs::Fixture.App.Program.Main -> csharp/src/Billing/CardPayment.cs::Fixture.Billing.CardPayment.Charge
+!calls csharp/src/App/Program.cs::Fixture.App.Program.Main -> csharp/src/Billing/Invoice.cs::Fixture.Billing.Invoice
+!embeds csharp/src/Billing/Invoice.cs::Fixture.Billing.Invoice -> csharp/src/Billing/Invoice.cs::Fixture.Billing.Invoice
+!extends csharp/src/Billing/CardPayment.cs::Fixture.Billing.CardPayment -> csharp/src/Billing/IPayment.cs::Fixture.Billing.IPayment
+
+[php]
+# U2A (resolve/php.go). The namespace is the PHP module identity, so chains
+# here omit it: EXPECTED.md's App.Model.Product is Product in
+# php/src/Model/Product.php (qname App.Model.Product).
+implements php/src/Model/Product.php::Product -> php/src/Model/Priceable.php::Priceable conf>=100
+extends php/src/Model/DigitalProduct.php::DigitalProduct -> php/src/Model/Product.php::Product conf>=100
+extends php/tests/CartTest.php::CartTest -> external:PHPUnit.Framework.TestCase
+imports php/src/Service/Cart.php -> php/src/Model/Product.php
+includes php/bootstrap.php -> php/src/helpers.php
+calls php/src/Model/DigitalProduct.php::DigitalProduct.price -> php/src/Model/Product.php::Product.price conf>=80
+calls php/src/Service/Cart.php::Cart.total -> php/src/Service/Cart.php::Cart.applyCoupon conf>=80
+calls php/src/Service/Cart.php::Cart.summary -> php/src/Service/Cart.php::Cart.total conf>=80
+calls php/src/Service/Cart.php::Cart.summary -> php/src/helpers.php::format_money conf>=100
+calls php/tests/CartTest.php::CartTest.testTotalSumsPrices -> php/src/Service/Cart.php::Cart.total conf>=80
+calls php/tests/CartTest.php::CartTest.testSummaryFormatsMoney -> php/src/Service/Cart.php::Cart.summary conf>=80
+?calls php/src/Service/Cart.php::Cart.total -> php/src/Model/Priceable.php::Priceable.price conf>=50
+!includes php/bootstrap.php -> php/vendor/autoload.php
+# Additional resolver checks (not in EXPECTED.md).
+calls php/tests/CartTest.php::CartTest.testTotalSumsPrices -> php/src/Service/Cart.php::Cart.add conf>=80
+calls php/tests/CartTest.php::CartTest.testSummaryFormatsMoney -> php/src/Service/Cart.php::Cart.add conf>=80
+calls php/tests/CartTest.php::CartTest.testTotalSumsPrices -> external:PHPUnit.Framework.TestCase.assertSame
+references php/tests/CartTest.php::CartTest.testTotalSumsPrices -> php/src/Service/Cart.php::Cart conf>=100
+references php/tests/CartTest.php::CartTest.testTotalSumsPrices -> php/src/Model/Product.php::Product conf>=100
+references php/src/Service/Cart.php::Cart.add -> php/src/Model/Product.php::Product conf>=100
+!calls php/src/Model/DigitalProduct.php::DigitalProduct.price -> php/src/Model/DigitalProduct.php::DigitalProduct.price
+!calls php/src/Service/Cart.php::Cart.summary -> php/src/Service/Cart.php::Cart.applyCoupon
+!calls php/tests/CartTest.php::CartTest.testTotalSumsPrices -> php/src/Service/Cart.php::Cart.summary

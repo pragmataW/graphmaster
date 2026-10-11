@@ -1,0 +1,19 @@
+lang csharp
+package "Fixture.Billing"
+testfile false
+
+defs 3
+  #0 class Fixture.Billing.PaymentBase  3:4-8:5  scope=Fixture.Billing  [exported]
+      sig "public abstract class PaymentBase"
+  #1 property Fixture.Billing.PaymentBase.Fee  5:8-5:53  parent=#0  [exported]
+      sig "protected decimal Fee"
+  #2 method Fixture.Billing.PaymentBase.WithFee  7:8-7:66  parent=#0  [exported]
+      sig "protected decimal WithFee(decimal amount)"
+
+refs 0
+
+imports 0
+
+inherits 0
+
+tests 0

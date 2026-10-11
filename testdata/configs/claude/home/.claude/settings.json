@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "model": "opus",
+  "permissions": {
+    "allow": [
+      "Bash(git status)",
+      "Bash(go test:*)" // test runs are always fine
+    ],
+    "deny": ["Read(./.env)"]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {"type": "command", "command": "~/bin/guard-rm.sh", "timeout": 3}
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {"type": "command", "command": "echo \"Today is $(date +%A)\""}
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {"type": "command", "command": "osascript -e 'display notification \"Claude needs you\"'"}
+        ]
+      }
+    ]
+  },
+  "statusLine": {"type": "command", "command": "~/.claude/statusline.sh"}
+}

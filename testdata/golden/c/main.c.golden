@@ -1,0 +1,27 @@
+lang c
+package ""
+testfile false
+
+defs 1
+  #0 function main  6:0-13:1  [exported]
+      sig "int main(void)"
+
+refs 9
+  7:4 type Vec2  in #0 main
+  8:4 type Vec2  in #0 main
+  8:13 call vec_scale  in #0 main
+  9:4 type Vec2  in #0 main
+  9:13 call vec_add  in #0 main
+  10:4 call log_msg  in #0 main
+  11:4 call printf  in #0 main
+  11:19 call clamp_int  in #0 main
+  11:34 call vec_len  in #0 main
+
+imports 3
+  1 "<stdio.h>"
+  3 "\"util.h\""
+  4 "\"vec.h\""
+
+inherits 0
+
+tests 0

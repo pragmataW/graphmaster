@@ -1,0 +1,16 @@
+lang rust
+package ""
+testfile false
+
+defs 0
+
+refs 0
+
+imports 3
+  3 "self::geometry"  names=geometry
+  4 "self::shapes"  names=shapes
+  6 "shapes::Shape"  names=Shape
+
+inherits 0
+
+tests 0

@@ -1,0 +1,5 @@
+graphmaster imports · fresh
+importers of go/internal/store/store.go (3):
+  go/cmd/server/main.go:10  example.com/fixture/internal/store
+  go/internal/service/order.go:6  example.com/fixture/internal/store
+  go/internal/service/order_test.go:6  example.com/fixture/internal/store

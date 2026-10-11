@@ -1,0 +1,97 @@
+lang c
+package ""
+testfile false
+
+defs 36
+  #0 macro SHAPES_MAX  7:0-8:0  [exported]
+      sig "#define SHAPES_MAX 16"
+  #1 macro SQUARE  8:0-9:0  [exported]
+      sig "#define SQUARE(x)"
+  #2 macro SHAPES_DEBUG  9:0-10:0  [exported]
+      sig "#define SHAPES_DEBUG"
+  #3 struct Point  11:0-14:8  [exported]
+      sig "typedef struct Point"
+  #4 field Point.x  12:4-12:13  parent=#3  [exported]
+      sig "double x"
+  #5 field Point.y  13:4-13:13  parent=#3  [exported]
+      sig "double y"
+  #6 struct Node  16:8-19:1  [exported]
+      sig "struct Node"
+  #7 field Node.next  17:4-17:22  parent=#6  [exported]
+      sig "struct Node *next"
+  #8 field Node.value  18:4-18:14  parent=#6  [exported]
+      sig "int value"
+  #9 type Node_t  19:2-19:8  [exported]
+      sig "typedef struct Node Node_t"
+  #10 type shape_id  21:0-21:31  [exported]
+      sig "typedef unsigned long shape_id"
+  #11 type shape_cb  22:0-22:51  [exported]
+      sig "typedef int (*shape_cb)(const Point *p, void *ctx)"
+  #12 struct Shape  24:0-33:1  [exported]
+      sig "struct Shape"
+  #13 field Shape.id  25:4-25:16  parent=#12  [exported]
+      sig "shape_id id"
+  #14 field Shape.origin  26:4-26:17  parent=#12  [exported]
+      sig "Point origin"
+  #15 field Shape.area  27:4-27:45  parent=#12  [exported]
+      sig "double (*area)(const struct Shape *self)"
+  #16 field Shape.name  28:4-28:18  parent=#12  [exported]
+      sig "char name[32]"
+  #17 field Shape.dim  29:4-32:10  parent=#12  [exported]
+      sig "union dim"
+  #18 field Shape.dim.radius  30:8-30:22  parent=#17  [exported]
+      sig "double radius"
+  #19 field Shape.dim.side  31:8-31:20  parent=#17  [exported]
+      sig "double side"
+  #20 struct Number  35:0-38:1  [exported]
+      sig "union Number"
+  #21 field Number.i  36:4-36:10  parent=#20  [exported]
+      sig "int i"
+  #22 field Number.f  37:4-37:12  parent=#20  [exported]
+      sig "float f"
+  #23 enum Kind  40:0-40:42  [exported]
+      sig "enum Kind"
+  #24 enum_member Kind.KIND_CIRCLE  40:12-40:23  parent=#23  [exported]
+      sig "KIND_CIRCLE"
+  #25 enum_member Kind.KIND_SQUARE  40:25-40:40  parent=#23  [exported]
+      sig "KIND_SQUARE = 2"
+  #26 enum Color  42:0-42:45  [exported]
+      sig "typedef enum Color"
+  #27 enum_member Color.COLOR_RED  42:15-42:24  parent=#26  [exported]
+      sig "COLOR_RED"
+  #28 enum_member Color.COLOR_BLUE  42:26-42:36  parent=#26  [exported]
+      sig "COLOR_BLUE"
+  #29 variable shape_count  44:0-44:23  [exported|declaration]
+      sig "extern int shape_count"
+  #30 variable shape_names  45:0-45:33  [exported|declaration]
+      sig "extern const char *shape_names[]"
+  #31 function point_make  47:0-47:37  [exported|declaration]
+      sig "Point point_make(double x, double y)"
+  #32 function shape_area  48:0-48:41  [exported|declaration]
+      sig "double shape_area(const struct Shape *s)"
+  #33 function shape_valid  49:0-49:74  [static]
+      sig "static inline int shape_valid(const struct Shape *s)"
+  #34 function shape_new  50:0-50:40  [exported|declaration]
+      sig "struct Shape *shape_new(enum Kind kind)"
+  #35 function shape_grid  51:0-51:27  [exported|declaration]
+      sig "int **shape_grid(size_t n)"
+
+refs 10
+  17:11 type Node  in #7 Node.next
+  22:30 type Point  in #11 shape_cb
+  25:4 type shape_id  in #13 Shape.id
+  26:4 type Point  in #14 Shape.origin
+  27:32 type Shape  in #15 Shape.area
+  47:0 type Point  in #31 point_make
+  48:31 type Shape  in #32 shape_area
+  49:43 type Shape  in #33 shape_valid
+  50:7 type Shape  in #34 shape_new
+  50:29 type Kind  in #34 shape_new
+
+imports 2
+  4 "<stddef.h>"
+  5 "\"config.h\""
+
+inherits 0
+
+tests 0

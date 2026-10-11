@@ -1,0 +1,102 @@
+lang python
+package ""
+testfile false
+
+defs 23
+  #0 type T  11:0-11:16  [exported]
+      sig "T = TypeVar(\"T\")"
+  #1 constant MAX_RETRIES  12:0-12:15  [exported]
+      sig "MAX_RETRIES = 3"
+  #2 variable default_name  13:0-13:21  [exported]
+      sig "default_name = \"misc\""
+  #3 enum Color  16:0-18:13  [exported]
+      sig "class Color(Enum)"
+  #4 enum_member Color.RED  17:4-17:11  parent=#3  [exported]
+      sig "RED = 1"
+  #5 enum_member Color.GREEN  18:4-18:13  parent=#3  [exported]
+      sig "GREEN = 2"
+  #6 interface Readable  21:0-22:40  [exported]
+      sig "class Readable(Protocol)"
+  #7 method Readable.read  22:4-22:40  parent=#6  [exported]
+      sig "def read(self, n: int) -> bytes"
+  #8 class Box  25:0-64:17  [exported]
+      sig "class Box(Model, Mixin, Generic[T])"
+  #9 field Box.count  28:4-28:18  parent=#8  [exported]
+      sig "count: int = 0"
+  #10 field Box.label  29:4-29:31  parent=#8  [exported]
+      sig "label: Optional[str] = None"
+  #11 class Box.Meta  31:4-32:28  parent=#8  [exported]
+      sig "class Meta"
+  #12 field Box.Meta.ordering  32:8-32:28  parent=#11  [exported]
+      sig "ordering = [\"count\"]"
+  #13 constructor Box.__init__  34:4-36:28  parent=#8  [exported]
+      sig "def __init__(self, item: T, reader: Readable | None = None) -> None"
+  #14 method Box.size  38:4-40:31  parent=#8  [exported]
+      sig "@property def size(self) -> int"
+  #15 method Box.empty  42:4-44:24  parent=#8  [exported|static]
+      sig "@staticmethod def empty() -> \"Box\""
+  #16 method Box.of  46:4-48:24  parent=#8  [exported|static]
+      sig "@classmethod def of(cls, item: T) -> \"Box[T]\""
+  #17 method Box.fetch  50:4-53:19  parent=#8  [exported|async|abstract]
+      sig "@abc.abstractmethod async def fetch(self, path: os.PathLike) -> bytes"
+  #18 method Box.peek  55:4-64:17  parent=#8  [exported]
+      sig "def peek(self) -> list[T]"
+  #19 function Box.peek.helper  56:8-57:22  parent=#18
+      sig "def helper(x)"
+  #20 class LookupFailed  67:0-68:8  [exported]
+      sig "class LookupFailed(Exception)"
+  #21 function _private_helper  71:0-74:42
+      sig "def _private_helper(box: Box[int]) -> Model"
+  #22 type Pair  77:0-77:27  [exported]
+      sig "type Pair = tuple[int, int]"
+
+refs 26
+  11:4 call TypeVar  in #0 T
+  29:11 type Optional  in #10 Box.label
+  34:29 type T  in #13 Box.__init__
+  34:40 type Readable  in #13 Box.__init__
+  35:13 member item  recv=self  in #13 Box.__init__
+  36:13 member reader  recv=self  in #13 Box.__init__
+  40:24 call peek  recv=self  in #14 Box.size
+  44:15 call Box  in #15 Box.empty
+  47:22 type T  in #16 Box.of
+  48:15 call cls  in #16 Box.of
+  50:9 call abstractmethod  qual=abc  in #17 Box.fetch
+  51:35 type PathLike  qual=os  in #17 Box.fetch
+  52:26 member reader  recv=self  in #17 Box.fetch
+  52:33 call read  recv=self.reader  in #17 Box.fetch
+  55:27 type T  in #18 Box.peek
+  60:19 call helper  in #18 Box.peek
+  60:31 member item  recv=self  in #18 Box.peek
+  62:18 call LookupFailed  in #18 Box.peek
+  63:18 type AxisError  qual=np  in #18 Box.peek
+  71:25 type Box  in #21 _private_helper
+  71:38 type BaseModel  in #21 _private_helper
+  72:23 type Box  in #21 _private_helper
+  73:12 call peek  recv=box  in #21 _private_helper
+  74:17 member objects  qual=BaseModel  in #21 _private_helper
+  74:25 call get  qual=BaseModel.objects  in #21 _private_helper
+  74:36 member count  recv=box  in #21 _private_helper
+
+imports 11
+  3 "abc"
+  4 "os.path"
+  5 "numpy"  alias=np
+  6 "enum.Enum"  names=Enum
+  7 "typing.Generic"  names=Generic
+  7 "typing.Optional"  names=Optional
+  7 "typing.Protocol"  names=Protocol
+  7 "typing.TypeVar"  names=TypeVar
+  8 ".base.BaseModel"  alias=Model  names=BaseModel
+  8 ".base.Mixin"  names=Mixin
+  9 "..util"  names=*  wildcard
+
+inherits 6
+  16:12 #3 Color extends Enum
+  21:15 #6 Readable extends Protocol
+  25:10 #8 Box extends BaseModel
+  25:17 #8 Box extends Mixin
+  25:24 #8 Box extends Generic
+  67:19 #20 LookupFailed extends Exception
+
+tests 0

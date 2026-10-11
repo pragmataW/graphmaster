@@ -1,0 +1,19 @@
+# Binaries
+/graphmaster
+/dist/
+*.exe
+*.test
+*.out
+
+# Coverage / profiling
+coverage.*
+*.prof
+
+# graphmaster's own index data
+.graphmaster/
+
+# Editors / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store

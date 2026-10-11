@@ -1,0 +1,5 @@
+graphmaster callers · fresh
+method service.OrderService.PlaceOrder  go/internal/service/order.go:24-32  func (s *OrderService) PlaceOrder(id string, qty int) (string, error)
+  function server.main  go/cmd/server/main.go:14-24  @19
+  test service.TestPlaceOrder  go/internal/service/order_test.go:9-21  @14
+  test service.TestPlaceOrderOutOfStock  go/internal/service/order_test.go:23-28  @25

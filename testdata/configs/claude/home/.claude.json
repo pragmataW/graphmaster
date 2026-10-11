@@ -1,0 +1,26 @@
+{
+  "numStartups": 187,
+  "installMethod": "native",
+  "autoUpdates": false,
+  // Personal MCP servers; graphmaster must not disturb these.
+  "mcpServers": {
+    "github": {
+      "type": "stdio",
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN", "ghcr.io/github/github-mcp-server"],
+      "env": {"GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"}
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp"
+    }
+  },
+  "projects": {
+    "/Users/me/code/shop": {
+      "allowedTools": [],
+      "mcpServers": {},
+      "hasTrustDialogAccepted": true
+    }
+  },
+  "tipsHistory": {"memory-command": 12, "shift-tab": 30}
+}

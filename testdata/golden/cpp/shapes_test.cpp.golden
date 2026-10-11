@@ -1,0 +1,40 @@
+lang cpp
+package ""
+testfile true
+
+defs 5
+  #0 class RectTest  5:0-8:1  [exported]
+      sig "class RectTest : public ::testing::Test"
+  #1 field RectTest.rect_  7:4-7:30  parent=#0
+      sig "geo::Rect rect_{2.0, 3.0}"
+  #2 test RectTest.Area  15:0-17:1  parent=#0  [exported|test]
+      sig "TEST_F(RectTest, Area)"
+  #3 test SquareTest.LabelIsSquare  10:0-13:1  scope=SquareTest  [exported|test]
+      sig "TEST(SquareTest, LabelIsSquare)"
+  #4 test test_clamp  19:0-21:1  [exported|test]
+      sig "void test_clamp()"
+
+refs 11
+  5:35 type Test  qual=testing  in #0 RectTest
+  7:9 type Rect  qual=geo  in #1 RectTest.rect_
+  10:5 type SquareTest  in #3 SquareTest.LabelIsSquare
+  11:9 type Square  qual=geo  in #3 SquareTest.LabelIsSquare
+  12:4 call EXPECT_EQ  in #3 SquareTest.LabelIsSquare
+  12:17 call label  recv=sq  in #3 SquareTest.LabelIsSquare
+  15:7 type RectTest  in #2 RectTest.Area
+  16:4 call EXPECT_DOUBLE_EQ  in #2 RectTest.Area
+  16:27 call area  recv=rect_  in #2 RectTest.Area
+  20:4 call ASSERT_TRUE  in #4 test_clamp
+  20:27 call clamp  qual=geo::util  in #4 test_clamp
+
+imports 2
+  1 "<gtest/gtest.h>"
+  3 "\"shapes.hpp\""
+
+inherits 1
+  5:24 #0 RectTest extends testing.Test
+
+tests 3
+  #2 RectTest.Area -> "Rect"
+  #3 SquareTest.LabelIsSquare -> "Square"
+  #4 test_clamp -> "clamp"

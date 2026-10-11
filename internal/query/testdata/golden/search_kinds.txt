@@ -1,0 +1,9 @@
+graphmaster search · fresh
+symbols (2):
+class User  ts/src/models/user.ts:7-16  class User implements Entity
+class UserService  ts/src/services/userService.ts:4-27  class UserService
+files (4):
+file ts/src/models/user.ts  typescript, 26 loc
+file ts/test/userService.test.ts  typescript, 17 loc
+file ts/src/components/UserCard.tsx  tsx, 19 loc
+file ts/src/services/userService.ts  typescript, 27 loc

@@ -1,0 +1,3 @@
+graphmaster callers · fresh
+method geo::Shape::area  cpp/include/geo/shape.hpp:10-10  virtual double area() const = 0
+  ~method geo::Canvas::totalArea  cpp/src/canvas.cpp:9-15  @12

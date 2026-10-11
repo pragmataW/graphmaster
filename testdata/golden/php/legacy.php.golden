@@ -1,0 +1,23 @@
+lang php
+package ""
+testfile false
+
+defs 1
+  #0 function render_page  10:0-16:1  [exported]
+      sig "function render_page($title)"
+
+refs 4
+  13:13 type Widget  qual=\  in #0 render_page
+  14:8 call render  recv=$w  in #0 render_page
+  15:11 type Widget  qual=\  in #0 render_page
+  15:19 call create  qual=\Widget  in #0 render_page
+
+imports 4
+  4 "./vendor/autoload.php"
+  5 "lib/helpers.php"
+  6 "./config.php"
+  8 "./boot.inc"
+
+inherits 0
+
+tests 0

@@ -1,0 +1,25 @@
+lang java
+package "com.example.zoo.util"
+testfile false
+
+defs 3
+  #0 class Strings  3:0-12:1  [exported]
+      sig "public final class Strings"
+  #1 constructor Strings.Strings  4:4-4:24  parent=#0
+      sig "private Strings()"
+  #2 method Strings.capitalize  6:4-11:5  parent=#0  [exported]
+      sig "public static String capitalize(String s)"
+
+refs 6
+  6:18 type String  in #2 Strings.capitalize
+  6:36 type String  in #2 Strings.capitalize
+  7:27 call isEmpty  recv=s  in #2 Strings.capitalize
+  10:25 call toUpperCase  qual=Character  in #2 Strings.capitalize
+  10:39 call charAt  recv=s  in #2 Strings.capitalize
+  10:54 call substring  recv=s  in #2 Strings.capitalize
+
+imports 0
+
+inherits 0
+
+tests 0

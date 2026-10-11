@@ -1,0 +1,42 @@
+lang c
+package ""
+testfile false
+
+defs 4
+  #0 function sq  5:0-7:1  [static]
+      sig "static double sq(double v)"
+  #1 function vec_add  9:0-12:1  [exported]
+      sig "Vec2 vec_add(Vec2 a, Vec2 b)"
+  #2 function vec_scale  14:0-17:1  [exported]
+      sig "Vec2 vec_scale(Vec2 v, double k)"
+  #3 function vec_len  19:0-21:1  [exported]
+      sig "double vec_len(Vec2 v)"
+
+refs 19
+  9:0 type Vec2  in #1 vec_add
+  9:13 type Vec2  in #1 vec_add
+  9:21 type Vec2  in #1 vec_add
+  10:4 type Vec2  in #1 vec_add
+  10:16 member x  recv=a  in #1 vec_add
+  10:22 member x  recv=b  in #1 vec_add
+  10:27 member y  recv=a  in #1 vec_add
+  10:33 member y  recv=b  in #1 vec_add
+  14:0 type Vec2  in #2 vec_scale
+  14:15 type Vec2  in #2 vec_scale
+  15:4 type Vec2  in #2 vec_scale
+  15:16 member x  recv=v  in #2 vec_scale
+  15:25 member y  recv=v  in #2 vec_scale
+  19:15 type Vec2  in #3 vec_len
+  20:11 call sqrt  in #3 vec_len
+  20:16 call sq  in #3 vec_len
+  20:21 member x  recv=v  in #3 vec_len
+  20:26 call sq  in #3 vec_len
+  20:31 member y  recv=v  in #3 vec_len
+
+imports 2
+  1 "<math.h>"
+  3 "\"vec.h\""
+
+inherits 0
+
+tests 0

@@ -1,0 +1,32 @@
+lang java
+package "com.example.zoo"
+testfile true
+
+defs 3
+  #0 class DogTest  7:0-18:1
+      sig "class DogTest"
+  #1 method DogTest.describeIncludesSound  8:4-12:5  parent=#0  [test]
+      sig "void describeIncludesSound()"
+  #2 method DogTest.fetchMentionsItem  14:4-17:5  parent=#0  [test]
+      sig "void fetchMentionsItem()"
+
+refs 9
+  8:5 type Test  in #1 DogTest.describeIncludesSound
+  10:8 type Dog  in #1 DogTest.describeIncludesSound
+  10:22 call Dog  in #1 DogTest.describeIncludesSound
+  11:8 call assertEquals  in #1 DogTest.describeIncludesSound
+  11:42 call describe  recv=dog  in #1 DogTest.describeIncludesSound
+  14:5 type Test  in #2 DogTest.fetchMentionsItem
+  16:8 call assertEquals  in #2 DogTest.fetchMentionsItem
+  16:59 call Dog  in #2 DogTest.fetchMentionsItem
+  16:70 call fetch  recv=new Dog("rex")  in #2 DogTest.fetchMentionsItem
+
+imports 2
+  3 "org.junit.jupiter.api.Assertions.assertEquals"  names=assertEquals
+  5 "org.junit.jupiter.api.Test"  names=Test
+
+inherits 0
+
+tests 2
+  #1 DogTest.describeIncludesSound -> ""
+  #2 DogTest.fetchMentionsItem -> ""

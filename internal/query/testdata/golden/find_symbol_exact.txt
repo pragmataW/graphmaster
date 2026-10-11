@@ -1,0 +1,7 @@
+graphmaster find_symbol · fresh
+method service.OrderService.PlaceOrder  go/internal/service/order.go:24-32  func (s *OrderService) PlaceOrder(id string, qty int) (string, error)
+method shop.services.orders.OrderService.place_order  python/shop/services/orders.py:16-21  def place_order(self, sku: str, qty: int) -> int
+test service.TestPlaceOrder  go/internal/service/order_test.go:9-21  func TestPlaceOrder(t *testing.T)
+test tests.test_orders.test_place_order  python/tests/test_orders.py:14-16  def test_place_order()
+test service.TestPlaceOrderOutOfStock  go/internal/service/order_test.go:23-28  func TestPlaceOrderOutOfStock(t *testing.T)
+test tests.test_orders.test_place_order_out_of_stock  python/tests/test_orders.py:19-21  def test_place_order_out_of_stock()

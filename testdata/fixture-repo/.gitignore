@@ -1,0 +1,12 @@
+# Build outputs
+build/
+ts/dist/
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Local environment and logs
+.env
+*.log
+!important.log
