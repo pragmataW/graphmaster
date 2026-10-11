@@ -35,6 +35,13 @@ func gitEnv() []string {
 		"GIT_COMMITTER_NAME="+gitUser,
 		"GIT_COMMITTER_EMAIL="+gitEmail,
 		"GIT_COMMITTER_DATE="+gitDate,
+		// No detached auto gc / maintenance after large commits: it keeps
+		// writing into .git while the test's TempDir cleanup removes it.
+		"GIT_CONFIG_COUNT=2",
+		"GIT_CONFIG_KEY_0=gc.auto",
+		"GIT_CONFIG_VALUE_0=0",
+		"GIT_CONFIG_KEY_1=maintenance.auto",
+		"GIT_CONFIG_VALUE_1=false",
 		"LC_ALL=C",
 	)
 }

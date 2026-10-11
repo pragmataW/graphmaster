@@ -1,0 +1,72 @@
+# scenario claude-glob-read
+
+## 1. claude pre-tool-use < claude/synthetic-pre-tool-use-glob.json
+var GLOB=**/*.go
+exit 0
+stdout {"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"graphmaster: glob `**/*.go` scans the code tree; the code graph already has the layout (repo_map):\n  ./  69 files, 1621 loc\n    c/  6 files, 89 loc  · Vec2, clamp_int, log_msg\n    cpp/  6 files, 121 loc  · add, area, totalArea\n    csharp/  7 files, 94 loc  · Invoice, CardPayment, IPayment\n    go/  9 files, 669 loc  · Ledger, Item, Memory\n    java/  7 files, 125 loc  · Animal, Cat, Keeper\n    js/  5 files, 79 loc  · formatTotal\n    php/  7 files, 134 loc\n    python/  9 files, 119 loc  · Item, Repository, apply_discount\n    rust/  7 files, 94 loc  · Shape, square_of, Circle\n    ts/  6 files, 97 loc  · User, Role, Admin\nNext: use the graphmaster MCP tools repo_map (path_prefix) and file_outline <path>; search finds files by name.\nNeed the raw file list? Run the same search again; it will be allowed."}}
+  hookSpecificOutput.hookEventName: PreToolUse
+  hookSpecificOutput.permissionDecision: deny
+  hookSpecificOutput.permissionDecisionReason: |
+    graphmaster: glob `**/*.go` scans the code tree; the code graph already has the layout (repo_map):
+      ./  69 files, 1621 loc
+        c/  6 files, 89 loc  · Vec2, clamp_int, log_msg
+        cpp/  6 files, 121 loc  · add, area, totalArea
+        csharp/  7 files, 94 loc  · Invoice, CardPayment, IPayment
+        go/  9 files, 669 loc  · Ledger, Item, Memory
+        java/  7 files, 125 loc  · Animal, Cat, Keeper
+        js/  5 files, 79 loc  · formatTotal
+        php/  7 files, 134 loc
+        python/  9 files, 119 loc  · Item, Repository, apply_discount
+        rust/  7 files, 94 loc  · Shape, square_of, Circle
+        ts/  6 files, 97 loc  · User, Role, Admin
+    Next: use the graphmaster MCP tools repo_map (path_prefix) and file_outline <path>; search finds files by name.
+    Need the raw file list? Run the same search again; it will be allowed.
+
+## 2. claude pre-tool-use < claude/synthetic-pre-tool-use-glob.json
+var GLOB=**/*.go
+exit 0
+stdout (empty)
+
+## 3. claude pre-tool-use < claude/synthetic-pre-tool-use-read.json
+var FILE={{REPO}}/go/internal/ledger/ledger.go
+exit 0
+stdout {"hookSpecificOutput":{"hookEventName":"PreToolUse","additionalContext":"graphmaster: go/internal/ledger/ledger.go has 484 lines. Outline (read one definition with the read_symbol MCP tool, or Read with offset/limit):\nstruct Ledger  4-4  type Ledger struct\n  field entries  4-4  entries []int\n  method Post01  7-10  func (l *Ledger) Post01(v int) int\n  method Post02  13-16  func (l *Ledger) Post02(v int) int\n  method Post03  19-22  func (l *Ledger) Post03(v int) int\n  method Post04  25-28  func (l *Ledger) Post04(v int) int\n  method Post05  31-34  func (l *Ledger) Post05(v int) int\n  method Post06  37-40  func (l *Ledger) Post06(v int) int\n  method Post07  43-46  func (l *Ledger) Post07(v int) int\n  method Post08  49-52  func (l *Ledger) Post08(v int) int\n  method Post09  55-58  func (l *Ledger) Post09(v int) int\n  method Post10  61-64  func (l *Ledger) Post10(v int) int\n  method Post11  67-70  func (l *Ledger) Post11(v int) int\n  method Post12  73-76  func (l *Ledger) Post12(v int) int\n  method Post13  79-82  func (l *Ledger) Post13(v int) int\n  method Post14  85-88  func (l *Ledger) Post14(v int) int\n  method Post15  91-94  func (l *Ledger) Post15(v int) int\n  method Post16  97-100  func (l *Ledger) Post16(v int) int\n  method Post17  103-106  func (l *Ledger) Post17(v int) int\n  method Post18  109-112  func (l *Ledger) Post18(v int) int\n  method Post19  115-118  func (l *Ledger) Post19(v int) int\n  method Post20  121-124  func (l *Ledger) Post20(v int) int\n  method Post21  127-130  func (l *Ledger) Post21(v int) int\n  method Post22  133-136  func (l *Ledger) Post22(v int) int\n  method Post23  139-142  func (l *Ledger) Post23(v int) int\n… +57 more (file_outline)"}}
+  hookSpecificOutput.additionalContext: |
+    graphmaster: go/internal/ledger/ledger.go has 484 lines. Outline (read one definition with the read_symbol MCP tool, or Read with offset/limit):
+    struct Ledger  4-4  type Ledger struct
+      field entries  4-4  entries []int
+      method Post01  7-10  func (l *Ledger) Post01(v int) int
+      method Post02  13-16  func (l *Ledger) Post02(v int) int
+      method Post03  19-22  func (l *Ledger) Post03(v int) int
+      method Post04  25-28  func (l *Ledger) Post04(v int) int
+      method Post05  31-34  func (l *Ledger) Post05(v int) int
+      method Post06  37-40  func (l *Ledger) Post06(v int) int
+      method Post07  43-46  func (l *Ledger) Post07(v int) int
+      method Post08  49-52  func (l *Ledger) Post08(v int) int
+      method Post09  55-58  func (l *Ledger) Post09(v int) int
+      method Post10  61-64  func (l *Ledger) Post10(v int) int
+      method Post11  67-70  func (l *Ledger) Post11(v int) int
+      method Post12  73-76  func (l *Ledger) Post12(v int) int
+      method Post13  79-82  func (l *Ledger) Post13(v int) int
+      method Post14  85-88  func (l *Ledger) Post14(v int) int
+      method Post15  91-94  func (l *Ledger) Post15(v int) int
+      method Post16  97-100  func (l *Ledger) Post16(v int) int
+      method Post17  103-106  func (l *Ledger) Post17(v int) int
+      method Post18  109-112  func (l *Ledger) Post18(v int) int
+      method Post19  115-118  func (l *Ledger) Post19(v int) int
+      method Post20  121-124  func (l *Ledger) Post20(v int) int
+      method Post21  127-130  func (l *Ledger) Post21(v int) int
+      method Post22  133-136  func (l *Ledger) Post22(v int) int
+      method Post23  139-142  func (l *Ledger) Post23(v int) int
+    … +57 more (file_outline)
+  hookSpecificOutput.hookEventName: PreToolUse
+
+## 4. claude pre-tool-use < claude/synthetic-pre-tool-use-read.json
+var FILE={{REPO}}/go/internal/service/order.go
+exit 0
+stdout (empty)
+
+## 5. claude pre-tool-use < claude/synthetic-pre-tool-use-read.json
+var FILE={{REPO}}/README.md
+exit 0
+stdout (empty)

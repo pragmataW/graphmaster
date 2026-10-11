@@ -1,0 +1,22 @@
+# scenario claude-non-code-allow
+
+## 1. claude pre-tool-use < claude/synthetic-pre-tool-use-grep-path.json
+var PATH=README.md
+var PATTERN=PlaceOrder
+exit 0
+stdout (empty)
+
+## 2. claude pre-tool-use < claude/synthetic-pre-tool-use-grep.json
+var PATTERN=out of stock
+exit 0
+stdout (empty)
+
+## 3. claude pre-tool-use < claude/synthetic-pre-tool-use-glob.json
+var GLOB=**/*.md
+exit 0
+stdout (empty)
+
+## 4. claude pre-tool-use < claude/synthetic-pre-tool-use-bash.json
+var COMMAND=cat README.md
+exit 0
+stdout (empty)

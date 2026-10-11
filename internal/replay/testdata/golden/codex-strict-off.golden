@@ -1,0 +1,41 @@
+# scenario codex-strict-off
+
+## 1. codex pre-tool-use < codex/synthetic-pre-tool-use-bash.json
+var COMMAND=rg 'out of stock'
+env GRAPHMASTER_MODE=strict
+exit 0
+stdout {"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"graphmaster (strict mode): rg `out of stock` is blocked; code search goes through the code graph. Graph results:\n  symbols (4):\n  class shop.services.orders.OutOfStock  python/shop/services/orders.py:8-9  class OutOfStock(Exception)\n  variable service.ErrOutOfStock  go/internal/service/order.go:11-11  var ErrOutOfStock = errors.New(\"out of stock\")\n  test service.TestPlaceOrderOutOfStock  go/internal/service/order_test.go:23-28  func TestPlaceOrderOutOfStock(t *testing.T)\n  test tests.test_orders.test_place_order_out_of_stock  python/tests/test_orders.py:19-21  def test_place_order_out_of_stock()\nUse the graphmaster MCP tools find_symbol, search, read_symbol, callers and impact.\nTo allow text searches again, set mode = \"balanced\" in .graphmaster/config.toml (or GRAPHMASTER_MODE=balanced)."}}
+  hookSpecificOutput.hookEventName: PreToolUse
+  hookSpecificOutput.permissionDecision: deny
+  hookSpecificOutput.permissionDecisionReason: |
+    graphmaster (strict mode): rg `out of stock` is blocked; code search goes through the code graph. Graph results:
+      symbols (4):
+      class shop.services.orders.OutOfStock  python/shop/services/orders.py:8-9  class OutOfStock(Exception)
+      variable service.ErrOutOfStock  go/internal/service/order.go:11-11  var ErrOutOfStock = errors.New("out of stock")
+      test service.TestPlaceOrderOutOfStock  go/internal/service/order_test.go:23-28  func TestPlaceOrderOutOfStock(t *testing.T)
+      test tests.test_orders.test_place_order_out_of_stock  python/tests/test_orders.py:19-21  def test_place_order_out_of_stock()
+    Use the graphmaster MCP tools find_symbol, search, read_symbol, callers and impact.
+    To allow text searches again, set mode = "balanced" in .graphmaster/config.toml (or GRAPHMASTER_MODE=balanced).
+
+## 2. codex pre-tool-use < codex/synthetic-pre-tool-use-bash.json
+var COMMAND=rg 'out of stock'
+env GRAPHMASTER_MODE=strict
+exit 0
+stdout {"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"graphmaster (strict mode): rg `out of stock` is blocked; code search goes through the code graph. Graph results:\n  symbols (4):\n  class shop.services.orders.OutOfStock  python/shop/services/orders.py:8-9  class OutOfStock(Exception)\n  variable service.ErrOutOfStock  go/internal/service/order.go:11-11  var ErrOutOfStock = errors.New(\"out of stock\")\n  test service.TestPlaceOrderOutOfStock  go/internal/service/order_test.go:23-28  func TestPlaceOrderOutOfStock(t *testing.T)\n  test tests.test_orders.test_place_order_out_of_stock  python/tests/test_orders.py:19-21  def test_place_order_out_of_stock()\nUse the graphmaster MCP tools find_symbol, search, read_symbol, callers and impact.\nTo allow text searches again, set mode = \"balanced\" in .graphmaster/config.toml (or GRAPHMASTER_MODE=balanced)."}}
+  hookSpecificOutput.hookEventName: PreToolUse
+  hookSpecificOutput.permissionDecision: deny
+  hookSpecificOutput.permissionDecisionReason: |
+    graphmaster (strict mode): rg `out of stock` is blocked; code search goes through the code graph. Graph results:
+      symbols (4):
+      class shop.services.orders.OutOfStock  python/shop/services/orders.py:8-9  class OutOfStock(Exception)
+      variable service.ErrOutOfStock  go/internal/service/order.go:11-11  var ErrOutOfStock = errors.New("out of stock")
+      test service.TestPlaceOrderOutOfStock  go/internal/service/order_test.go:23-28  func TestPlaceOrderOutOfStock(t *testing.T)
+      test tests.test_orders.test_place_order_out_of_stock  python/tests/test_orders.py:19-21  def test_place_order_out_of_stock()
+    Use the graphmaster MCP tools find_symbol, search, read_symbol, callers and impact.
+    To allow text searches again, set mode = "balanced" in .graphmaster/config.toml (or GRAPHMASTER_MODE=balanced).
+
+## 3. codex pre-tool-use < codex/synthetic-pre-tool-use-bash.json
+var COMMAND=rg OrderService
+env GRAPHMASTER_MODE=off
+exit 0
+stdout (empty)

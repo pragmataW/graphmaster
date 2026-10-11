@@ -1,0 +1,52 @@
+# scenario codex-apply-patch
+
+## 1. codex pre-tool-use < codex/synthetic-pre-tool-use-apply-patch.json
+var PATCH=*** Begin Patch\n*** Add File: go/internal/service/refund.go\n+package service\n*** End Patch\n
+exit 0
+stdout (empty)
+
+## 2. codex post-tool-use < codex/synthetic-post-tool-use-apply-patch.json
+var PATCH=*** Begin Patch\n*** Add File: go/internal/service/refund.go\n+package service\n*** End Patch\n
+exit 0
+stdout (empty)
+
+## 3. codex pre-tool-use < codex/synthetic-pre-tool-use-bash.json
+var COMMAND=rg RefundOrderZebra
+exit 0
+stdout {"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"graphmaster: rg `RefundOrderZebra` looks up code symbols; the code graph has them:\n  function service.RefundOrderZebra  go/internal/service/refund.go:4-4  func RefundOrderZebra(id string) error\nNext: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.\nNeed a literal text match? Run the same search again; it will be allowed."}}
+  hookSpecificOutput.hookEventName: PreToolUse
+  hookSpecificOutput.permissionDecision: deny
+  hookSpecificOutput.permissionDecisionReason: |
+    graphmaster: rg `RefundOrderZebra` looks up code symbols; the code graph has them:
+      function service.RefundOrderZebra  go/internal/service/refund.go:4-4  func RefundOrderZebra(id string) error
+    Next: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.
+    Need a literal text match? Run the same search again; it will be allowed.
+
+## 4. codex post-tool-use < codex/synthetic-post-tool-use-apply-patch-input.json
+var PATCH=*** Begin Patch\n*** Update File: go/internal/service/refund.go\n*** Move to: go/internal/service/refunds.go\n@@\n-x\n+y\n*** End Patch\n
+exit 0
+stdout (empty)
+
+## 5. codex pre-tool-use < codex/synthetic-pre-tool-use-bash.json
+var COMMAND=rg -n RefundOrderZebra
+var SESSION_ID=sess-codex-moved
+exit 0
+stdout {"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"graphmaster: rg `RefundOrderZebra` looks up code symbols; the code graph has them:\n  function service.RefundOrderZebra  go/internal/service/refunds.go:4-4  func RefundOrderZebra(id string) error\nNext: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.\nNeed a literal text match? Run the same search again; it will be allowed."}}
+  hookSpecificOutput.hookEventName: PreToolUse
+  hookSpecificOutput.permissionDecision: deny
+  hookSpecificOutput.permissionDecisionReason: |
+    graphmaster: rg `RefundOrderZebra` looks up code symbols; the code graph has them:
+      function service.RefundOrderZebra  go/internal/service/refunds.go:4-4  func RefundOrderZebra(id string) error
+    Next: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.
+    Need a literal text match? Run the same search again; it will be allowed.
+
+## 6. codex post-tool-use < codex/synthetic-post-tool-use-apply-patch.json
+var PATCH=*** Begin Patch\n*** Delete File: go/internal/service/refunds.go\n*** End Patch\n
+exit 0
+stdout (empty)
+
+## 7. codex pre-tool-use < codex/synthetic-pre-tool-use-bash.json
+var COMMAND=rg --line-number RefundOrderZebra
+var SESSION_ID=sess-codex-deleted
+exit 0
+stdout (empty)

@@ -1,0 +1,64 @@
+# scenario opencode-pre-tool-use
+
+## 1. opencode pre-tool-use < opencode/real-pre-tool-use-1.json
+exit 0
+stdout {"action":"deny","reason":"graphmaster: grep `PlaceOrder` looks up code symbols; the code graph has them:\n  method service.OrderService.PlaceOrder  go/internal/service/order.go:24-32  func (s *OrderService) PlaceOrder(id string, qty int) (string, error)\n  method shop.services.orders.OrderService.place_order  python/shop/services/orders.py:16-21  def place_order(self, sku: str, qty: int) -> int\n  test service.TestPlaceOrder  go/internal/service/order_test.go:9-21  func TestPlaceOrder(t *testing.T)\n  test tests.test_orders.test_place_order  python/tests/test_orders.py:14-16  def test_place_order()\n  test service.TestPlaceOrderOutOfStock  go/internal/service/order_test.go:23-28  func TestPlaceOrderOutOfStock(t *testing.T)\n  test tests.test_orders.test_place_order_out_of_stock  python/tests/test_orders.py:19-21  def test_place_order_out_of_stock()\nNext: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.\nNeed a literal text match? Run the same search again; it will be allowed."}
+  action: deny
+  reason: |
+    graphmaster: grep `PlaceOrder` looks up code symbols; the code graph has them:
+      method service.OrderService.PlaceOrder  go/internal/service/order.go:24-32  func (s *OrderService) PlaceOrder(id string, qty int) (string, error)
+      method shop.services.orders.OrderService.place_order  python/shop/services/orders.py:16-21  def place_order(self, sku: str, qty: int) -> int
+      test service.TestPlaceOrder  go/internal/service/order_test.go:9-21  func TestPlaceOrder(t *testing.T)
+      test tests.test_orders.test_place_order  python/tests/test_orders.py:14-16  def test_place_order()
+      test service.TestPlaceOrderOutOfStock  go/internal/service/order_test.go:23-28  func TestPlaceOrderOutOfStock(t *testing.T)
+      test tests.test_orders.test_place_order_out_of_stock  python/tests/test_orders.py:19-21  def test_place_order_out_of_stock()
+    Next: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.
+    Need a literal text match? Run the same search again; it will be allowed.
+
+## 2. opencode pre-tool-use < opencode/real-pre-tool-use-1.json
+exit 0
+stdout (empty)
+
+## 3. opencode pre-tool-use < opencode/synthetic-pre-tool-use-glob.json
+var GLOB=**/*.go
+exit 0
+stdout {"action":"deny","reason":"graphmaster: glob `**/*.go` scans the code tree; the code graph already has the layout (repo_map):\n  ./  68 files, 1137 loc\n    c/  6 files, 89 loc  · Vec2, clamp_int, log_msg\n    cpp/  6 files, 121 loc  · add, area, totalArea\n    csharp/  7 files, 94 loc  · Invoice, CardPayment, IPayment\n    go/  8 files, 185 loc  · Item, Memory, Store\n    java/  7 files, 125 loc  · Animal, Cat, Keeper\n    js/  5 files, 79 loc  · formatTotal\n    php/  7 files, 134 loc\n    python/  9 files, 119 loc  · Item, Repository, apply_discount\n    rust/  7 files, 94 loc  · Shape, square_of, Circle\n    ts/  6 files, 97 loc  · User, Role, Admin\nNext: use the graphmaster MCP tools repo_map (path_prefix) and file_outline <path>; search finds files by name.\nNeed the raw file list? Run the same search again; it will be allowed."}
+  action: deny
+  reason: |
+    graphmaster: glob `**/*.go` scans the code tree; the code graph already has the layout (repo_map):
+      ./  68 files, 1137 loc
+        c/  6 files, 89 loc  · Vec2, clamp_int, log_msg
+        cpp/  6 files, 121 loc  · add, area, totalArea
+        csharp/  7 files, 94 loc  · Invoice, CardPayment, IPayment
+        go/  8 files, 185 loc  · Item, Memory, Store
+        java/  7 files, 125 loc  · Animal, Cat, Keeper
+        js/  5 files, 79 loc  · formatTotal
+        php/  7 files, 134 loc
+        python/  9 files, 119 loc  · Item, Repository, apply_discount
+        rust/  7 files, 94 loc  · Shape, square_of, Circle
+        ts/  6 files, 97 loc  · User, Role, Admin
+    Next: use the graphmaster MCP tools repo_map (path_prefix) and file_outline <path>; search finds files by name.
+    Need the raw file list? Run the same search again; it will be allowed.
+
+## 4. opencode pre-tool-use < opencode/synthetic-pre-tool-use-read.json
+var FILE={{REPO}}/go/internal/service/order.go
+exit 0
+stdout (empty)
+
+## 5. opencode pre-tool-use < opencode/synthetic-pre-tool-use-bash.json
+var COMMAND=rg OrderService
+exit 0
+stdout {"action":"deny","reason":"graphmaster: rg `OrderService` looks up code symbols; the code graph has them:\n  class shop.services.orders.OrderService  python/shop/services/orders.py:12-24  class OrderService\n  struct service.OrderService  go/internal/service/order.go:14-16  type OrderService struct\n  function service.NewOrderService  go/internal/service/order.go:19-21  func NewOrderService(s store.Store) *OrderService\nNext: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.\nNeed a literal text match? Run the same search again; it will be allowed."}
+  action: deny
+  reason: |
+    graphmaster: rg `OrderService` looks up code symbols; the code graph has them:
+      class shop.services.orders.OrderService  python/shop/services/orders.py:12-24  class OrderService
+      struct service.OrderService  go/internal/service/order.go:14-16  type OrderService struct
+      function service.NewOrderService  go/internal/service/order.go:19-21  func NewOrderService(s store.Store) *OrderService
+    Next: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.
+    Need a literal text match? Run the same search again; it will be allowed.
+
+## 6. opencode pre-tool-use < opencode/synthetic-pre-tool-use-bash.json
+var COMMAND=ps aux | grep OrderService
+exit 0
+stdout (empty)

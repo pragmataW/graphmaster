@@ -1,0 +1,13 @@
+{
+  "agent": "opencode",
+  "event": "pre-tool-use",
+  "cwd": "{{REPO}}",
+  "env": {},
+  "stdin": {
+    "sessionID": "{{SESSIONID}}",
+    "tool": "bash",
+    "callID": "{{CALLID}}",
+    "args": {"command": "{{COMMAND}}", "description": "search"},
+    "cwd": "{{REPO}}"
+  }
+}

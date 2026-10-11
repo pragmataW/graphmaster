@@ -1,0 +1,16 @@
+{
+  "agent": "claude",
+  "event": "post-tool-use",
+  "cwd": "{{REPO}}",
+  "env": {"CLAUDE_CODE_ENTRYPOINT": "cli", "CLAUDE_PROJECT_DIR": "{{REPO}}"},
+  "stdin": {
+    "session_id": "{{SESSION_ID}}",
+    "transcript_path": "{{TRANSCRIPT_PATH}}",
+    "cwd": "{{REPO}}",
+    "permission_mode": "default",
+    "hook_event_name": "PostToolUse",
+    "tool_name": "Edit",
+    "tool_input": {"file_path": "{{FILE}}", "old_string": "a", "new_string": "b"},
+    "tool_use_id": "{{TOOL_USE_ID}}"
+  }
+}

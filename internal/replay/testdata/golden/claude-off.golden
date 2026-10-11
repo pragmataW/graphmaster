@@ -1,0 +1,43 @@
+# scenario claude-off
+
+## 1. claude session-start < claude/real-session-start-1.json
+env GRAPHMASTER_MODE=off
+exit 0
+stdout {"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"graphmaster: a code graph of this repository is available; prefer it over grep/find/ls for code navigation.\nindex: 66 files (python 8, go 7, rust 7, java 7, csharp 7, php 7, c 6, cpp 6, typescript 5, javascript 5, tsx 1), 238 symbols, 608 edges · fresh\nMCP tools (server \"graphmaster\"):\n  find_symbol <name>      definitions by name (exact > prefix > fuzzy)\n  search <words>          symbol and file names\n  read_symbol <symbol>    source of one definition\n  file_outline <path>     definitions of a file\n  repo_map [path_prefix]  directory tree with top symbols\n  callers / callees <sym> call tree; impact <sym|path|changed> blast radius\n  imports, inheritance, tests_for, traverse, status\nSteering mode off: searches are not steered, but the graph tools are faster and smaller than grep for code.\nrepo map:\n./  68 files, 1137 loc\n  c/  6 files, 89 loc  · Vec2, clamp_int, log_msg\n  cpp/  6 files, 121 loc  · add, area, totalArea\n  csharp/  7 files, 94 loc  · Invoice, CardPayment, IPayment\n  go/  8 files, 185 loc  · Item, Memory, Store\n  java/  7 files, 125 loc  · Animal, Cat, Keeper\n  js/  5 files, 79 loc  · formatTotal\n  php/  7 files, 134 loc\n  python/  9 files, 119 loc  · Item, Repository, apply_discount\n  rust/  7 files, 94 loc  · Shape, square_of, Circle\n  ts/  6 files, 97 loc  · User, Role, Admin"}}
+  hookSpecificOutput.additionalContext: |
+    graphmaster: a code graph of this repository is available; prefer it over grep/find/ls for code navigation.
+    index: 66 files (python 8, go 7, rust 7, java 7, csharp 7, php 7, c 6, cpp 6, typescript 5, javascript 5, tsx 1), 238 symbols, 608 edges · fresh
+    MCP tools (server "graphmaster"):
+      find_symbol <name>      definitions by name (exact > prefix > fuzzy)
+      search <words>          symbol and file names
+      read_symbol <symbol>    source of one definition
+      file_outline <path>     definitions of a file
+      repo_map [path_prefix]  directory tree with top symbols
+      callers / callees <sym> call tree; impact <sym|path|changed> blast radius
+      imports, inheritance, tests_for, traverse, status
+    Steering mode off: searches are not steered, but the graph tools are faster and smaller than grep for code.
+    repo map:
+    ./  68 files, 1137 loc
+      c/  6 files, 89 loc  · Vec2, clamp_int, log_msg
+      cpp/  6 files, 121 loc  · add, area, totalArea
+      csharp/  7 files, 94 loc  · Invoice, CardPayment, IPayment
+      go/  8 files, 185 loc  · Item, Memory, Store
+      java/  7 files, 125 loc  · Animal, Cat, Keeper
+      js/  5 files, 79 loc  · formatTotal
+      php/  7 files, 134 loc
+      python/  9 files, 119 loc  · Item, Repository, apply_discount
+      rust/  7 files, 94 loc  · Shape, square_of, Circle
+      ts/  6 files, 97 loc  · User, Role, Admin
+  hookSpecificOutput.hookEventName: SessionStart
+
+## 2. claude pre-tool-use < claude/synthetic-pre-tool-use-grep.json
+var PATTERN=PlaceOrder
+env GRAPHMASTER_MODE=off
+exit 0
+stdout (empty)
+
+## 3. claude pre-tool-use < claude/synthetic-pre-tool-use-bash.json
+var COMMAND=rg OrderService
+env GRAPHMASTER_MODE=off
+exit 0
+stdout (empty)

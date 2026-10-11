@@ -1,0 +1,52 @@
+{
+  "agent": "codex",
+  "event": "post-tool-use",
+  "cwd": "{{REPO}}",
+  "env": {
+    "CLAUDE_AGENT_SDK_MCP_NO_PREFIX": "{{REDACTED}}",
+    "CLAUDE_AGENT_SDK_VERSION": "{{REDACTED}}",
+    "CLAUDE_CODE_ACCOUNT_UUID": "{{REDACTED}}",
+    "CLAUDE_CODE_CHILD_SESSION": "{{REDACTED}}",
+    "CLAUDE_CODE_DESKTOP_APP_VERSION": "{{REDACTED}}",
+    "CLAUDE_CODE_DISABLE_CRON": "{{REDACTED}}",
+    "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "{{REDACTED}}",
+    "CLAUDE_CODE_EAGER_FLUSH": "{{REDACTED}}",
+    "CLAUDE_CODE_EMIT_TOOL_USE_SUMMARIES": "{{REDACTED}}",
+    "CLAUDE_CODE_ENABLE_ASK_USER_QUESTION_TOOL": "{{REDACTED}}",
+    "CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING": "{{REDACTED}}",
+    "CLAUDE_CODE_ENTRYPOINT": "claude-desktop",
+    "CLAUDE_CODE_EXECPATH": "{{REDACTED}}",
+    "CLAUDE_CODE_HOST_SESSION_ID": "{{REDACTED}}",
+    "CLAUDE_CODE_MESSAGING_SOCKET": "{{REDACTED}}",
+    "CLAUDE_CODE_MESSAGING_TOKEN": "{{REDACTED}}",
+    "CLAUDE_CODE_OAUTH_SCOPES": "{{REDACTED}}",
+    "CLAUDE_CODE_ORGANIZATION_UUID": "{{REDACTED}}",
+    "CLAUDE_CODE_REPORT_FINDINGS": "{{REDACTED}}",
+    "CLAUDE_CODE_SDK_HAS_HOST_AUTH_REFRESH": "{{REDACTED}}",
+    "CLAUDE_CODE_SESSION_ATTENDED": "{{REDACTED}}",
+    "CLAUDE_CODE_SESSION_ID": "{{REDACTED}}",
+    "CLAUDE_CODE_SIMPLE": "{{REDACTED}}",
+    "CLAUDE_CODE_TERMINAL_MCP_TOOLS": "{{REDACTED}}",
+    "CLAUDE_CODE_USER_EMAIL": "{{REDACTED}}",
+    "CLAUDE_EFFORT": "{{REDACTED}}",
+    "CLAUDE_PID": "{{REDACTED}}",
+    "CLAUDE_PLUGIN_DATA": "{{REDACTED}}",
+    "CLAUDE_PREVIEW_CLASSIFIER_FLOOR": "{{REDACTED}}",
+    "CODEX_COMPANION_SESSION_ID": "{{REDACTED}}"
+  },
+  "stdin": {
+    "session_id": "{{SESSION_ID}}",
+    "turn_id": "{{TURN_ID}}",
+    "transcript_path": "{{TRANSCRIPT_PATH}}",
+    "cwd": "{{REPO}}",
+    "hook_event_name": "PostToolUse",
+    "model": "gpt-5.5",
+    "permission_mode": "bypassPermissions",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "rg -n OrderService ."
+    },
+    "tool_response": "./go/cmd/server/main.go:18:\tsvc := service.NewOrderService(st)\n./expected_edges.txt:9:#                (e.g. OrderService.PlaceOrder). A bare path (imports,\n./expected_edges.txt:31:calls go/cmd/server/main.go::main -> go/internal/service/order.go::NewOrderService conf>=100\n./expected_edges.txt:33:calls go/cmd/server/main.go::main -> go/internal/service/order.go::OrderService.PlaceOrder conf>=50\n./expected_edges.txt:34:calls go/internal/service/order.go::OrderService.PlaceOrder -> go/internal/service/order.go::validate conf>=90\n./expected_edges.txt:35:calls go/internal/service/order.go::OrderService.PlaceOrder -> go/internal/util/format.go::FormatID conf>=100\n./expected_edges.txt:36:calls go/internal/service/order.go::OrderService.PlaceOrder -> go/internal/util/format.go::FormatMoney conf>=100\n./expected_edges.txt:37:?calls go/internal/service/order.go::OrderService.PlaceOrder -> go/internal/store/store.go::Store.Get conf>=80\n./expected_edges.txt:41:calls go/internal/service/order_test.go::TestPlaceOrder -> go/internal/service/order.go::NewOrderService conf>=90\n./expected_edges.txt:43:calls go/internal/service/order_test.go::TestPlaceOrder -> go/internal/service/order.go::OrderService.PlaceOrder conf>=50\n./expected_edges.txt:47:?tests go/internal/service/order_test.go::TestPlaceOrder -> go/internal/service/order.go::OrderService.PlaceOrder\n./expected_edges.txt:51:calls go/internal/service/order.go::OrderService.PlaceOrder -> go/internal/store/store.go::Store.Put conf>=80\n./expected_edges.txt:56:!calls go/internal/service/order.go::OrderService.PlaceOrder -> go/internal/store/store.go::Memory.Get\n./expected_edges.txt:68:calls python/shop/services/orders.py::OrderService.place_order -> python/shop/services/orders.py::OrderService._can_fulfil conf>=80\n./expected_edges.txt:69:calls python/shop/services/orders.py::OrderService.place_order -> python/shop/services/pricing.py::apply_discount conf>=100\n./expected_edges.txt:70:?calls python/shop/services/orders.py::OrderService.place_order -> python/shop/repository.py::Repository.get conf>=80\n./expected_edges.txt:76:?tests python/tests/test_orders.py::test_place_order -> python/shop/services/orders.py::OrderService.place_order\n./expected_edges.txt:78:calls python/shop/services/orders.py::OrderService.place_order -> python/shop/repository.py::Repository.get conf>=80\n./expected_edges.txt:80:tests python/tests/test_orders.py::test_place_order -> python/shop/services/orders.py::OrderService.place_order conf>=50\n./expected_edges.txt:81:calls python/shop/services/orders.py::OrderService.place_order -> python/shop/services/orders.py::OutOfStock conf>=90\n./expected_edges.txt:84:calls python/tests/test_orders.py::make_service -> python/shop/services/orders.py::OrderService conf>=100\n./expected_edges.txt:86:calls python/tests/test_orders.py::test_place_order -> python/shop/services/orders.py::OrderService.place_order conf>=80\n./expected_edges.txt:87:calls python/tests/test_orders.py::test_place_order_out_of_stock -> python/shop/services/orders.py::OrderService.place_order conf>=80\n./expected_edges.txt:90:references python/shop/services/orders.py::OrderService.__init__ -> python/shop/repository.py::Repository conf>=100\n./expected_edges.txt:91:references python/shop/services/orders.py::OrderService._can_fulfil -> python/shop/models.py::Item conf>=100\n./expected_edges.txt:92:references python/shop/services/orders.py::OrderService._can_fulfil -> python/shop/models.py::Item.quantity conf>=80\n./expected_edges.txt:93:references python/shop/services/orders.py::OrderService.place_order -> python/shop/models.py::Item.price conf>=80\n./expected_edges.txt:99:!calls python/shop/services/orders.py::OrderService.place_order -> python/shop/models.py::Item.total\n./EXPECTED.md:16:  container chain joined with `.` (e.g. `OrderService.PlaceOrder`,\n./EXPECTED.md:57:- `go/internal/service/order.go`: var `ErrOutOfStock`, struct `OrderService`,\n./EXPECTED.md:58:  `NewOrderService`, method `OrderService.PlaceOrder`, unexported `validate`\n./EXPECTED.md:70:calls go/cmd/server/main.go::main -> go/internal/service/order.go::NewOrderService conf>=100\n./EXPECTED.md:72:calls go/cmd/server/main.go::main -> go/internal/service/order.go::OrderService.PlaceOrder conf>=50\n./EXPECTED.md:73:calls go/internal/service/order.go::OrderService.PlaceOrder -> go/internal/service/order.go::validate conf>=90\n./EXPECTED.md:74:calls go/internal/service/order.go::OrderService.PlaceOrder -> go/internal/util/format.go::FormatID conf>=100\n./EXPECTED.md:75:calls go/internal/service/order.go::OrderService.PlaceOrder -> go/internal/util/format.go::FormatMoney conf>=100\n./EXPECTED.md:76:?calls go/internal/service/order.go::OrderService.PlaceOrder -> go/internal/store/store.go::Store.Get conf>=80\n./EXPECTED.md:80:calls go/internal/service/order_test.go::TestPlaceOrder -> go/internal/service/order.go::NewOrderService conf>=90\n./EXPECTED.md:82:calls go/internal/service/order_test.go::TestPlaceOrder -> go/internal/service/order.go::OrderService.PlaceOrder conf>=50\n./EXPECTED.md:86:?tests go/internal/service/order_test.go::TestPlaceOrder -> go/internal/service/order.go::OrderService.PlaceOrder\n./EXPECTED.md:101:  `OrderService` (`__init__`, `place_order`, `_can_fulfil`)\n./EXPECTED.md:115:calls python/shop/services/orders.py::OrderService.place_order -> python/shop/services/orders.py::OrderService._can_fulfil conf>=80\n./EXPECTED.md:116:calls python/shop/services/orders.py::OrderService.place_order -> python/shop/services/pricing.py::apply_discount conf>=100\n./EXPECTED.md:117:?calls python/shop/services/orders.py::OrderService.place_order -> python/shop/repository.py::Repository.get conf>=80\n./EXPECTED.md:123:?tests python/tests/test_orders.py::test_place_order -> python/shop/services/orders.py::OrderService.place_order\n./go/internal/service/order.go:13:// OrderService places orders against a Store.\n./go/internal/service/order.go:14:type OrderService struct {\n./go/internal/service/order.go:18:// NewOrderService wires an OrderService to s.\n./go/internal/service/order.go:19:func NewOrderService(s store.Store) *OrderService {\n./go/internal/service/order.go:20:\treturn &OrderService{store: s}\n./go/internal/service/order.go:24:func (s *OrderService) PlaceOrder(id string, qty int) (string, error) {\n./python/tests/test_orders.py:5:from shop.services.orders import OrderService, OutOfStock\n./python/tests/test_orders.py:8:def make_service() -> OrderService:\n./python/tests/test_orders.py:11:    return OrderService(repo)\n./python/shop/services/orders.py:12:class OrderService:\n./go/internal/service/order_test.go:12:\tsvc := NewOrderService(mem)\n./go/internal/service/order_test.go:24:\tsvc := NewOrderService(store.NewMemory())\n",
+    "tool_use_id": "{{TOOL_USE_ID}}"
+  }
+}

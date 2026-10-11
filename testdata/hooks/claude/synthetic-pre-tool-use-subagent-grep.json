@@ -1,0 +1,17 @@
+{
+  "agent": "claude",
+  "event": "pre-tool-use",
+  "cwd": "{{REPO}}",
+  "env": {"CLAUDE_CODE_ENTRYPOINT": "cli", "CLAUDE_PROJECT_DIR": "{{REPO}}"},
+  "stdin": {
+    "session_id": "{{SESSION_ID}}",
+    "transcript_path": "{{TRANSCRIPT_PATH}}",
+    "cwd": "{{REPO}}",
+    "hook_event_name": "PreToolUse",
+    "agent_id": "{{AGENT_ID}}",
+    "agent_type": "Explore",
+    "tool_name": "Grep",
+    "tool_input": {"pattern": "{{PATTERN}}"},
+    "tool_use_id": "{{TOOL_USE_ID}}"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "agent": "cursor",
+  "event": "pre-tool-use",
+  "cwd": "{{REPO}}",
+  "env": {"CURSOR_PROJECT_DIR": "{{REPO}}", "CURSOR_VERSION": "1.7.2"},
+  "stdin": {
+    "conversation_id": "{{SESSION_ID}}",
+    "generation_id": "{{GENERATION_ID}}",
+    "cursor_version": "1.7.2",
+    "workspace_roots": ["{{REPO}}"],
+    "hook_event_name": "preToolUse",
+    "tool_name": "Shell",
+    "tool_use_id": "{{TOOL_USE_ID}}",
+    "tool_input": {"command": "{{COMMAND}}", "cwd": "{{REPO}}"}
+  }
+}

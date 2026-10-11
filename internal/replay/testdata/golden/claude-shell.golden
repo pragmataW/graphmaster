@@ -1,0 +1,44 @@
+# scenario claude-shell
+
+## 1. claude pre-tool-use < claude/synthetic-pre-tool-use-bash.json
+var COMMAND=rg -n OrderService
+exit 0
+stdout {"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"graphmaster: rg `OrderService` looks up code symbols; the code graph has them:\n  class shop.services.orders.OrderService  python/shop/services/orders.py:12-24  class OrderService\n  struct service.OrderService  go/internal/service/order.go:14-16  type OrderService struct\n  function service.NewOrderService  go/internal/service/order.go:19-21  func NewOrderService(s store.Store) *OrderService\nNext: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.\nNeed a literal text match? Run the same search again; it will be allowed."}}
+  hookSpecificOutput.hookEventName: PreToolUse
+  hookSpecificOutput.permissionDecision: deny
+  hookSpecificOutput.permissionDecisionReason: |
+    graphmaster: rg `OrderService` looks up code symbols; the code graph has them:
+      class shop.services.orders.OrderService  python/shop/services/orders.py:12-24  class OrderService
+      struct service.OrderService  go/internal/service/order.go:14-16  type OrderService struct
+      function service.NewOrderService  go/internal/service/order.go:19-21  func NewOrderService(s store.Store) *OrderService
+    Next: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.
+    Need a literal text match? Run the same search again; it will be allowed.
+
+## 2. claude pre-tool-use < claude/synthetic-pre-tool-use-bash.json
+var COMMAND=rg -n OrderService
+exit 0
+stdout (empty)
+
+## 3. claude pre-tool-use < claude/synthetic-pre-tool-use-bash.json
+var COMMAND=ps aux | grep OrderService
+exit 0
+stdout (empty)
+
+## 4. claude pre-tool-use < claude/synthetic-pre-tool-use-bash.json
+var COMMAND=grep -rn PlaceOrder go/
+exit 0
+stdout {"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"graphmaster: grep `PlaceOrder` looks up code symbols; the code graph has them:\n  method service.OrderService.PlaceOrder  go/internal/service/order.go:24-32  func (s *OrderService) PlaceOrder(id string, qty int) (string, error)\n  test service.TestPlaceOrder  go/internal/service/order_test.go:9-21  func TestPlaceOrder(t *testing.T)\n  test service.TestPlaceOrderOutOfStock  go/internal/service/order_test.go:23-28  func TestPlaceOrderOutOfStock(t *testing.T)\nNext: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.\nNeed a literal text match? Run the same search again; it will be allowed."}}
+  hookSpecificOutput.hookEventName: PreToolUse
+  hookSpecificOutput.permissionDecision: deny
+  hookSpecificOutput.permissionDecisionReason: |
+    graphmaster: grep `PlaceOrder` looks up code symbols; the code graph has them:
+      method service.OrderService.PlaceOrder  go/internal/service/order.go:24-32  func (s *OrderService) PlaceOrder(id string, qty int) (string, error)
+      test service.TestPlaceOrder  go/internal/service/order_test.go:9-21  func TestPlaceOrder(t *testing.T)
+      test service.TestPlaceOrderOutOfStock  go/internal/service/order_test.go:23-28  func TestPlaceOrderOutOfStock(t *testing.T)
+    Next: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.
+    Need a literal text match? Run the same search again; it will be allowed.
+
+## 5. claude pre-tool-use < claude/synthetic-pre-tool-use-bash.json
+var COMMAND=go test ./...
+exit 0
+stdout (empty)

@@ -1,0 +1,74 @@
+# scenario codex-session-start-shell
+
+## 1. codex session-start < codex/synthetic-session-start.json
+exit 0
+stdout {"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"graphmaster: a code graph of this repository is available; prefer it over grep/find/ls for code navigation.\nindex: 66 files (python 8, go 7, rust 7, java 7, csharp 7, php 7, c 6, cpp 6, typescript 5, javascript 5, tsx 1), 238 symbols, 608 edges · fresh (+68 files, {{DURATION}})\nMCP tools (server \"graphmaster\"):\n  find_symbol <name>      definitions by name (exact > prefix > fuzzy)\n  search <words>          symbol and file names\n  read_symbol <symbol>    source of one definition\n  file_outline <path>     definitions of a file\n  repo_map [path_prefix]  directory tree with top symbols\n  callers / callees <sym> call tree; impact <sym|path|changed> blast radius\n  imports, inheritance, tests_for, traverse, status\nSteering mode balanced: the first grep/glob for a code symbol is blocked once with graph results; run the same search again to get text matches. Text, docs and config searches and Read are never blocked. After 8 redirects per agent nothing is blocked.\nrepo map:\n./  68 files, 1137 loc\n  c/  6 files, 89 loc  · Vec2, clamp_int, log_msg\n  cpp/  6 files, 121 loc  · add, area, totalArea\n  csharp/  7 files, 94 loc  · Invoice, CardPayment, IPayment\n  go/  8 files, 185 loc  · Item, Memory, Store\n  java/  7 files, 125 loc  · Animal, Cat, Keeper\n  js/  5 files, 79 loc  · formatTotal\n  php/  7 files, 134 loc\n  python/  9 files, 119 loc  · Item, Repository, apply_discount\n  rust/  7 files, 94 loc  · Shape, square_of, Circle\n  ts/  6 files, 97 loc  · User, Role, Admin"}}
+  hookSpecificOutput.additionalContext: |
+    graphmaster: a code graph of this repository is available; prefer it over grep/find/ls for code navigation.
+    index: 66 files (python 8, go 7, rust 7, java 7, csharp 7, php 7, c 6, cpp 6, typescript 5, javascript 5, tsx 1), 238 symbols, 608 edges · fresh (+68 files, {{DURATION}})
+    MCP tools (server "graphmaster"):
+      find_symbol <name>      definitions by name (exact > prefix > fuzzy)
+      search <words>          symbol and file names
+      read_symbol <symbol>    source of one definition
+      file_outline <path>     definitions of a file
+      repo_map [path_prefix]  directory tree with top symbols
+      callers / callees <sym> call tree; impact <sym|path|changed> blast radius
+      imports, inheritance, tests_for, traverse, status
+    Steering mode balanced: the first grep/glob for a code symbol is blocked once with graph results; run the same search again to get text matches. Text, docs and config searches and Read are never blocked. After 8 redirects per agent nothing is blocked.
+    repo map:
+    ./  68 files, 1137 loc
+      c/  6 files, 89 loc  · Vec2, clamp_int, log_msg
+      cpp/  6 files, 121 loc  · add, area, totalArea
+      csharp/  7 files, 94 loc  · Invoice, CardPayment, IPayment
+      go/  8 files, 185 loc  · Item, Memory, Store
+      java/  7 files, 125 loc  · Animal, Cat, Keeper
+      js/  5 files, 79 loc  · formatTotal
+      php/  7 files, 134 loc
+      python/  9 files, 119 loc  · Item, Repository, apply_discount
+      rust/  7 files, 94 loc  · Shape, square_of, Circle
+      ts/  6 files, 97 loc  · User, Role, Admin
+  hookSpecificOutput.hookEventName: SessionStart
+
+## 2. codex pre-tool-use < codex/synthetic-pre-tool-use-bash.json
+var COMMAND=rg OrderService
+exit 0
+stdout {"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"graphmaster: rg `OrderService` looks up code symbols; the code graph has them:\n  class shop.services.orders.OrderService  python/shop/services/orders.py:12-24  class OrderService\n  struct service.OrderService  go/internal/service/order.go:14-16  type OrderService struct\n  function service.NewOrderService  go/internal/service/order.go:19-21  func NewOrderService(s store.Store) *OrderService\nNext: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.\nNeed a literal text match? Run the same search again; it will be allowed."}}
+  hookSpecificOutput.hookEventName: PreToolUse
+  hookSpecificOutput.permissionDecision: deny
+  hookSpecificOutput.permissionDecisionReason: |
+    graphmaster: rg `OrderService` looks up code symbols; the code graph has them:
+      class shop.services.orders.OrderService  python/shop/services/orders.py:12-24  class OrderService
+      struct service.OrderService  go/internal/service/order.go:14-16  type OrderService struct
+      function service.NewOrderService  go/internal/service/order.go:19-21  func NewOrderService(s store.Store) *OrderService
+    Next: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.
+    Need a literal text match? Run the same search again; it will be allowed.
+
+## 3. codex pre-tool-use < codex/synthetic-pre-tool-use-bash.json
+var COMMAND=rg OrderService
+exit 0
+stdout (empty)
+
+## 4. codex pre-tool-use < codex/synthetic-pre-tool-use-bash.json
+var COMMAND=ps aux | grep OrderService
+exit 0
+stdout (empty)
+
+## 5. codex pre-tool-use < codex/synthetic-pre-tool-use-shell-argv.json
+var COMMAND=grep -rn PlaceOrder .
+var WORKDIR=go
+exit 0
+stdout {"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"graphmaster: grep `PlaceOrder` looks up code symbols; the code graph has them:\n  method service.OrderService.PlaceOrder  go/internal/service/order.go:24-32  func (s *OrderService) PlaceOrder(id string, qty int) (string, error)\n  test service.TestPlaceOrder  go/internal/service/order_test.go:9-21  func TestPlaceOrder(t *testing.T)\n  test service.TestPlaceOrderOutOfStock  go/internal/service/order_test.go:23-28  func TestPlaceOrderOutOfStock(t *testing.T)\nNext: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.\nNeed a literal text match? Run the same search again; it will be allowed."}}
+  hookSpecificOutput.hookEventName: PreToolUse
+  hookSpecificOutput.permissionDecision: deny
+  hookSpecificOutput.permissionDecisionReason: |
+    graphmaster: grep `PlaceOrder` looks up code symbols; the code graph has them:
+      method service.OrderService.PlaceOrder  go/internal/service/order.go:24-32  func (s *OrderService) PlaceOrder(id string, qty int) (string, error)
+      test service.TestPlaceOrder  go/internal/service/order_test.go:9-21  func TestPlaceOrder(t *testing.T)
+      test service.TestPlaceOrderOutOfStock  go/internal/service/order_test.go:23-28  func TestPlaceOrderOutOfStock(t *testing.T)
+    Next: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.
+    Need a literal text match? Run the same search again; it will be allowed.
+
+## 6. codex pre-tool-use < codex/synthetic-pre-tool-use-bash.json
+var COMMAND=rg 'out of stock'
+exit 0
+stdout (empty)

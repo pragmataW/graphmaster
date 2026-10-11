@@ -1,0 +1,13 @@
+{
+  "agent": "opencode",
+  "event": "pre-tool-use",
+  "cwd": "{{REPO}}",
+  "env": {},
+  "stdin": {
+    "sessionID": "{{SESSIONID}}",
+    "tool": "read",
+    "callID": "{{CALLID}}",
+    "args": {"filePath": "{{FILE}}"},
+    "cwd": "{{REPO}}"
+  }
+}

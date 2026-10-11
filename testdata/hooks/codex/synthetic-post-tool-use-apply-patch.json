@@ -1,0 +1,16 @@
+{
+  "agent": "codex",
+  "event": "post-tool-use",
+  "cwd": "{{REPO}}",
+  "env": {"CODEX_SANDBOX": "seatbelt"},
+  "stdin": {
+    "session_id": "{{SESSION_ID}}",
+    "transcript_path": "{{TRANSCRIPT_PATH}}",
+    "cwd": "{{REPO}}",
+    "hook_event_name": "PostToolUse",
+    "model": "gpt-5-codex",
+    "tool_name": "apply_patch",
+    "tool_input": {"command": "{{PATCH}}"},
+    "tool_use_id": "{{TOOL_USE_ID}}"
+  }
+}

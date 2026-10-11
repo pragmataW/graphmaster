@@ -1,0 +1,51 @@
+# scenario malformed-fail-open
+
+## 1. claude pre-tool-use < claude/synthetic-pre-tool-use-grep.json
+stdin "{\"session_id\": \"{{SESSION_ID}}\", \"tool_input\": {\"pattern\": "
+exit 0
+stdout (empty)
+
+## 2. claude pre-tool-use < claude/synthetic-pre-tool-use-grep.json
+stdin ""
+exit 0
+stdout (empty)
+
+## 3. claude pre-tool-use < claude/synthetic-pre-tool-use-grep.json
+stdin "[\"not\", \"an\", \"object\"]"
+exit 0
+stdout (empty)
+
+## 4. codex pre-tool-use < codex/synthetic-pre-tool-use-bash.json
+stdin "{\"session_id\": \"{{SESSION_ID}}\", \"tool_input\": {\"pattern\": "
+exit 0
+stdout (empty)
+
+## 5. codex pre-tool-use < codex/synthetic-pre-tool-use-bash.json
+stdin "{\"session_id\": 42, \"tool_input\": \"x\"}"
+exit 0
+stdout (empty)
+
+## 6. cursor pre-tool-use < cursor/synthetic-pre-tool-use-grep.json
+stdin "{\"session_id\": \"{{SESSION_ID}}\", \"tool_input\": {\"pattern\": "
+exit 0
+stdout {}
+
+## 7. cursor pre-tool-use < cursor/synthetic-pre-tool-use-grep.json
+stdin "null"
+exit 0
+stdout {}
+
+## 8. opencode pre-tool-use < opencode/real-pre-tool-use-1.json
+stdin "{\"session_id\": \"{{SESSION_ID}}\", \"tool_input\": {\"pattern\": "
+exit 0
+stdout (empty)
+
+## 9. opencode pre-tool-use < opencode/real-pre-tool-use-1.json
+stdin "{\"tool\": \"grep\", \"args\": \"not an object\", \"cwd\": \"{{REPO}}\"}"
+exit 0
+stdout (empty)
+
+## 10. vim pre-tool-use < claude/synthetic-pre-tool-use-grep.json
+var PATTERN=PlaceOrder
+exit 0
+stdout (empty)

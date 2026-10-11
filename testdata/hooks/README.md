@@ -66,11 +66,13 @@ doctor` shows the agent green.
    drive the scenarios listed below.
 
 3. Review every file in `.rec/` (see "Before committing"), then copy the good
-   ones into `testdata/hooks/<agent>/` and give each a descriptive name:
+   ones into `testdata/hooks/<agent>/` and give each a descriptive name with
+   the `real-` prefix (hand-written payloads use `synthetic-`; the replay
+   tests reject any other name):
 
    ```
-   testdata/hooks/claude/pre-tool-use-grep-first.json
-   testdata/hooks/claude/pre-tool-use-grep-retry.json
+   testdata/hooks/claude/real-pre-tool-use-grep-first.json
+   testdata/hooks/claude/real-pre-tool-use-grep-retry.json
    ```
 
 ### Claude Code
@@ -165,6 +167,26 @@ Do not commit:
 - the `.rec/` directory itself (unreviewed);
 - transcript files, session databases or anything copied from `~/.claude`,
   `~/.codex`, `~/.cursor` or `~/.config/opencode`.
+
+## Replay tests
+
+`internal/replay` replays these files through the hook dispatcher, in process
+and through a built `graphmaster hook`, against a materialized fixture repo and
+a temporary `HOME`. Scenarios are listed in `internal/replay/scenarios_test.go`;
+their transcripts (exit code, stdout verbatim and its JSON fields, with paths
+and timings normalized) are golden files in `internal/replay/testdata/golden/`.
+
+- `real-*.json` are captures and are never edited by hand.
+- `synthetic-*.json` follow the shapes documented in the adapters' tests until a
+  capture replaces them. They use placeholders such as `{{PATTERN}}`,
+  `{{COMMAND}}`, `{{FILE}}` or `{{PATCH}}` that each scenario step fills in.
+- Every placeholder needs a value; an unknown one fails the test.
+
+Accept intended output changes with:
+
+```sh
+go test -tags "sqlite_fts5 sqlite_omit_load_extension" ./internal/replay -run TestReplay -update
+```
 
 ## Re-capturing
 

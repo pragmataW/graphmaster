@@ -1,0 +1,17 @@
+# scenario opencode-edit-then-fresh-query
+
+## 1. opencode post-tool-use < opencode/synthetic-post-tool-use-edit.json
+var FILE={{REPO}}/go/internal/service/refund.go
+exit 0
+stdout (empty)
+
+## 2. opencode pre-tool-use < opencode/synthetic-pre-tool-use-bash.json
+var COMMAND=rg RefundOrderZebra
+exit 0
+stdout {"action":"deny","reason":"graphmaster: rg `RefundOrderZebra` looks up code symbols; the code graph has them:\n  function service.RefundOrderZebra  go/internal/service/refund.go:4-4  func RefundOrderZebra(id string) error\nNext: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.\nNeed a literal text match? Run the same search again; it will be allowed."}
+  action: deny
+  reason: |
+    graphmaster: rg `RefundOrderZebra` looks up code symbols; the code graph has them:
+      function service.RefundOrderZebra  go/internal/service/refund.go:4-4  func RefundOrderZebra(id string) error
+    Next: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.
+    Need a literal text match? Run the same search again; it will be allowed.

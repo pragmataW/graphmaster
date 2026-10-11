@@ -1,0 +1,14 @@
+{
+  "agent": "cursor",
+  "event": "session-start",
+  "cwd": "{{REPO}}",
+  "env": {"CURSOR_PROJECT_DIR": "{{REPO}}", "CURSOR_VERSION": "1.7.2"},
+  "stdin": {
+    "conversation_id": "{{SESSION_ID}}",
+    "generation_id": "{{GENERATION_ID}}",
+    "cursor_version": "1.7.2",
+    "workspace_roots": ["{{REPO}}"],
+    "session_id": "{{SESSION_ID}}",
+    "hook_event_name": "sessionStart"
+  }
+}

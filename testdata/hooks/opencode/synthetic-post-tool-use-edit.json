@@ -1,0 +1,13 @@
+{
+  "agent": "opencode",
+  "event": "post-tool-use",
+  "cwd": "{{REPO}}",
+  "env": {},
+  "stdin": {
+    "sessionID": "{{SESSIONID}}",
+    "tool": "edit",
+    "callID": "{{CALLID}}",
+    "args": {"filePath": "{{FILE}}", "oldString": "a", "newString": "b"},
+    "cwd": "{{REPO}}"
+  }
+}

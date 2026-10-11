@@ -1,0 +1,52 @@
+# scenario claude-edit-then-fresh-query
+
+## 1. claude post-tool-use < claude/synthetic-post-tool-use-write.json
+var FILE={{REPO}}/go/internal/service/refund.go
+exit 0
+stdout (empty)
+
+## 2. claude pre-tool-use < claude/synthetic-pre-tool-use-grep.json
+var PATTERN=RefundOrderZebra
+exit 0
+stdout {"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"graphmaster: grep `RefundOrderZebra` looks up code symbols; the code graph has them:\n  function service.RefundOrderZebra  go/internal/service/refund.go:4-4  func RefundOrderZebra(id string) error\nNext: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.\nNeed a literal text match? Run the same search again; it will be allowed."}}
+  hookSpecificOutput.hookEventName: PreToolUse
+  hookSpecificOutput.permissionDecision: deny
+  hookSpecificOutput.permissionDecisionReason: |
+    graphmaster: grep `RefundOrderZebra` looks up code symbols; the code graph has them:
+      function service.RefundOrderZebra  go/internal/service/refund.go:4-4  func RefundOrderZebra(id string) error
+    Next: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.
+    Need a literal text match? Run the same search again; it will be allowed.
+
+## 3. claude post-tool-use < claude/synthetic-post-tool-use-edit.json
+var FILE=go/internal/service/order.go
+exit 0
+stdout (empty)
+
+## 4. claude pre-tool-use < claude/synthetic-pre-tool-use-grep.json
+var PATTERN=CancelOrderOtter
+exit 0
+stdout {"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"graphmaster: grep `CancelOrderOtter` looks up code symbols; the code graph has them:\n  function service.CancelOrderOtter  go/internal/service/order.go:40-40  func CancelOrderOtter(id string) error\nNext: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.\nNeed a literal text match? Run the same search again; it will be allowed."}}
+  hookSpecificOutput.hookEventName: PreToolUse
+  hookSpecificOutput.permissionDecision: deny
+  hookSpecificOutput.permissionDecisionReason: |
+    graphmaster: grep `CancelOrderOtter` looks up code symbols; the code graph has them:
+      function service.CancelOrderOtter  go/internal/service/order.go:40-40  func CancelOrderOtter(id string) error
+    Next: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.
+    Need a literal text match? Run the same search again; it will be allowed.
+
+## 5. claude post-tool-use < claude/synthetic-post-tool-use-bash.json
+var COMMAND=cat >> go/internal/service/order.go <<'EOF' ... EOF
+exit 0
+stdout (empty)
+
+## 6. claude pre-tool-use < claude/synthetic-pre-tool-use-grep.json
+var PATTERN=AuditOrderWalrus
+exit 0
+stdout {"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"graphmaster: grep `AuditOrderWalrus` looks up code symbols; the code graph has them:\n  function service.AuditOrderWalrus  go/internal/service/order.go:43-43  func AuditOrderWalrus(id string) error\nNext: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.\nNeed a literal text match? Run the same search again; it will be allowed."}}
+  hookSpecificOutput.hookEventName: PreToolUse
+  hookSpecificOutput.permissionDecision: deny
+  hookSpecificOutput.permissionDecisionReason: |
+    graphmaster: grep `AuditOrderWalrus` looks up code symbols; the code graph has them:
+      function service.AuditOrderWalrus  go/internal/service/order.go:43-43  func AuditOrderWalrus(id string) error
+    Next: use the graphmaster MCP tools read_symbol <name> for source, callers/callees for usage, find_symbol for more matches.
+    Need a literal text match? Run the same search again; it will be allowed.

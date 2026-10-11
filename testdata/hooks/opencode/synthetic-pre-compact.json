@@ -1,0 +1,11 @@
+{
+  "agent": "opencode",
+  "event": "pre-compact",
+  "cwd": "{{REPO}}",
+  "env": {},
+  "stdin": {
+    "sessionID": "{{SESSIONID}}",
+    
+    "cwd": "{{REPO}}"
+  }
+}
