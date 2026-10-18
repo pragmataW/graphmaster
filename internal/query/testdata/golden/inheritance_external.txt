@@ -1,0 +1,3 @@
+graphmaster inheritance · fresh
+external symbol "Exception": not defined in this repository; extended or implemented by:
+  class shop.services.orders.OutOfStock  python/shop/services/orders.py:8-9  @8

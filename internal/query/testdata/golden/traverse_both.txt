@@ -1,5 +1,5 @@
 graphmaster traverse · fresh
 class com.example.zoo.Dog  java/src/main/java/com/example/zoo/Dog.java:3-16  public class Dog extends Animal
 both via calls,references,extends,implements,embeds,tests,declares, depth ≤1, min_confidence 50: 2 symbols
-  ←references method com.example.zoo.DogTest.describeIncludesSound  java/src/test/java/com/example/zoo/DogTest.java:8-12
+  ←references test com.example.zoo.DogTest.describeIncludesSound  java/src/test/java/com/example/zoo/DogTest.java:8-12
   →extends class com.example.zoo.Animal  java/src/main/java/com/example/zoo/Animal.java:6-23

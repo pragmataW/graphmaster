@@ -1,0 +1,8 @@
+graphmaster read_symbol · fresh
+no definition spans go/internal/store/store.go:1
+nearest definitions (file_outline lists all):
+  interface store.Store  go/internal/store/store.go:6-9
+  struct store.Memory  go/internal/store/store.go:12-15
+  function store.NewMemory  go/internal/store/store.go:18-20
+  struct store.Audited  go/internal/store/store.go:38-41
+  function store.NewAudited  go/internal/store/store.go:44-46

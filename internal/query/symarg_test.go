@@ -33,7 +33,9 @@ func TestResolveSymbolForms(t *testing.T) {
 		"store.Memory.Put",              // longer suffix
 		"go/internal/store/store.go:33", // path:line inside the body
 		"./go/internal/store/store.go:31",
-		s.skeyHex(), // skey
+		s.skeyHex(),          // skey
+		"Memory::Put",        // another language's separator
+		"store::Memory->Put", // mixed separators
 	} {
 		if got := one(arg); got.ID != s.ID {
 			t.Errorf("%q resolved to %s", arg, got.QName)

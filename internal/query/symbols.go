@@ -49,7 +49,17 @@ func (s *sym) row() string {
 
 // short is row without the signature (trees, grouped lists).
 func (s *sym) short() string {
-	return fmt.Sprintf("%s %s  %s:%d-%d", s.Kind, s.displayQName(), s.Path, s.Start, s.End)
+	return fmt.Sprintf("%s %s  %s:%d-%d", s.displayKind(), s.displayQName(), s.Path, s.Start, s.End)
+}
+
+// displayKind labels test methods (JUnit @Test, xUnit [Fact], PHPUnit
+// test*) "test" like test functions; they keep the method kind in the
+// index for resolution.
+func (s *sym) displayKind() model.NodeKind {
+	if s.Kind == model.KindMethod && s.Flags.Has(model.FlagTest) {
+		return model.KindTest
+	}
+	return s.Kind
 }
 
 // displayQName is the qualified name as rendered next to the symbol's path.

@@ -60,6 +60,19 @@ func (q *querier) resolveSymbol(ctx context.Context, arg string) ([]*sym, error)
 			suffix = append(suffix, s)
 		}
 	}
+	if name != arg && len(exact) == 0 && len(suffix) == 0 {
+		// The language's own spelling: App::run or Slim\App::run for the
+		// PHP qname Slim.App.run, a.b.C for a::b::C.
+		na := normSeps(arg)
+		for _, s := range cands {
+			switch nq := normSeps(s.QName); {
+			case nq == na:
+				exact = append(exact, s)
+			case hasQNameSuffix(nq, na):
+				suffix = append(suffix, s)
+			}
+		}
+	}
 	switch {
 	case name == arg:
 		// A bare name: every definition with that name, even where the
@@ -119,8 +132,29 @@ func (q *querier) symbolArg(ctx context.Context, o *output, arg string) (*sym, e
 	case 0:
 		return nil, q.notFound(ctx, o, arg)
 	}
+	if s := codeOverTests(ss); s != nil {
+		return s, nil
+	}
 	writeAmbiguous(o, arg, ss)
 	return nil, nil
+}
+
+// codeOverTests picks the one non-test candidate when every other
+// candidate is a test: a describe("ArticlesService") > describe("query")
+// block shares the name of the code it tests, and the code is what a
+// symbol argument means (the block stays reachable by path:line or skey).
+func codeOverTests(ss []*sym) *sym {
+	var code *sym
+	for _, s := range ss {
+		if s.IsTest() {
+			continue
+		}
+		if code != nil {
+			return nil
+		}
+		code = s
+	}
+	return code
 }
 
 // writeAmbiguous prints the numbered candidate list for an ambiguous
@@ -135,6 +169,11 @@ func writeAmbiguous(o *output, arg string, ss []*sym) {
 
 // notFound reports an unknown symbol with a few full-text suggestions.
 func (q *querier) notFound(ctx context.Context, o *output, arg string) error {
+	if path, line, ok := splitPathLine(strings.TrimSpace(arg)); ok {
+		if f, err := q.st.FileByPath(ctx, path); err == nil {
+			return q.nearLine(ctx, o, f.ID, path, line)
+		}
+	}
 	o.linef("no symbol matches %q", arg)
 	ids, err := q.suggest(ctx, lastSegment(arg))
 	if err != nil || len(ids) == 0 {
@@ -146,6 +185,29 @@ func (q *querier) notFound(ctx context.Context, o *output, arg string) error {
 	}
 	sortByLocation(ss)
 	o.line("did you mean:")
+	for _, s := range ss {
+		if !o.line("  " + s.short()) {
+			break
+		}
+	}
+	return nil
+}
+
+// nearLine answers a path:line that no definition spans (imports, a
+// directive, blank lines) with the closest definitions of the file.
+func (q *querier) nearLine(ctx context.Context, o *output, fileID int64, path string, line int) error {
+	ss, err := q.symsWhere(ctx, `n.file_id = ? AND n.parent_id IS NULL
+		ORDER BY abs(n.start_line - ?), n.start_line LIMIT 5`, fileID, line)
+	if err != nil {
+		return err
+	}
+	o.linef("no definition spans %s:%d", path, line)
+	if len(ss) == 0 {
+		o.line("the file has no definitions")
+		return nil
+	}
+	sortByLocation(ss)
+	o.line("nearest definitions (file_outline lists all):")
 	for _, s := range ss {
 		if !o.line("  " + s.short()) {
 			break
@@ -202,6 +264,12 @@ func lastSegment(s string) string {
 	}
 	return s[pos:]
 }
+
+// sepNormalizer maps every qualified-name separator to ".".
+var sepNormalizer = strings.NewReplacer("::", ".", "->", ".", "\\", ".", "#", ".", "/", ".")
+
+// normSeps spells a qualified name with "." separators only.
+func normSeps(s string) string { return strings.TrimPrefix(sepNormalizer.Replace(s), ".") }
 
 // hasQNameSuffix reports whether qname ends with suffix at a segment
 // boundary ("a.B.c" has suffix "B.c" but not "c" of "Bc").

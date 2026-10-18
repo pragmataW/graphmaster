@@ -1,0 +1,3 @@
+graphmaster callees · fresh
+class com.example.zoo.Dog  java/src/main/java/com/example/zoo/Dog.java:3-16  public class Dog extends Animal
+  class com.example.zoo.Animal  java/src/main/java/com/example/zoo/Animal.java:6-23  @3

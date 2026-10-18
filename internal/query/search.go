@@ -88,6 +88,17 @@ func (e *Engine) Search(ctx context.Context, in SearchInput) (string, error) {
 				return err
 			}
 		}
+		anyWord := false
+		if words := strings.Fields(query); wantSyms && len(syms) == 0 && len(words) > 1 {
+			// Agents often pass several names at once ("detect_binary
+			// binary_byte_offset"); nothing has all of them, so answer for
+			// each word instead of returning nothing.
+			var err error
+			if syms, err = q.rankAnyWord(ctx, words, f); err != nil {
+				return err
+			}
+			anyWord = len(syms) > 0
+		}
 		if len(files) == 0 && len(syms) == 0 {
 			o.linef("nothing matches %q", query)
 			return nil
@@ -101,6 +112,9 @@ func (e *Engine) Search(ctx context.Context, in SearchInput) (string, error) {
 		fileCap = min(fileCap, limit)
 		symCap := min(len(syms), limit-fileCap)
 
+		if anyWord {
+			o.linef("no symbol matches all of %q; matches for any word:", query)
+		}
 		if symCap > 0 {
 			o.linef("symbols (%d%s):", len(syms), plusIf(len(syms) >= candidatePool(f)))
 			o.list(symCap, func(i int) string { return syms[i].row() }, len(syms)-symCap)
@@ -111,6 +125,42 @@ func (e *Engine) Search(ctx context.Context, in SearchInput) (string, error) {
 		}
 		return nil
 	})
+}
+
+// rankAnyWord ranks the matches of each word separately and interleaves
+// them, so every word's best hits appear near the top.
+func (q *querier) rankAnyWord(ctx context.Context, words []string, f *symFilter) ([]ranked, error) {
+	var lists [][]ranked
+	done := map[string]bool{}
+	for _, w := range words {
+		if done[w] {
+			continue
+		}
+		done[w] = true
+		r, err := q.rankSymbols(ctx, w, false, f)
+		if err != nil {
+			return nil, err
+		}
+		lists = append(lists, r)
+	}
+	seen := map[int64]bool{}
+	var out []ranked
+	for i := 0; ; i++ {
+		more := false
+		for _, l := range lists {
+			if i >= len(l) {
+				continue
+			}
+			more = true
+			if !seen[l[i].ID] {
+				seen[l[i].ID] = true
+				out = append(out, l[i])
+			}
+		}
+		if !more {
+			return out, nil
+		}
+	}
 }
 
 // plusIf marks a count that is a lower bound.

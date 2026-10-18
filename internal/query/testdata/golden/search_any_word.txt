@@ -1,0 +1,10 @@
+graphmaster search · fresh
+no symbol matches all of "PlaceOrder NewMemory"; matches for any word:
+symbols (7):
+method service.OrderService.PlaceOrder  go/internal/service/order.go:24-32  func (s *OrderService) PlaceOrder(id string, qty int) (string, error)
+function store.NewMemory  go/internal/store/store.go:18-20  func NewMemory() *Memory
+method shop.services.orders.OrderService.place_order  python/shop/services/orders.py:16-21  def place_order(self, sku: str, qty: int) -> int
+test service.TestPlaceOrder  go/internal/service/order_test.go:9-21  func TestPlaceOrder(t *testing.T)
+test tests.test_orders.test_place_order  python/tests/test_orders.py:14-16  def test_place_order()
+test service.TestPlaceOrderOutOfStock  go/internal/service/order_test.go:23-28  func TestPlaceOrderOutOfStock(t *testing.T)
+… +1 more (narrow path_prefix / raise limit)

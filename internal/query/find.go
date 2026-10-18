@@ -20,7 +20,7 @@ func (f *symFilter) active() bool {
 }
 
 func (f *symFilter) match(s *sym) bool {
-	return (len(f.kinds) == 0 || f.kinds[s.Kind]) &&
+	return (len(f.kinds) == 0 || f.kinds[s.Kind] || f.kinds[s.displayKind()]) &&
 		(len(f.langs) == 0 || f.langs[s.Lang]) &&
 		strings.HasPrefix(s.Path, f.pathPrefix)
 }

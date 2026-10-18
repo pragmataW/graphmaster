@@ -186,13 +186,18 @@ func (e *Engine) Callees(ctx context.Context, in CallsInput) (string, error) {
 
 func (e *Engine) calls(ctx context.Context, tool string, in CallsInput, reverse bool) (string, error) {
 	return e.run(ctx, tool, in.MaxTokens, func(ctx context.Context, q *querier, o *output) error {
-		s, err := q.symbolArg(ctx, o, in.Symbol)
+		limit := orDefault(in.Limit, 50, 1000)
+		var ext externalUses
+		if reverse {
+			// callers of a library function: its unresolved call sites.
+			ext = externalUses{kinds: []model.EdgeKind{model.EdgeCalls, model.EdgeReferences}, verb: "used by", limit: limit}
+		}
+		s, err := q.symbolArgExt(ctx, o, in.Symbol, ext)
 		if s == nil || err != nil {
 			return err
 		}
 		depth := orDefault(in.Depth, 1, 5)
 		minConf := orDefault(in.MinConfidence, 50, 100)
-		limit := orDefault(in.Limit, 50, 1000)
 		kinds := []model.EdgeKind{model.EdgeCalls}
 		if !s.Kind.IsCallable() {
 			// Types, fields and variables are used rather than called.
@@ -201,6 +206,13 @@ func (e *Engine) calls(ctx context.Context, tool string, in CallsInput, reverse 
 		links, capped, err := q.walkCalls(ctx, s.ID, reverse, depth, minConf, kinds, max(limit*4, 200))
 		if err != nil {
 			return err
+		}
+		if !reverse && len(links) == 0 && s.Kind.IsType() {
+			// A class calls nothing itself; answer with its methods' callees.
+			calls := []model.EdgeKind{model.EdgeCalls}
+			if links, capped, err = q.memberCallees(ctx, s.ID, depth, minConf, calls, max(limit*4, 200)); err != nil {
+				return err
+			}
 		}
 		links = foldDispatch(links)
 		ids := make([]int64, 0, len(links))
@@ -242,6 +254,37 @@ func (e *Engine) calls(ctx context.Context, tool string, in CallsInput, reverse 
 		}
 		return nil
 	})
+}
+
+// memberCallees walks the callees of each callable member of type id and
+// hangs them under their member, so the tree reads type > method > callee.
+func (q *querier) memberCallees(ctx context.Context, id int64, depth, minConf int, kinds []model.EdgeKind, rowLimit int) ([]link, bool, error) {
+	members, err := q.symsWhere(ctx, `n.parent_id = ? ORDER BY n.start_line`, id)
+	if err != nil {
+		return nil, false, err
+	}
+	var out []link
+	for _, m := range members {
+		if !m.Kind.IsCallable() {
+			continue
+		}
+		sub, capped, err := q.walkCalls(ctx, m.ID, false, depth, minConf, kinds, rowLimit-len(out))
+		if err != nil {
+			return nil, false, err
+		}
+		if len(sub) == 0 {
+			continue
+		}
+		out = append(out, link{id: m.ID, parent: id, depth: 1, conf: 100})
+		for _, l := range sub {
+			l.depth++
+			out = append(out, l)
+		}
+		if capped || len(out) >= rowLimit {
+			return out, true, nil
+		}
+	}
+	return out, false, nil
 }
 
 // unresolvedCalls lists the names a definition calls that resolve to no

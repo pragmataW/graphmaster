@@ -1,0 +1,5 @@
+graphmaster callers · fresh
+class UserService  ts/src/services/userService.ts:4-27  class UserService
+  field UserCardProps.service  ts/src/components/UserCard.tsx:4-4  @4
+  test UserService.greets a known user  ts/test/userService.test.ts:6-10  @7
+  test UserService.promotes to admin  ts/test/userService.test.ts:12-16  @13

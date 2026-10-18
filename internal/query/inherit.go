@@ -94,7 +94,13 @@ func (e *Engine) Inheritance(ctx context.Context, in InheritanceInput) (string, 
 		default:
 			return invalidf("direction must be up, down or both, got %q", in.Direction)
 		}
-		s, err := q.symbolArg(ctx, o, in.Symbol)
+		var ext externalUses
+		if dir != "up" {
+			// Subtypes of a library type: its unresolved extends/implements.
+			ext = externalUses{kinds: []model.EdgeKind{model.EdgeExtends, model.EdgeImplements, model.EdgeEmbeds},
+				verb: "extended or implemented by", limit: 100}
+		}
+		s, err := q.symbolArgExt(ctx, o, in.Symbol, ext)
 		if s == nil || err != nil {
 			return err
 		}
