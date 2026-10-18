@@ -63,5 +63,10 @@ exports.create = function create() {
   return new Calculator(0);
 };
 
+helpers.reset = function reset() {
+  instances = 0;
+  return create();
+};
+
 module.exports.makeScientific = () => new Scientific();
 module.exports = { Calculator, Scientific, helpers, VERSION, legacyFlag, rest };

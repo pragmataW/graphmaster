@@ -22,7 +22,7 @@ func (tsxSpec) Lang() model.Lang        { return model.LangTSX }
 func (tsxSpec) Extensions() []string    { return model.LangTSX.Extensions() }
 func (tsxSpec) Grammar() unsafe.Pointer { return tsts.LanguageTSX() }
 func (tsxSpec) QuerySource() string     { return typescriptQuery + "\n" + tsxQueryExtra }
-func (tsxSpec) ExtractorVersion() int   { return 1 }
+func (tsxSpec) ExtractorVersion() int   { return 2 }
 
 // ResolveImport implements model.LanguageSpec (see jsResolveImport).
 func (tsxSpec) ResolveImport(spec, fromFile string, ctx model.RepoContext) model.ImportTarget {

@@ -30,7 +30,7 @@ func (typescriptSpec) Lang() model.Lang        { return model.LangTypeScript }
 func (typescriptSpec) Extensions() []string    { return model.LangTypeScript.Extensions() }
 func (typescriptSpec) Grammar() unsafe.Pointer { return tsts.LanguageTypescript() }
 func (typescriptSpec) QuerySource() string     { return typescriptQuery }
-func (typescriptSpec) ExtractorVersion() int   { return 1 }
+func (typescriptSpec) ExtractorVersion() int   { return 2 }
 
 // ResolveImport implements model.LanguageSpec (see jsResolveImport).
 func (typescriptSpec) ResolveImport(spec, fromFile string, ctx model.RepoContext) model.ImportTarget {

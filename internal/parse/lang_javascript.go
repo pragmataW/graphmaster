@@ -25,7 +25,7 @@ func (javascriptSpec) Lang() model.Lang        { return model.LangJavaScript }
 func (javascriptSpec) Extensions() []string    { return model.LangJavaScript.Extensions() }
 func (javascriptSpec) Grammar() unsafe.Pointer { return tsjs.Language() }
 func (javascriptSpec) QuerySource() string     { return javascriptQuery }
-func (javascriptSpec) ExtractorVersion() int   { return 1 }
+func (javascriptSpec) ExtractorVersion() int   { return 2 }
 
 // ResolveImport implements model.LanguageSpec (see jsResolveImport).
 func (javascriptSpec) ResolveImport(spec, fromFile string, ctx model.RepoContext) model.ImportTarget {

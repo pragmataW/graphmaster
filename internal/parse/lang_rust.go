@@ -32,7 +32,7 @@ func (rustSpec) Lang() model.Lang           { return model.LangRust }
 func (rustSpec) Extensions() []string       { return model.LangRust.Extensions() }
 func (rustSpec) Grammar() unsafe.Pointer    { return tsrust.Language() }
 func (rustSpec) QuerySource() string        { return rustQuery }
-func (rustSpec) ExtractorVersion() int      { return 1 }
+func (rustSpec) ExtractorVersion() int      { return 2 }
 func (rustSpec) testTarget(n string) string { return rustTestTarget(n) }
 
 // IsTestPath reports integration tests (a "tests" directory) and test
@@ -710,6 +710,40 @@ type cargoManifest struct {
 		Name string `toml:"name"`
 		Path string `toml:"path"`
 	} `toml:"bin"`
+	Dependencies      map[string]any `toml:"dependencies"`
+	DevDependencies   map[string]any `toml:"dev-dependencies"`
+	BuildDependencies map[string]any `toml:"build-dependencies"`
+	Target            map[string]struct {
+		Dependencies      map[string]any `toml:"dependencies"`
+		DevDependencies   map[string]any `toml:"dev-dependencies"`
+		BuildDependencies map[string]any `toml:"build-dependencies"`
+	} `toml:"target"`
+	Workspace struct {
+		Dependencies map[string]any `toml:"dependencies"`
+	} `toml:"workspace"`
+}
+
+// depTables returns every dependency table of the manifest.
+func (m *cargoManifest) depTables() []map[string]any {
+	out := []map[string]any{m.Dependencies, m.DevDependencies, m.BuildDependencies}
+	for _, t := range m.Target {
+		out = append(out, t.Dependencies, t.DevDependencies, t.BuildDependencies)
+	}
+	return out
+}
+
+// cargoDepPath returns the path of a path dependency and whether the entry
+// defers to [workspace.dependencies] ("x = { workspace = true }").
+func cargoDepPath(v any) (p string, workspace bool) {
+	t, ok := v.(map[string]any)
+	if !ok {
+		return "", false
+	}
+	if w, _ := t["workspace"].(bool); w {
+		return "", true
+	}
+	p, _ = t["path"].(string)
+	return p, false
 }
 
 // manifestCache memoizes parsed manifests by content; reads still go
@@ -746,6 +780,7 @@ type rustCrate struct {
 	lib     string            // library crate name
 	libRoot string            // library crate root file
 	bins    map[string]string // binary crate root file -> crate name
+	deps    map[string]string // crate name used in code -> path dependency's package dir
 }
 
 func rustIdent(s string) string { return strings.ReplaceAll(strings.TrimSpace(s), "-", "_") }
@@ -753,7 +788,7 @@ func rustIdent(s string) string { return strings.ReplaceAll(strings.TrimSpace(s)
 // rustLoadCrate reads the package enclosing dir. Without a Cargo.toml the
 // repository root is treated as a package named "crate".
 func rustLoadCrate(ctx model.RepoContext, dir string) rustCrate {
-	c := rustCrate{pkg: "crate", bins: map[string]string{}}
+	c := rustCrate{pkg: "crate", bins: map[string]string{}, deps: map[string]string{}}
 	var man *cargoManifest
 	if ctx != nil {
 		if mf, ok := model.FindUp(ctx, dir, "Cargo.toml"); ok {
@@ -784,11 +819,61 @@ func rustLoadCrate(ctx model.RepoContext, dir string) rustCrate {
 				c.bins[join(b.Path)] = rustIdent(b.Name)
 			}
 		}
+		rustLoadDeps(ctx, &c, man)
 	}
 	if mainRS := join("src/main.rs"); c.bins[mainRS] == "" {
 		c.bins[mainRS] = c.pkg
 	}
 	return c
+}
+
+// rustLoadDeps records the path dependencies of the package, following
+// "workspace = true" entries to the enclosing workspace manifest. Registry
+// and git dependencies stay external.
+func rustLoadDeps(ctx model.RepoContext, c *rustCrate, man *cargoManifest) {
+	var ws *cargoManifest
+	wsDir := ""
+	loadWorkspace := func() {
+		if ws != nil {
+			return
+		}
+		ws = &cargoManifest{}
+		if man.Workspace.Dependencies != nil {
+			ws, wsDir = man, c.dir
+			return
+		}
+		if c.dir == "" {
+			return
+		}
+		if mf, ok := model.FindUp(ctx, parentRel(c.dir), "Cargo.toml"); ok {
+			if b, err := ctx.ReadFile(mf); err == nil {
+				ws, wsDir = parseCargoManifest(b), model.CleanRel(path.Dir(mf))
+			}
+		}
+	}
+	for _, table := range man.depTables() {
+		for name, v := range table {
+			p, inherit := cargoDepPath(v)
+			dir := c.dir
+			if inherit {
+				loadWorkspace()
+				p, _ = cargoDepPath(ws.Workspace.Dependencies[name])
+				dir = wsDir
+			}
+			if p != "" {
+				c.deps[rustIdent(name)] = model.CleanRel(path.Join(dir, p))
+			}
+		}
+	}
+}
+
+// parentRel returns the parent of a repo-relative directory ("" for a
+// top-level one).
+func parentRel(dir string) string {
+	if d := path.Dir(dir); d != "." {
+		return d
+	}
+	return ""
 }
 
 // rustModule locates a file in the mod tree of its crate.
@@ -872,9 +957,43 @@ func rustLocate(p string, ctx model.RepoContext) rustModule {
 		m.segs = rustModuleSegs(rest)
 		return m
 	}
+	// Targets with a custom path ([[bin]] path = "crates/core/main.rs") own
+	// the mod tree below their root's directory.
+	best := ""
+	for file, name := range c.customRoots() {
+		dir := model.CleanRel(path.Dir(file))
+		if dir != "" && !strings.HasPrefix(p, dir+"/") {
+			continue
+		}
+		// Deepest root wins; ties break on the file name so map order
+		// cannot change a module's identity.
+		if m.name == "" || len(dir) > len(best) || (len(dir) == len(best) && file < m.root) {
+			m.name, m.root, m.rootDir, best = name, file, dir, dir
+		}
+	}
+	if m.name != "" {
+		m.segs = rustModuleSegs(strings.TrimPrefix(p, best+"/"))
+		return m
+	}
 	m.name, m.root, m.rootDir = c.pkg, c.libRoot, c.dir
 	m.segs = rustModuleSegs(rel)
 	return m
+}
+
+// customRoots returns the crate roots declared with a path outside the
+// standard layout, keyed by root file.
+func (c rustCrate) customRoots() map[string]string {
+	join := func(rel string) string { return model.CleanRel(path.Join(c.dir, rel)) }
+	out := map[string]string{}
+	if c.libRoot != join("src/lib.rs") {
+		out[c.libRoot] = c.lib
+	}
+	for file, name := range c.bins {
+		if file != join("src/main.rs") && !strings.HasPrefix(file, join("src")+"/") {
+			out[file] = name
+		}
+	}
+	return out
 }
 
 // ModuleOf returns "crate::mod::path" for the file.
@@ -947,6 +1066,13 @@ func rustResolveImport(spec, fromFile string, ctx model.RepoContext, depth int) 
 			// Child module of the importing module (2018 uniform paths).
 		case rustHasModFile(ctx, m, segs[:1]):
 			base.segs = nil // crate-relative (2015 paths)
+		case m.crate.deps[segs[0]] != "":
+			// Path dependency, e.g. another workspace member.
+			dep := rustLoadCrate(ctx, m.crate.deps[segs[0]])
+			if dep.dir != m.crate.deps[segs[0]] || !ctx.FileExists(dep.libRoot) {
+				return model.ImportTarget{Kind: model.TargetExternal, Module: segs[0]}
+			}
+			base, rest = rustLocate(dep.libRoot, ctx), segs[1:]
 		default:
 			return model.ImportTarget{Kind: model.TargetExternal, Module: segs[0]}
 		}

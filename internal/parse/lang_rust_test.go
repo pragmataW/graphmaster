@@ -62,6 +62,31 @@ func rustFixtureRepo() *model.MemRepo {
 		"broken/Cargo.toml":            "[package\nname = = \n",
 		"broken/src/lib.rs":            "pub fn x() {}\n",
 		"broken/src/inner/deep/mod.rs": "pub fn y() {}\n",
+		// ripgrep layout: targets rooted outside src/.
+		"custom/Cargo.toml": "[package]\nname = \"custom-tool\"\n\n[lib]\npath = \"lib/root.rs\"\n\n" +
+			"[[bin]]\nname = \"rg\"\npath = \"crates/core/main.rs\"\n",
+		"custom/crates/core/main.rs":      "mod search;\nfn main() {}\n",
+		"custom/crates/core/search.rs":    "pub fn run() {}\n",
+		"custom/crates/core/flags/mod.rs": "pub fn parse() {}\n",
+		"custom/lib/root.rs":              "pub mod util;\n",
+		"custom/lib/util.rs":              "pub fn u() {}\n",
+		"custom/crates/other/x.rs":        "fn x() {}\n",
+		"custom/tests/t.rs":               "#[test]\nfn t() {}\n",
+		// Workspace with path dependencies between members.
+		"ws/Cargo.toml": "[workspace]\nmembers = [\"crates/*\"]\n\n" +
+			"[workspace.dependencies]\nws-core = { path = \"crates/core-lib\", version = \"1\" }\n",
+		"ws/crates/core-lib/Cargo.toml":  "[package]\nname = \"ws-core\"\n",
+		"ws/crates/core-lib/src/lib.rs":  "pub mod sink;\npub use crate::sink::Sink;\n",
+		"ws/crates/core-lib/src/sink.rs": "pub trait Sink {}\n",
+		"ws/crates/unixdep/Cargo.toml":   "[package]\nname = \"unixdep\"\n",
+		"ws/crates/unixdep/src/lib.rs":   "pub fn x() {}\n",
+		"ws/crates/nolib/Cargo.toml":     "[package]\nname = \"nolib\"\n",
+		"ws/crates/nolib/src/main.rs":    "fn main() {}\n",
+		"ws/crates/printer/src/lib.rs":   "use ws_core::Sink;\n",
+		"ws/crates/printer/Cargo.toml": "[package]\nname = \"ws-printer\"\n\n[dependencies]\n" +
+			"ws-core = { workspace = true }\nrenamed = { path = \"../core-lib\", package = \"ws-core\" }\n" +
+			"nolib = { path = \"../nolib\" }\nserde = \"1\"\n\n" +
+			"[target.'cfg(unix)'.dependencies]\nunixdep = { path = \"../unixdep\" }\n",
 	})
 }
 
@@ -103,23 +128,30 @@ func TestRustModuleOf(t *testing.T) {
 	rc := rustFixtureRepo()
 	spec, _ := Lookup(model.LangRust)
 	cases := map[string]string{
-		"rust/src/lib.rs":               "fixture_shapes",
-		"rust/src/geometry.rs":          "fixture_shapes::geometry",
-		"rust/src/shapes/mod.rs":        "fixture_shapes::shapes",
-		"rust/src/shapes/circle.rs":     "fixture_shapes::shapes::circle",
-		"rust/src/main.rs":              "shapes",
-		"rust/src/bin/tool.rs":          "tool",
-		"rust/src/bin/multi/main.rs":    "multi",
-		"rust/src/bin/multi/cli.rs":     "multi::cli",
-		"rust/tests/area_test.rs":       "area_test",
-		"rust/tests/common/mod.rs":      "common",
-		"rust/build.rs":                 "build_script_build",
-		"binonly/src/main.rs":           "bin_only",
-		"binonly/src/cmd.rs":            "bin_only::cmd",
-		"loose/a/b.rs":                  "crate::loose::a::b",
-		"broken/src/lib.rs":             "broken",
-		"broken/src/inner/deep/mod.rs":  "broken::inner::deep",
-		"broken/src/inner/deep/../x.rs": "broken::inner::x",
+		"rust/src/lib.rs":                 "fixture_shapes",
+		"rust/src/geometry.rs":            "fixture_shapes::geometry",
+		"rust/src/shapes/mod.rs":          "fixture_shapes::shapes",
+		"rust/src/shapes/circle.rs":       "fixture_shapes::shapes::circle",
+		"rust/src/main.rs":                "shapes",
+		"rust/src/bin/tool.rs":            "tool",
+		"rust/src/bin/multi/main.rs":      "multi",
+		"rust/src/bin/multi/cli.rs":       "multi::cli",
+		"rust/tests/area_test.rs":         "area_test",
+		"rust/tests/common/mod.rs":        "common",
+		"rust/build.rs":                   "build_script_build",
+		"binonly/src/main.rs":             "bin_only",
+		"binonly/src/cmd.rs":              "bin_only::cmd",
+		"loose/a/b.rs":                    "crate::loose::a::b",
+		"broken/src/lib.rs":               "broken",
+		"broken/src/inner/deep/mod.rs":    "broken::inner::deep",
+		"broken/src/inner/deep/../x.rs":   "broken::inner::x",
+		"custom/crates/core/main.rs":      "rg",
+		"custom/crates/core/search.rs":    "rg::search",
+		"custom/crates/core/flags/mod.rs": "rg::flags",
+		"custom/lib/root.rs":              "custom_tool",
+		"custom/lib/util.rs":              "custom_tool::util",
+		"custom/crates/other/x.rs":        "custom_tool::crates::other::x",
+		"custom/tests/t.rs":               "t",
 	}
 	for p, want := range cases {
 		if got := spec.ModuleOf(p, nil, rc); got != want {
@@ -164,6 +196,14 @@ func TestRustResolveImport(t *testing.T) {
 		{"::fixture_shapes::geometry", "rust/src/main.rs", file("rust/src/geometry.rs", "fixture_shapes::geometry")},
 		{"self::cli::run", "rust/src/bin/multi/main.rs", file("rust/src/bin/multi/cli.rs", "multi::cli")},
 		{"crate::cmd", "binonly/src/main.rs", file("binonly/src/cmd.rs", "bin_only::cmd")},
+		// Path dependencies: workspace-inherited, renamed, target-specific.
+		{"ws_core::Sink", "ws/crates/printer/src/lib.rs", file("ws/crates/core-lib/src/sink.rs", "ws_core::sink")},
+		{"ws_core::sink::Sink", "ws/crates/printer/src/lib.rs", file("ws/crates/core-lib/src/sink.rs", "ws_core::sink")},
+		{"renamed::sink", "ws/crates/printer/src/lib.rs", file("ws/crates/core-lib/src/sink.rs", "ws_core::sink")},
+		{"unixdep::x", "ws/crates/printer/src/lib.rs", file("ws/crates/unixdep/src/lib.rs", "unixdep")},
+		{"nolib::x", "ws/crates/printer/src/lib.rs", ext("nolib")},
+		{"serde::Serialize", "ws/crates/printer/src/lib.rs", ext("serde")},
+		{"ws_core::Sink", "rust/src/lib.rs", ext("ws_core")},
 		{"std::collections::HashMap", "rust/src/lib.rs", ext("std")},
 		{"core::fmt", "rust/src/lib.rs", ext("core")},
 		{"serde::Serialize", "rust/src/lib.rs", ext("serde")},

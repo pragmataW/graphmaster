@@ -32,7 +32,7 @@ func QName(lang model.Lang, module string, parts []string) string {
 	if lang == model.LangCPP || lang == model.LangRust {
 		sep = "::"
 	}
-	name := strings.Join(parts, sep)
+	name := joinParts(parts, sep)
 	switch {
 	case module == "":
 		return name
@@ -40,6 +40,20 @@ func QName(lang model.Lang, module string, parts []string) string {
 		return module
 	}
 	return module + sep + name
+}
+
+// joinParts joins qname parts with sep, without doubling a separator a part
+// already carries: describe("res") > describe(".json()") is "res.json()",
+// not "res..json()".
+func joinParts(parts []string, sep string) string {
+	var b strings.Builder
+	for i, p := range parts {
+		if i > 0 && !strings.HasPrefix(p, sep) && !strings.HasSuffix(parts[i-1], sep) {
+			b.WriteString(sep)
+		}
+		b.WriteString(p)
+	}
+	return b.String()
 }
 
 // graphWriter maps processed files onto graph rows through one Writer.

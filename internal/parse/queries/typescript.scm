@@ -325,6 +325,17 @@
   right: [(arrow_function) (function_expression) (generator_function)]
   (#eq? @_proto "prototype")) @def.method
 
+; Methods attached to a module-level object: res.send = function send() {},
+; app.use = function () {}, proto.route = () => {} (Express-style modules).
+(program
+  (expression_statement
+    (assignment_expression
+      left: (member_expression
+        object: (identifier) @scope
+        property: (property_identifier) @name)
+      right: [(arrow_function) (function_expression) (generator_function)]
+      (#not-any-of? @scope "exports" "module" "this")) @def.method))
+
 ; ---------------------------------------------------------------- tests
 
 ; describe("name", () => {}), it.only("name", function () {}), test(...).

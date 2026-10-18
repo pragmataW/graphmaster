@@ -2,7 +2,7 @@ lang javascript
 package ""
 testfile false
 
-defs 21
+defs 22
   #0 function Legacy  7:0-9:1
       sig "function Legacy(name)"
   #1 method Legacy.greet  11:0-13:1  scope=Legacy  [exported]
@@ -43,10 +43,12 @@ defs 21
       sig "var legacyFlag = true"
   #19 function create  61:0-64:1  [exported]
       sig "exports.create = function create()"
-  #20 function makeScientific  66:0-66:54  [exported]
+  #20 method helpers.reset  66:0-69:1  scope=helpers  [exported]
+      sig "helpers.reset = function reset()"
+  #21 function makeScientific  71:0-71:54  [exported]
       sig "module.exports.makeScientific = () =>"
 
-refs 14
+refs 15
   8:7 member name  recv=this  in #0 Legacy
   12:23 member name  recv=other  in #1 Legacy.greet
   12:35 member sep  qual=path  in #1 Legacy.greet
@@ -60,7 +62,8 @@ refs 14
   44:32 member Precise  recv=mixins  in #11 Scientific
   46:16 call product  recv=this  in #12 Scientific.square
   63:13 call Calculator  in #19 create
-  66:42 call Scientific  in #20 makeScientific
+  68:9 call create  in #20 helpers.reset
+  71:42 call Scientific  in #21 makeScientific
 
 imports 3
   3 "path"  alias=path
