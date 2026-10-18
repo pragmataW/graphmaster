@@ -6,6 +6,18 @@ uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `go install github.com/pragmataW/graphmaster@latest` works without build
+  tags: the module root is a main package, and untagged builds use the
+  pure-Go `modernc.org/sqlite` driver (FTS5 built in). Release builds keep
+  the cgo driver.
+
+### Fixed
+
+- `--version` of a `go install` build reports the module version and
+  commit instead of `dev (commit none)`.
+
 ## [0.1.0] - 2026-10-18
 
 First release.

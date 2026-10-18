@@ -14,8 +14,8 @@ One binary, one install, no daemon, no account, no telemetry.
 </div>
 
 ```sh
-brew install pragmataW/tap/graphmaster   # or: curl -fsSL https://raw.githubusercontent.com/pragmataW/graphmaster/main/install.sh | sh
-graphmaster install                      # once; then restart your agent
+brew install pragmataW/tap/graphmaster          # or: go install github.com/pragmataW/graphmaster@latest
+graphmaster install                             # once; then restart your agent
 ```
 
 ---
@@ -155,13 +155,18 @@ curl -fsSL https://raw.githubusercontent.com/pragmataW/graphmaster/main/install.
 # options after `sh -s --`: -b DIR, -v 0.1.0, -n (dry run)
 ```
 
-**From source**: needs Go 1.25+ and a C compiler (graphmaster uses cgo for
-tree-sitter and SQLite). Both build tags are required.
+**go install**: needs Go 1.25+ and a C compiler for the tree-sitter
+grammars (Xcode Command Line Tools on macOS, `gcc` or `clang` on Linux).
+The binary lands in `$(go env GOPATH)/bin`; make sure that is on your
+`PATH`.
 
 ```sh
-CGO_ENABLED=1 go install -tags "sqlite_fts5 sqlite_omit_load_extension" \
-  github.com/pragmataW/graphmaster/cmd/graphmaster@latest
+go install github.com/pragmataW/graphmaster@latest
 ```
+
+A plain `go install` uses a pure-Go SQLite driver. Release builds (Homebrew,
+install script) and builds with `-tags "sqlite_fts5 sqlite_omit_load_extension"`
+use the cgo SQLite driver, which indexes about 5-10% faster.
 
 Then, once:
 
