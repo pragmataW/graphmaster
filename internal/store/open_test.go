@@ -106,7 +106,7 @@ func TestOpenReopenKeepsData(t *testing.T) {
 
 func setUserVersion(t *testing.T, path string, v int) {
 	t.Helper()
-	db, err := sql.Open("sqlite3", path)
+	db, err := sql.Open(driverName, path)
 	if err != nil {
 		t.Fatal(err)
 	}

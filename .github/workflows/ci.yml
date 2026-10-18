@@ -63,6 +63,20 @@ jobs:
           go build -tags "$GO_TAGS" -o graphmaster ./cmd/graphmaster
           ./graphmaster --version
 
+      # `go install github.com/pragmataW/graphmaster@latest` builds without
+      # tags and uses the pure-Go SQLite driver; keep that path working.
+      - name: Test without build tags
+        run: go test ./internal/store/... ./internal/index/... ./internal/query/... ./internal/mcp/... ./internal/cli/...
+
+      - name: Smoke go install (no tags)
+        shell: bash
+        run: |
+          GOBIN="$RUNNER_TEMP/bin" go install .
+          repo="$RUNNER_TEMP/smoke" && mkdir -p "$repo" && cd "$repo"
+          git init -q && printf 'package main\nfunc Foo() {}\nfunc main() { Foo() }\n' > main.go && git add .
+          "$RUNNER_TEMP/bin/graphmaster" index
+          "$RUNNER_TEMP/bin/graphmaster" query callers Foo | grep -q 'main'
+
   lint:
     runs-on: ubuntu-24.04
     steps:

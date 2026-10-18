@@ -2,14 +2,15 @@ package store
 
 import (
 	"database/sql"
-	"errors"
 	"time"
-
-	sqlite3 "github.com/mattn/go-sqlite3"
 )
 
-// driverName is the database/sql driver registered by this package. It wraps
-// mattn/go-sqlite3 with per-connection pragmas and the gm_tokens() function.
+// driverName is the database/sql driver registered by this package: a
+// SQLite driver with per-connection pragmas and the gm_tokens() function.
+//
+// Release builds (tag sqlite_fts5) use mattn/go-sqlite3 (cgo, fastest);
+// a plain `go install` without tags uses modernc.org/sqlite (pure Go, FTS5
+// built in). See driver_mattn.go and driver_modernc.go.
 const driverName = "sqlite3_graphmaster"
 
 // connPragmas are applied to every new connection. busy_timeout goes first so
@@ -23,9 +24,13 @@ var connPragmas = []string{
 	"PRAGMA foreign_keys = OFF",
 }
 
-func init() {
-	sql.Register(driverName, &sqlite3.SQLiteDriver{ConnectHook: connectHook})
-}
+// Primary SQLite result codes the store reacts to.
+const (
+	codeBusy    = 5
+	codeLocked  = 6
+	codeCorrupt = 11
+	codeNotADB  = 26
+)
 
 // pragmaBusyBudget bounds retries of a connection pragma that fails with
 // SQLITE_BUSY. Switching a brand-new database file to WAL needs an
@@ -33,24 +38,24 @@ func init() {
 // first opens (several hook processes at once) would otherwise fail.
 const pragmaBusyBudget = 5 * time.Second
 
-func connectHook(c *sqlite3.SQLiteConn) error {
+// applyPragmas runs connPragmas through exec, the driver's statement runner.
+func applyPragmas(exec func(q string) error) error {
 	for _, p := range connPragmas {
-		if err := execRetryBusy(c, p); err != nil {
+		if err := execRetryBusy(exec, p); err != nil {
 			return err
 		}
 	}
-	// gm_tokens(name) lets bulk FTS population run entirely inside SQLite.
-	return c.RegisterFunc("gm_tokens", TokenizeIdent, true)
+	return nil
 }
 
 // execRetryBusy runs q, retrying with a short backoff while it fails with
 // SQLITE_BUSY or SQLITE_LOCKED, for at most pragmaBusyBudget.
-func execRetryBusy(c *sqlite3.SQLiteConn, q string) error {
+func execRetryBusy(exec func(q string) error, q string) error {
 	deadline := time.Now().Add(pragmaBusyBudget)
 	wait := time.Millisecond
 	for {
-		_, err := c.Exec(q, nil)
-		if err == nil || !isBusy(err) || time.Now().After(deadline) {
+		err := exec(q)
+		if err == nil || !IsBusy(err) || time.Now().After(deadline) {
 			return err
 		}
 		time.Sleep(wait)
@@ -58,13 +63,10 @@ func execRetryBusy(c *sqlite3.SQLiteConn, q string) error {
 	}
 }
 
-// isBusy reports whether err is SQLITE_BUSY or SQLITE_LOCKED.
-func isBusy(err error) bool {
-	var se sqlite3.Error
-	if errors.As(err, &se) {
-		return se.Code == sqlite3.ErrBusy || se.Code == sqlite3.ErrLocked
-	}
-	return false
+// IsBusy reports whether err is SQLITE_BUSY or SQLITE_LOCKED.
+func IsBusy(err error) bool {
+	code, ok := errCode(err)
+	return ok && (code == codeBusy || code == codeLocked)
 }
 
 // openDB opens path with the graphmaster driver. database/sql connects
@@ -82,9 +84,6 @@ func openDB(path string) (*sql.DB, error) {
 // isCorrupt reports whether err means the file is not a usable database, in
 // which case it is safe to throw it away (all content is derived).
 func isCorrupt(err error) bool {
-	var se sqlite3.Error
-	if errors.As(err, &se) {
-		return se.Code == sqlite3.ErrCorrupt || se.Code == sqlite3.ErrNotADB
-	}
-	return false
+	code, ok := errCode(err)
+	return ok && (code == codeCorrupt || code == codeNotADB)
 }

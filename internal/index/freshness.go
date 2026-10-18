@@ -11,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	sqlite3 "github.com/mattn/go-sqlite3"
 	"golang.org/x/sync/singleflight"
 
 	"github.com/pragmataW/graphmaster/internal/config"
@@ -147,11 +146,7 @@ func openStoreRetry(ctx context.Context, dir string, opts store.Options) (*store
 }
 
 func isBusy(err error) bool {
-	var se sqlite3.Error
-	if errors.As(err, &se) {
-		return se.Code == sqlite3.ErrBusy || se.Code == sqlite3.ErrLocked
-	}
-	return strings.Contains(err.Error(), "database is locked")
+	return store.IsBusy(err) || strings.Contains(err.Error(), "database is locked")
 }
 
 func (ix *Indexer) loadDirCache(ctx context.Context) *repo.DirCache {

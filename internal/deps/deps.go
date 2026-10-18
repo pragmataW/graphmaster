@@ -26,5 +26,6 @@ import (
 	_ "github.com/tree-sitter/tree-sitter-typescript/bindings/go"
 	_ "golang.org/x/sync/errgroup"
 	_ "golang.org/x/sync/singleflight"
+	_ "modernc.org/sqlite"
 	_ "mvdan.cc/sh/v3/syntax"
 )

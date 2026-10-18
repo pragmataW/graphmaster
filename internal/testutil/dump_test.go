@@ -6,8 +6,6 @@ import (
 	"strings"
 	"testing"
 
-	_ "github.com/mattn/go-sqlite3"
-
 	"github.com/pragmataW/graphmaster/internal/model"
 )
 
@@ -45,7 +43,7 @@ type graphRows struct {
 
 func openPlanDB(t *testing.T, r graphRows) *sql.DB {
 	t.Helper()
-	db, err := sql.Open("sqlite3", filepath.Join(t.TempDir(), "g.db"))
+	db, err := sql.Open(testDriver, filepath.Join(t.TempDir(), "g.db"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -144,7 +142,7 @@ func TestCanonicalDumpContent(t *testing.T) {
 }
 
 func TestCanonicalDumpToleratesMissingTables(t *testing.T) {
-	db, err := sql.Open("sqlite3", filepath.Join(t.TempDir(), "empty.db"))
+	db, err := sql.Open(testDriver, filepath.Join(t.TempDir(), "empty.db"))
 	if err != nil {
 		t.Fatal(err)
 	}

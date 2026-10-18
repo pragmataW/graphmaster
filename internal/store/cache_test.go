@@ -147,7 +147,7 @@ func TestCacheVersionMismatchRecreates(t *testing.T) {
 	}
 	_ = c.Put(context.Background(), blobKey(1), model.LangGo, 1, []byte("x"))
 	_ = c.Close()
-	db, _ := sql.Open("sqlite3", path)
+	db, _ := sql.Open(driverName, path)
 	_, _ = db.Exec(`PRAGMA user_version = 99`)
 	_ = db.Close()
 
