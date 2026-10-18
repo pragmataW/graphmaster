@@ -115,6 +115,11 @@ type Session struct {
 	state       map[model.Lang]any
 	batch       map[model.Lang]any // per-batch language state
 
+	// resolved holds the files whose edges the file queue re-resolved in
+	// this run. Resolution starts after every write, so their edges already
+	// read the final definitions and need no dependents pass.
+	resolved map[int64]bool
+
 	err error // first loader error, see fail
 }
 
@@ -140,8 +145,12 @@ func newSession(ctx context.Context, q querier, rc model.RepoContext, opts Optio
 		sources:  map[int64][]byte{},
 		state:    map[model.Lang]any{},
 		batch:    map[model.Lang]any{},
+		resolved: map[int64]bool{},
 	}
 }
+
+// markResolved records that the file queue re-resolved file id.
+func (s *Session) markResolved(id int64) { s.resolved[id] = true }
 
 // endBatch releases per-batch caches (sources and per-batch state).
 func (s *Session) endBatch() {

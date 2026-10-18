@@ -165,6 +165,7 @@ func drainFileQueue(s *Session, w *store.Writer, stats *Stats) error {
 				continue
 			}
 			stats.Files++
+			s.markResolved(id)
 			if err := s.rows(`SELECT `+edgeCols+` FROM edges e WHERE e.file_id = ? AND e.name_id IS NOT NULL ORDER BY e.id`,
 				scanEdgeInto(gs), id); err != nil {
 				return fmt.Errorf("resolve: load file edges: %w", err)

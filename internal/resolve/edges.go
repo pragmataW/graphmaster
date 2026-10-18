@@ -152,6 +152,11 @@ func dependentGroups(s *Session, ids []int64, have *groupSet) (out *groupSet, sk
 			return nil, false, err
 		}
 	}
+	for f := range files {
+		if s.resolved[f] {
+			delete(files, f)
+		}
+	}
 	if len(files) > s.opts.maxDependentFiles() {
 		return newGroupSet(), true, nil
 	}
