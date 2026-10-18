@@ -29,11 +29,11 @@ var descriptions = map[string]string{
 	"repo_map":     "Directory/package tree with file counts, lines of code and key exported symbols. Use instead of ls/tree/find to get oriented in the repository or one directory.",
 	"file_outline": "All definitions of one file, nested, with line ranges and signatures. Use before reading a file, then read_symbol for the part you need.",
 	"read_symbol":  "Source code of one definition with line numbers. Use instead of reading a whole file when you need a specific function, method or type.",
-	"callers":      "Who calls a function or references a symbol, as a tree (depth up to 5). Use instead of grepping for call sites or usages.",
+	"callers":      "Who calls a function or references a symbol, as a tree (depth up to 5); for a library name with no definition here (useState, fmt.Sprintf) it lists the definitions that use it. Use instead of grepping for call sites or usages.",
 	"callees":      "What a function calls: resolved definitions plus external/library calls. Use to follow control flow without opening each file.",
 	"impact":       "Reverse dependencies: what may break if a symbol, a file or the uncommitted changes (changed=true) are modified, grouped by file with affected tests. Use before refactoring or when reviewing a change.",
 	"imports":      "Imports of a file or package (direction=out) or who imports it (direction=in). Use instead of grepping import statements.",
-	"inheritance":  "Type hierarchy: supertypes, subtypes and implementations of a class, struct or interface. Use instead of grepping for extends/implements.",
+	"inheritance":  "Type hierarchy: supertypes, subtypes and implementations of a class, struct or interface, including library types defined outside the repository (implementations of a framework interface). Use instead of grepping for extends/implements.",
 	"tests_for":    "Tests that exercise a symbol (callers within two hops plus tests named after it). Use to decide which tests to run or update after a change.",
 	"traverse":     "Breadth-first exploration from a symbol over chosen edge kinds (calls, references, extends, implements, embeds, tests, declares) in either direction, with hubs summarized. Use for questions that need more than one callers/callees step.",
 	"status":       "Index health: freshness, file states, languages, database size, last scan and steering mode. Use when results look stale, empty or surprising.",
@@ -51,6 +51,7 @@ func bind[In any](name string) binding {
 		if got, want := reflect.TypeOf(t.NewInput()), reflect.TypeFor[*In](); got != want {
 			return fmt.Errorf("mcp: tool %s: input is %v, binding expects %v", name, got, want)
 		}
+		s.args[name] = argsOf(reflect.TypeFor[In]())
 		desc := descriptions[name]
 		if desc == "" {
 			desc = t.Description

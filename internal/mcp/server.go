@@ -47,6 +47,7 @@ type Server struct {
 	defRoot string // start repository root, once located
 	engines map[string]*repoEngine
 	closed  bool
+	args    map[string]toolArgs // tool name -> arguments, for aliasMiddleware
 }
 
 // repoEngine is an open index and the query engine over it.
@@ -77,7 +78,7 @@ func New(opts Options) (*Server, error) {
 	if opts.Logf == nil {
 		opts.Logf = func(string, ...any) {}
 	}
-	s := &Server{opts: opts, dir: dir, engines: map[string]*repoEngine{}}
+	s := &Server{opts: opts, dir: dir, engines: map[string]*repoEngine{}, args: map[string]toolArgs{}}
 	s.srv = gomcp.NewServer(
 		&gomcp.Implementation{Name: ServerName, Title: "graphmaster code graph", Version: version.String()},
 		&gomcp.ServerOptions{
@@ -89,6 +90,7 @@ func New(opts Options) (*Server, error) {
 	if err := s.register(); err != nil {
 		return nil, err
 	}
+	s.srv.AddReceivingMiddleware(aliasMiddleware(s.args))
 	return s, nil
 }
 
