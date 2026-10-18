@@ -15,6 +15,14 @@ coverage.*
 # graphmaster's own index data
 .graphmaster/
 
+# Internal notes and agent session files (never published)
+/docs/PLAN.md
+/CONTEXT.md
+/notes/
+*.local.md
+.claude/
+context-store.json
+
 # Editors / OS
 .idea/
 .vscode/

@@ -88,7 +88,9 @@ jobs:
         with:
           distribution: goreleaser
           version: v2.15.3
-          args: release --clean
+          # Without the tap token the release still publishes; the cask is
+          # then pushed to pragmataW/homebrew-tap by hand.
+          args: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN != '' && 'release --clean' || 'release --clean --skip=homebrew' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Fine-grained PAT with contents:write on pragmataW/homebrew-tap.

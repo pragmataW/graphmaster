@@ -1,6 +1,6 @@
 name: nightly
 
-# Performance gates (docs/PLAN.md U54). Thresholds per runner live in
+# Performance gates. Thresholds per runner live in
 # bench/thresholds.json (profiles macos-ci and linux-ci); bench/README.md
 # documents them. Raw results are uploaded as the perf-<os> artifact.
 on:

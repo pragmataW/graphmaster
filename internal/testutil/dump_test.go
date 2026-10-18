@@ -11,7 +11,7 @@ import (
 	"github.com/pragmataW/graphmaster/internal/model"
 )
 
-// planSchema mirrors the graph.db schema from docs/PLAN.md closely enough to
+// planSchema mirrors the graph.db schema (docs/architecture.md) closely enough to
 // exercise CanonicalDump without depending on internal/store.
 const planSchema = `
 CREATE TABLE meta(key TEXT PRIMARY KEY, value TEXT);

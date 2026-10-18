@@ -86,6 +86,7 @@ bench:
 	OUT=$(BENCH_OUT) bench/synth.sh $(BENCH_GATES)
 
 bench-k8s: build
+	@mkdir -p $(BENCH_OUT)
 	GRAPHMASTER_BIN=$(CURDIR)/$(BIN) RESULTS=$(BENCH_OUT)/k8s.jsonl bench/k8s.sh
 
 perf-gates:
