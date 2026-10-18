@@ -28,7 +28,9 @@ func TestIndexHelperProcess(t *testing.T) {
 		t.Skip("helper process only")
 	}
 	ctx := context.Background()
-	ix, err := Open(ctx, dir, Options{Resolver: &fakeResolver{}, BatchFiles: 5, Workers: 2})
+	// Commit by file count only: a time-based commit on a slow machine would
+	// split batches and move the simulated crash point.
+	ix, err := Open(ctx, dir, Options{Resolver: &fakeResolver{}, BatchFiles: 5, BatchDelay: time.Hour, Workers: 2})
 	if err != nil {
 		fmt.Println("ERROR", err)
 		os.Exit(2)
