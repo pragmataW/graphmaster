@@ -14,7 +14,7 @@ import (
 	"time"
 
 	// Agent adapters register themselves for the dispatcher, as in
-	// cmd/graphmaster.
+	// internal/cli.
 	_ "github.com/pragmataW/graphmaster/internal/adapters/claude"
 	_ "github.com/pragmataW/graphmaster/internal/adapters/codex"
 	_ "github.com/pragmataW/graphmaster/internal/adapters/cursor"

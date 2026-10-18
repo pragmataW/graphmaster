@@ -34,7 +34,7 @@ and `resolve`. All logic lives in the core; adapters only translate formats.
 
 | Package | Responsibility |
 |---|---|
-| `cmd/graphmaster` | cobra CLI: `index`, `status`, `query`, `mcp`, `hook`, `ui`, `install`, `uninstall`, `doctor` |
+| `internal/cli` | cobra CLI: `index`, `status`, `query`, `mcp`, `hook`, `ui`, `install`, `uninstall`, `doctor`; the module root and `cmd/graphmaster` are thin main packages calling it |
 | `internal/model` | language and kind enums, per-file `Facts`, the `LanguageSpec` interface |
 | `internal/config` | TOML layers (defaults < user < project < env) and validation |
 | `internal/repo` | locate the repository (worktrees, submodules), decode `.git/index`, walk untracked files with git ignore semantics and a directory cache, content filters |
