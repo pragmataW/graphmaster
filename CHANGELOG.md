@@ -6,6 +6,8 @@ uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-18
+
 ### Added
 
 - `go install github.com/pragmataW/graphmaster@latest` works without build
@@ -17,6 +19,7 @@ uses [Semantic Versioning](https://semver.org/).
 
 - `--version` of a `go install` build reports the module version and
   commit instead of `dev (commit none)`.
+- A crash-recovery test no longer depends on the machine's speed.
 
 ## [0.1.0] - 2026-10-18
 
@@ -101,5 +104,6 @@ commerce, angular-realworld, spring-petclinic and Slim before the release.
 - Re-resolution after a whole-repository change skips files already
   resolved in the same run (4.6 s to 1.1 s on ripgrep).
 
-[Unreleased]: https://github.com/pragmataW/graphmaster/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/pragmataW/graphmaster/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/pragmataW/graphmaster/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/pragmataW/graphmaster/releases/tag/v0.1.0
