@@ -6,11 +6,11 @@ uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### 0.1.0 (not released yet)
+## [0.1.0] - 2026-10-18
 
 First release.
 
-#### Added
+### Added
 
 - **Indexing** of Go, Python, TypeScript, TSX, JavaScript, Rust, Java, C,
   C++, C# and PHP with tree-sitter into a SQLite graph at
@@ -56,11 +56,38 @@ First release.
 - **Configuration** through `~/.config/graphmaster/config.toml`,
   `<repo>/.graphmaster/config.toml` and `GRAPHMASTER_*` environment
   variables.
+- **Library symbols:** `callers useState` or `inheritance
+  Psr\Http\Server\MiddlewareInterface` list the definitions that use or
+  implement a name defined outside the repository.
+- `callees` of a class or struct lists the callees of its methods.
+- Symbol arguments accept each language's own spelling (`App::run`,
+  `Slim\App::run`, `ns::Cls->m`); argument aliases (`name`, `qname`,
+  `file_path`) are mapped to the documented ones.
+- `search` with several words falls back to matching any word.
+- Prebuilt binaries for macOS and Linux (amd64, arm64; Linux fully static),
+  experimental Windows build, `install.sh` with SHA-256 verification and the
+  Homebrew tap `pragmataW/tap/graphmaster`.
 - Benchmarks on Kubernetes v1.34.0 and synthetic repositories, nightly
   performance gates.
 
-#### Coming with the release
+### Fixed during field trials
 
-- Prebuilt binaries for macOS and Linux (amd64, arm64).
-- Homebrew tap: `brew install pragmataW/tap/graphmaster`.
-- `install.sh` with SHA-256 verification.
+Agents were run against flask, express, ripgrep, excalidraw, Next.js
+commerce, angular-realworld, spring-petclinic and Slim before the release.
+
+- Rust: imports between workspace members (`path` and `workspace = true`
+  dependencies) now resolve; targets with a custom `[[bin]] path` get the
+  right module names.
+- JavaScript/TypeScript: `res.send = function send() {}` style methods on
+  module-level objects are indexed; no doubled dots in nested test names.
+- Steering: member call-site searches (`\.save\(`, `->save\(`) are
+  answered from the graph.
+- A same-named `describe()` block no longer makes a symbol ambiguous; test
+  methods (JUnit, xUnit, PHPUnit) are labelled `test`.
+- `read_symbol path:line` on a line without a definition lists the nearest
+  definitions.
+- Re-resolution after a whole-repository change skips files already
+  resolved in the same run (4.6 s to 1.1 s on ripgrep).
+
+[Unreleased]: https://github.com/pragmataW/graphmaster/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/pragmataW/graphmaster/releases/tag/v0.1.0
