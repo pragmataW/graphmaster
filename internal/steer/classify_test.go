@@ -258,6 +258,10 @@ func TestClassifyPatternIdentsAndQueries(t *testing.T) {
 		{"a.b.*Client", []string{"a", "b", "Client"}, []string{"a.b", "Client"}},
 		{"func Foo|func Foo", []string{"Foo"}, []string{"Foo"}},
 		{"$this->repo", []string{"this", "repo"}, []string{"$this->repo"}},
+		// Member call sites: the member name is the lookup.
+		{`\.make_response\(`, []string{"make_response"}, []string{"make_response"}},
+		{`->save\(`, []string{"save"}, []string{"save"}},
+		{`::new\(`, []string{"new"}, []string{"new"}},
 		{`^\s*class Foo\b`, []string{"Foo"}, []string{"Foo"}},
 	}
 	for _, c := range cases {

@@ -279,7 +279,22 @@ func classifyAlt(a string, fixed bool) ([]string, string) {
 	if expr == "" {
 		return nil, reasonKeyword
 	}
-	return parseExpr(expr, fixed)
+	return parseExpr(callSiteName(expr), fixed)
+}
+
+// callSiteName turns a member call-site search (".save(", "->save(",
+// "::new(") into the member name plus its call parenthesis. A leading
+// separator without the call stays as it is (".Foo" is not symbol-like).
+func callSiteName(expr string) string {
+	if !strings.HasSuffix(expr, "(") {
+		return expr
+	}
+	for _, sep := range []string{".", "->", "::"} {
+		if rest, ok := strings.CutPrefix(expr, sep); ok && rest != "(" {
+			return rest
+		}
+	}
+	return expr
 }
 
 // parseExpr parses ident((\.|::|#|->|\.\*)ident)*\(?\)? and returns one query
